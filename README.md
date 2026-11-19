@@ -41,5 +41,16 @@ The addon is and will stay **free**, with readable source code, no ads and no do
 [Blizzard's UI Add-On Development Policy](https://us.forums.blizzard.com/en/wow/t/ui-add-on-development-policy/24534).
 If you want to support the project, see "Support the project" on the [web guide](https://difusbisproroute.github.io/).
 
+## Support the project
+The addon is free and will stay free. If it helps you, you can support it:
+
+- ⭐ Star this repository and share the [web guide](https://difusbisproroute.github.io/).
+- **PayPal:** https://paypal.me/DifuWoW
+- **Binance Pay ID:** `128341418` (DifuWoW). No fee between Binance users: Pay → Send, paste the Pay ID and check the name is DifuWoW.
+- **USDT (TRC20 / Tron network):** `TF6aQxhahtLNtFqEDRpeGASgn92hUDEYoo`
+  Send **only USDT on the TRC20 network** to this address. Any other coin or network will be lost.
+
+Donations are optional and never unlock anything inside the addon.
+
 ## License
 © 2026 Difu (DifusBisProRoute). All rights reserved. See [LICENSE](LICENSE).

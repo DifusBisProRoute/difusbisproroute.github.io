@@ -6,6 +6,7 @@
 ## Author: Difu
 ## Version: 1.0.2
 ## X-Website: https://difusbisproroute.github.io/
+## X-Curse-Project-ID: 1816912
 ## X-License: All Rights Reserved
 ## SavedVariables: DifusBisProRouteDB
 

@@ -1,24 +1,66 @@
+# Push a tag like v1.0.3 ->
+#   1. builds DifusBisProRoute-1.0.3-forever.zip ("-forever" lets WowUp pick the right file),
+#   2. publishes a GitHub Release,
+#   3. uploads the same zip to CurseForge (project 1816912) when the CF_API_KEY secret exists.
+# Before tagging: bump "## Version" in DifusBisProRoute/DifusBisProRoute.toc and add a "## <version>" section to CHANGELOG.md.
 name: Release
+
 on:
   push:
     tags: ["v*"]
+
 permissions:
   contents: write
+
+env:
+  CF_PROJECT_ID: "1816912"
+  # WoW Forever game versions on CurseForge (comma separated names, as shown in the upload form)
+  CF_GAME_VERSIONS: "1.60.1"
+  CF_API_KEY: ${{ secrets.CF_API_KEY }}
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Check the tag matches the .toc version
         run: |
           TAG="${GITHUB_REF_NAME#v}"
           TOC=$(grep -m1 '^## Version:' DifusBisProRoute/DifusBisProRoute.toc | sed 's/## Version: *//' | tr -d '\r')
+          echo "tag=$TAG toc=$TOC"
           test "$TAG" = "$TOC" || { echo "::error::Tag v$TAG does not match .toc version $TOC"; exit 1; }
           echo "VERSION=$TAG" >> "$GITHUB_ENV"
+          echo "ZIP=DifusBisProRoute-$TAG-forever.zip" >> "$GITHUB_ENV"
+
+      - name: Extract changelog for this version
+        run: |
+          awk -v v="## $VERSION" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md > notes.md
+          test -s notes.md || echo "Release $VERSION" > notes.md
+          cat notes.md
+
       - name: Build zip
-        run: zip -r -X "DifusBisProRoute-${VERSION}-forever.zip" DifusBisProRoute
+        run: zip -r -X "$ZIP" DifusBisProRoute
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: DifusBisProRoute-${{ env.VERSION }}-forever.zip
-          generate_release_notes: true
+          files: ${{ env.ZIP }}
+          body_path: notes.md
+
+      - name: Upload to CurseForge
+        if: env.CF_API_KEY != ''
+        run: |
+          set -euo pipefail
+          API=https://wow.curseforge.com/api
+          curl -sS --fail-with-body -H "X-Api-Token: $CF_API_KEY" "$API/game/versions" -o versions.json
+          IDS=$(jq -c --arg names "$CF_GAME_VERSIONS" '
+            ($names | split(",") | map(gsub("^\\s+|\\s+$"; ""))) as $want
+            | [ .[] | select(.name as $n | $want | index($n)) | .id ] | unique' versions.json)
+          echo "game version ids: $IDS"
+          test "$IDS" != "[]" || { echo "::error::Game versions '$CF_GAME_VERSIONS' not found on CurseForge"; exit 1; }
+          META=$(jq -nc --rawfile cl notes.md --argjson gv "$IDS" --arg dn "Difu'sBisProRoute $VERSION" \
+            '{changelog:$cl, changelogType:"markdown", displayName:$dn, gameVersions:$gv, releaseType:"release"}')
+          curl -sS --fail-with-body -H "X-Api-Token: $CF_API_KEY" \
+            --form-string "metadata=$META" -F "file=@$ZIP" \
+            "$API/projects/$CF_PROJECT_ID/upload-file"

@@ -1,0 +1,24 @@
+name: Release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the tag matches the .toc version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          TOC=$(grep -m1 '^## Version:' DifusBisProRoute/DifusBisProRoute.toc | sed 's/## Version: *//' | tr -d '\r')
+          test "$TAG" = "$TOC" || { echo "::error::Tag v$TAG does not match .toc version $TOC"; exit 1; }
+          echo "VERSION=$TAG" >> "$GITHUB_ENV"
+      - name: Build zip
+        run: zip -r -X "DifusBisProRoute-${VERSION}-forever.zip" DifusBisProRoute
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: DifusBisProRoute-${{ env.VERSION }}-forever.zip
+          generate_release_notes: true

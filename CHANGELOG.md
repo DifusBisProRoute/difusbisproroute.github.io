@@ -1,10 +1,11 @@
 # Changelog
 
 ## 1.0.2
-- Enlace a la guía web: `## X-Website` en el .toc, comando `/difu web` y línea discreta en el cuadro de Sincronizar.
+- Link to the web guide: `## X-Website` in the .toc, new `/difu web` command and a discreet line in the Sync box.
+- Readme files in English.
 
 ## 1.0.1
-- `/difu talents` ya no da error de API: lectura de talentos compatible con varias versiones del cliente y diagnóstico en el chat.
+- `/difu talents` no longer throws an API error: talent reading works across client versions and prints diagnostics in chat.
 
 ## 1.0.0
-- Primera versión pública: Warrior Prot y Fury, ruta por dependencias, hasta 5 opciones por slot, optimizador de caps (440 Def + 8% hit / 8% hit + EP), presets, panel de stats, enlace a WoWSims, sincronización con la guía web.
+- First public release: Warrior Protection and Fury, dependency-ordered route, up to 5 options per slot, caps optimizer (440 Def + 8% hit / 8% hit + EP), presets, stats panel, WoWSims link and sync with the web guide.

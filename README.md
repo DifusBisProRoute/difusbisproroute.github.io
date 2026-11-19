@@ -1,44 +1,45 @@
 # Difu'sBisProRoute
 
-Ruta pre-raid para **Warrior (Prot y Fury)** en **WoW Forever**: addon gratuito + guía web.
-*Pre-raid route for **Warrior (Prot and Fury)** on **WoW Forever**: free addon + web guide.*
+Pre-raid route for **Warrior (Protection and Fury)** on **WoW Forever**: a free in-game addon plus a web guide.
 
-**Guía web / Web guide:** https://difusbisproroute.github.io/
-**Descarga / Download:** [última versión / latest release](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest)
+**Web guide:** https://difusbisproroute.github.io/
+**Download:** [latest release](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest)
 
-## Qué hace
-- **Ruta ordenada por dependencias**: qué hacer primero (llaves, attunements, quests, mazmorras, reputaciones) para conseguir tu pre-BiS. Completar, Después y Saltar por paso.
-- **Hasta 5 opciones por slot**, basadas en WoW Forever BiS List, wowtbc.gg y sixtyupgrades.
-- **Optimizador de caps**: Prot = 440 Defensa + 8% hit; Fury = 8% hit + máximo EP. Presets: Óptimo, Tanque, Sin crafteos ni AH y los tuyos.
-- **Panel de stats tipo hoja de personaje** con lo que tienes ahora vs. tu plan, leyendo tus talentos.
-- **Enlace a WoWSims** con tu set elegido (`/difu sim`).
-- **Detecta tu progreso**: quests, ítems, reputación y profesiones.
+## Features
+- **Dependency-ordered route**: what to do first (keys, attunements, quests, dungeons, reputations) to get your pre-raid BiS. Mark each step as Complete, Later or Skip.
+- **Up to 5 options per slot**, based on WoW Forever BiS List, wowtbc.gg and sixtyupgrades.
+- **Caps optimizer**: Protection = 440 Defense + 8% hit; Fury = 8% hit + maximum EP. Presets: Optimal, Tank, No crafts / AH, plus your own.
+- **Character-sheet stats panel** comparing what you have now with your plan, using your real talents.
+- **WoWSims link** for your chosen set (`/difu sim`).
+- **Tracks your progress automatically**: quests, items, reputation and professions.
+- **English and Spanish** (`/difu lang en` · `/difu lang es`).
 
-## Instalar
-1. Descarga el zip de [Releases](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest).
-2. Copia la carpeta `DifusBisProRoute` en `World of Warcraft\_forever_\Interface\AddOns\`.
-3. En el juego: `/difu`.
+## Installation
+1. Download the zip from [Releases](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest).
+2. Copy the `DifusBisProRoute` folder into `World of Warcraft\_forever_\Interface\AddOns\`.
+   The result must be `...\AddOns\DifusBisProRoute\DifusBisProRoute.toc` (no nested folders).
+3. In game, type `/difu`. If it does not show up, enable "Load out of date AddOns" in the AddOns list.
 
-## Comandos
-| Comando | Qué hace |
+## Commands
+| Command | What it does |
 |---|---|
-| `/difu` | Abrir / cerrar |
-| `/difu spec prot` · `/difu spec fury` | Cambiar de spec |
-| `/difu sim` | Enlace a WoWSims con tu set |
-| `/difu web` | Enlace a la guía web |
-| `/difu talents` | Ver qué talentos lee el addon |
-| `/difu export` · `/difu import` | Sincronizar con la guía web |
-| `/difu lang es` · `/difu lang en` | Idioma |
-| `/difu scale 0.6-1.4` | Tamaño de la ventana |
-| `/difu reset` | Reiniciar el progreso del personaje |
+| `/difu` | Open / close the window |
+| `/difu spec prot` · `/difu spec fury` | Switch spec |
+| `/difu sim` | WoWSims link for your set |
+| `/difu web` | Link to the web guide |
+| `/difu talents` | Show which talents the addon reads |
+| `/difu export` · `/difu import` | Sync with the web guide |
+| `/difu lang en` · `/difu lang es` | Language |
+| `/difu scale 0.6-1.4` | Window size |
+| `/difu reset` | Reset this character's progress |
 
-## Fuentes y créditos
-- [WoW Forever BiS List](https://wowforeverbislist.com/) · [wowtbc.gg](https://wowtbc.gg/warcraftforever/) · [sixtyupgrades](https://sixtyupgrades.com/forever/) · [WoWSims](https://www.wowsims.com/forever/) · [Wowhead Forever](https://www.wowhead.com/forever)
+## Sources and credits
+[WoW Forever BiS List](https://wowforeverbislist.com/) · [wowtbc.gg](https://wowtbc.gg/warcraftforever/) · [sixtyupgrades](https://sixtyupgrades.com/forever/) · [WoWSims](https://www.wowsims.com/forever/) · [Wowhead Forever](https://www.wowhead.com/forever)
 
-## Política
-El addon es y será **gratis**, con el código visible, sin anuncios y sin pedir donaciones dentro del juego, según la
-[política de addons de Blizzard](https://us.forums.blizzard.com/en/wow/t/ui-add-on-development-policy/24534).
-Si quieres apoyar el proyecto, en la [guía web](https://difusbisproroute.github.io/) está la sección "Apoya el proyecto".
+## Policy
+The addon is and will stay **free**, with readable source code, no ads and no donation requests inside the game, following
+[Blizzard's UI Add-On Development Policy](https://us.forums.blizzard.com/en/wow/t/ui-add-on-development-policy/24534).
+If you want to support the project, see "Support the project" on the [web guide](https://difusbisproroute.github.io/).
 
-## Licencia
-© 2026 Difu (DifusBisProRoute). All rights reserved. Ver [LICENSE](LICENSE).
+## License
+© 2026 Difu (DifusBisProRoute). All rights reserved. See [LICENSE](LICENSE).

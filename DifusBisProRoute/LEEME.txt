@@ -1,0 +1,25 @@
+Difu'sBisProRoute 1.0.2 - WoW Forever (Warrior Prot / Fury)
+=============================================================
+
+INSTALAR
+1. Cierra el juego (o quedate en la pantalla de personajes).
+2. Descomprime este .zip.
+3. Copia la carpeta "DifusBisProRoute" dentro de:
+   C:\Program Files\World of Warcraft\_forever_\Interface\AddOns\
+   (debe quedar ...\AddOns\DifusBisProRoute\DifusBisProRoute.toc, sin carpetas dobles)
+4. Entra al juego. Si no aparece, en la lista de AddOns marca "Cargar AddOns desactualizados".
+
+USAR
+/difu              abrir / cerrar la ventana
+/difu spec prot    o  /difu spec fury
+/difu sim          enlace para simular tu set en WoWSims (copiar y pegar en el navegador)
+/difu web          guia web: https://difusbisproroute.github.io/
+/difu talents      ver que talentos lee el addon
+/difu export | import   sincronizar con la guia web
+/difu lang es|en   idioma
+/difu scale 0.6-1.4  tamano de la ventana
+/difu reset        reiniciar el progreso de este personaje
+
+INSTALL (EN)
+Unzip and copy the "DifusBisProRoute" folder into
+World of Warcraft\_forever_\Interface\AddOns\ ; then type /difu in game.

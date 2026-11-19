@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Difu'sBisProRoute: ruta pre-raid para Warrior (Prot y Fury) en WoW Forever, con optimizador de caps, enlace a WoWSims y addon gratuito.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Difu'sBisProRoute</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky command bar (faction, language, caps, sim) + tabbed workspace: Route (dependency-ordered steps) / Gear (up to 5 options per slot); WoW-style item tooltips on hover/tap */
+:root{
+  --bg:#141110; --panel:#1c1714; --panel2:#241d19; --line:#3b2f27; --fg:#efe6d6; --muted:#a69684;
+  --gold:#c69b6d; --gold-ink:#1a120b; --blood:#b02a20; --blood-ink:#fff1e8; --steel:#8c97a3;
+  --epic:#b98af5; --rare:#5aa2ff; --unc:#4fd07a;
+  --good:#6cc07a; --warn:#e0a14a; --bad:#e5604f;
+  --f-display:"Cinzel","Trajan Pro",Georgia,serif; --f-body:"IBM Plex Sans",system-ui,sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#f2ebe0; --panel:#fffaf2; --panel2:#f7efe3; --line:#ddcdb6; --fg:#2a1e16; --muted:#6e5c4b;
+  --gold:#8a5a2e; --gold-ink:#fffaf2; --blood:#9b1c16; --blood-ink:#ffffff; --steel:#56616c;
+  --epic:#7a3fc6; --rare:#1d5fc8; --unc:#1c8a43;
+  --good:#2c7a3f; --warn:#9a5d10; --bad:#b0302a; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f2ebe0; --panel:#fffaf2; --panel2:#f7efe3; --line:#ddcdb6; --fg:#2a1e16; --muted:#6e5c4b;
+  --gold:#8a5a2e; --gold-ink:#fffaf2; --blood:#9b1c16; --blood-ink:#ffffff; --steel:#56616c;
+  --epic:#7a3fc6; --rare:#1d5fc8; --unc:#1c8a43;
+  --good:#2c7a3f; --warn:#9a5d10; --bad:#b0302a; color-scheme:light}
+/* the tooltip keeps the in-game look in both themes: dark navy box, quality colors tuned for it */
+:root{--tt-bg:#070b1c;--tt-line:#5c6a8a;--tt-fg:#ffffff;--tt-equip:#1eff00;--tt-muted:#c9c9c9;--tt-gold:#ffd100;--tt-epic:#a335ee;--tt-rare:#0070dd;--tt-unc:#1eff00}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 var(--f-body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+a{color:var(--rare)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:linear-gradient(180deg,var(--panel),var(--panel2));border-bottom:2px solid var(--blood)}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;padding-block:12px}
+h1{font:800 22px/1.1 var(--f-display);letter-spacing:.03em;margin:0;text-wrap:balance;color:var(--gold)}
+h1 small{color:var(--muted)}
+h1 small{display:block;font:500 12px/1.3 var(--f-body);color:var(--muted);letter-spacing:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:none;border:0;padding:6px 11px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--gold);color:var(--gold-ink);font-weight:600}
+.meters{display:flex;gap:14px;flex-wrap:wrap;margin-left:auto}
+.meter{min-width:120px}
+.meter .lbl{display:flex;justify-content:space-between;gap:8px;font:500 11px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.meter .lbl b{color:var(--fg);font-weight:500}
+.track{height:6px;border-radius:3px;background:var(--line);margin-top:4px;overflow:hidden}
+.track i{display:block;height:100%;background:linear-gradient(90deg,var(--blood),color-mix(in srgb,var(--blood) 60%,var(--gold)));transition:width .3s}
+.track i.ok{background:var(--good)}
+.track i.soft{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 70%,#000),var(--gold))}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));background:var(--panel2);padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;color:var(--fg);font-size:13px}
+.btn.primary{background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 92%,#fff),color-mix(in srgb,var(--gold) 80%,#000));color:var(--gold-ink);border-color:color-mix(in srgb,var(--gold) 60%,#000);font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 1px 0 rgba(0,0,0,.3)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--gold)}
+main.wrap{padding-block:18px 60px;display:grid;gap:18px;position:relative;z-index:1}
+.bgwar{position:fixed;right:-40px;bottom:0;height:min(90vh,780px);aspect-ratio:2/3;max-width:70vw;color:var(--gold);opacity:.10;pointer-events:none;z-index:0}
+.bgwar svg{width:100%;height:100%;display:block}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .bgwar{opacity:.13}}
+:root[data-theme="light"] .bgwar{opacity:.13}
+@media (max-width:640px){.bgwar{opacity:.06;right:-80px}}
+.next{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;border:1px solid color-mix(in srgb,var(--gold) 60%,transparent);border-left:4px solid var(--blood);border-radius:10px;padding:14px 16px;background:linear-gradient(90deg,color-mix(in srgb,var(--blood) 14%,var(--panel)),var(--panel) 75%)}
+.next .eyebrow{font:500 11px var(--f-mono);color:var(--gold);text-transform:uppercase;letter-spacing:.08em}
+.next h2{margin:2px 0 2px;font:700 19px/1.25 var(--f-display);text-wrap:balance}
+.next p{margin:0;color:var(--muted);min-width:0}
+.next .acts{display:flex;gap:8px;flex-wrap:wrap}
+.prog{display:flex;align-items:center;gap:12px;font:500 12px var(--f-mono);color:var(--muted)}
+.prog .track{flex:1;height:8px;margin:0}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 12px;cursor:pointer;color:var(--muted);font-weight:500}
+.tabs button[aria-selected="true"]{color:var(--fg);border-color:var(--gold)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+.toolbar label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.phase{display:grid;gap:8px}
+.phase h3{margin:10px 0 2px;color:var(--gold);font:700 15px var(--f-display);letter-spacing:.04em;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.phase h3 span{font:500 11px var(--f-mono);color:var(--muted);letter-spacing:.04em}
+.step{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:8px}
+.step.done{opacity:.6;border-left-color:var(--good)}
+.step.skipped{opacity:.5;border-style:dashed}
+.step.isnext{border-left-color:var(--blood)}
+.step.blocked .t{color:var(--muted)}
+.chk{width:20px;height:20px;margin-top:2px;accent-color:var(--good);cursor:pointer}
+.step .t{font-weight:600;min-width:0}
+.step.done .t{text-decoration:line-through}
+.step .where{font:500 12px var(--f-mono);color:var(--muted)}
+.step .d{grid-column:2/4;color:var(--muted);font-size:13px;min-width:0}
+.step .meta{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 11px var(--f-mono);padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.req{border-color:var(--warn);color:var(--warn);white-space:normal}
+.chip.note{border-color:var(--bad);color:var(--bad)}
+.laterBox{margin-top:18px}
+.laterBox details{border:1px dashed color-mix(in srgb,var(--gold) 55%,var(--line));border-radius:10px;padding:10px 14px;background:color-mix(in srgb,var(--gold) 6%,var(--panel))}
+.laterBox summary{cursor:pointer;display:flex;gap:10px;align-items:center;font:700 15px var(--f-display);color:var(--gold);letter-spacing:.04em}
+.laterBox .cnt{font:600 11px var(--f-mono);background:var(--gold);color:var(--gold-ink);border-radius:999px;padding:1px 8px}
+.laterBox .lh{color:var(--muted);font-size:13px;margin:6px 0 10px}
+.step.later{border-left-color:var(--gold);border-style:dashed}
+.sacts{display:flex;gap:2px;align-items:start}
+.link{background:none;border:0;color:var(--muted);cursor:pointer;font-size:12px;padding:2px 4px;text-decoration:underline}
+/* item references: dotted underline marks "hover/tap for tooltip" */
+.it{cursor:help;font-weight:600;text-decoration:underline dotted;text-underline-offset:3px;text-decoration-thickness:1px}
+.chip .it{font-weight:500}
+.q4{color:var(--epic)} .q3{color:var(--rare)} .q2{color:var(--unc)}
+.doll{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,330px) minmax(0,1fr);gap:14px;align-items:start}
+.doll .col{display:grid;gap:12px;min-width:0}
+.statsCol{align-self:stretch;min-width:0}
+.stats{position:sticky;top:calc(env(safe-area-inset-top,0px) + 88px);display:grid;gap:10px;border-color:color-mix(in srgb,var(--gold) 55%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--blood) 10%,var(--panel)),var(--panel) 40%)}
+.stats h3{margin:0;font:800 16px var(--f-display);letter-spacing:.06em;color:var(--gold);text-align:center}
+.stats .model{font-size:11px;color:var(--muted);text-align:center;margin:-4px 0 0}
+.cap{display:grid;gap:3px}
+.cap .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px}
+.cap .row b{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums}
+.cap .note{font-size:11px;color:var(--muted)}
+.cap .track{height:8px;margin:0;position:relative;overflow:visible}
+.cap .track i{border-radius:3px}
+.cap .track i.ok{background:var(--good)}
+.cap .track i.soft{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 70%,#000),var(--gold))}
+.cap .track .ghost{position:absolute;top:0;height:100%;border-radius:3px;background:color-mix(in srgb,var(--gold) 45%,transparent)}
+.av{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+.av span:nth-child(3n+2){border-bottom:1px dotted var(--line);align-self:center}
+.tal{border-top:1px solid var(--line);padding-top:8px;display:grid;gap:4px}
+.tal .row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 8px;align-items:baseline}
+.tal .row b{white-space:nowrap}
+.tal .row b{font:700 13px var(--f-display);color:var(--gold);letter-spacing:.04em}
+.tal .row span{font-size:11px;color:var(--muted)}
+.tal label{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.tal small{display:block;font:11px var(--f-mono);color:var(--muted)}
+.tal select{background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:2px 6px;font:13px var(--f-mono)}
+.av b{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+.dl{font:500 11px var(--f-mono);margin-left:4px}
+.dl.up{color:var(--good)} .dl.dn{color:var(--bad)}
+.opt .delta{grid-column:2/4;display:flex;gap:4px;flex-wrap:wrap}
+.opt .delta span{font:500 10.5px var(--f-mono);padding:0 5px;border-radius:4px;background:var(--panel)}
+.opt .delta .up{color:var(--good)} .opt .delta .dn{color:var(--bad)} .opt .delta .cur{color:var(--muted)}
+.slot{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;align-content:start}
+.slot.off{opacity:.55}
+.slot header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.slot h4{margin:0;font:700 13px var(--f-display);letter-spacing:.06em;color:var(--gold)}
+.slot .ench{font:500 11px var(--f-mono);color:var(--muted);text-align:right}
+.opt{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
+.opt:has(input:checked){border-color:var(--gold)}
+.opt input{margin-top:3px;accent-color:var(--gold);cursor:pointer}
+.opt .nm{min-width:0}
+.opt .wh{font:500 11px var(--f-mono);color:var(--muted);text-decoration:none;align-self:start}
+.opt .wh:hover{color:var(--gold)}
+.opt .st{grid-column:2/4;font:400 11.5px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.opt .src{grid-column:2/4;font-size:12px;color:var(--muted)}
+.opt .badges{grid-column:2/4;display:flex;gap:4px;flex-wrap:wrap}
+.opt .own{grid-column:2/4;display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);cursor:pointer;width:max-content}
+.opt .own input{accent-color:var(--good);margin:0}
+.opt.owned{border-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--panel2))}
+.opt.owned .own{color:var(--good);font-weight:600}
+.slot .has{font:500 11px var(--f-mono);color:var(--good)}
+.b{font:600 10px var(--f-mono);padding:1px 6px;border-radius:4px;letter-spacing:.04em}
+.b.wfb{background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--gold)}
+.b.wtbc{background:color-mix(in srgb,var(--rare) 20%,transparent);color:var(--rare)}
+.b.warn{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}
+.slot footer{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+.tabk{border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line));background:color-mix(in srgb,var(--gold) 12%,var(--panel2));color:var(--gold);border-radius:999px;padding:3px 12px;font:600 12px var(--f-body);cursor:pointer}
+.tabk[aria-expanded="true"]{background:var(--gold);color:var(--gold-ink)}
+.opt.solo{grid-template-columns:0 1fr auto;column-gap:0}
+.opt.solo input[type=radio]{visibility:hidden;width:0;margin:0}
+.opt.solo .wh{margin-left:8px}
+[hidden]{display:none!important}
+.presetBar{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center}
+.presel{background:var(--panel2);color:var(--fg);border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;max-width:100%;min-width:0;cursor:pointer}
+.presel:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.pchip{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel2)}
+.pchip button{background:none;border:0;padding:7px 10px;cursor:pointer;color:var(--fg);font-size:13px}
+.pchip button+button{border-left:1px solid var(--line);color:var(--muted);padding:7px 8px}
+.pchip button:hover{color:var(--gold)}
+.pform{display:inline-flex;gap:6px;align-items:center}
+.pform input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:13px var(--f-body);width:160px}
+.slot footer label{display:inline-flex;gap:5px;align-items:center;cursor:pointer}
+.site-foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin-top:22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.panel h3{margin:0 0 6px;font:700 15px var(--f-display);letter-spacing:.04em;color:var(--gold)}
+.panel p,.panel li{color:var(--muted);max-width:70ch}
+.alerts{display:grid;gap:6px}
+.alert{font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid var(--warn);color:var(--warn);background:color-mix(in srgb,var(--warn) 8%,transparent)}
+textarea{width:100%;min-height:90px;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;font:12px var(--f-mono);padding:8px}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:20}
+/* WoW-style tooltip */
+#tt{position:fixed;z-index:30;max-width:300px;width:max-content;pointer-events:none;background:var(--tt-bg);color:var(--tt-fg);border:1px solid var(--tt-line);border-radius:5px;padding:9px 11px;font:13px/1.4 var(--f-body);box-shadow:0 6px 24px rgba(0,0,0,.45)}
+#tt .n{font-size:15px;font-weight:600;margin-bottom:2px}
+#tt .n.q4{color:var(--tt-epic)} #tt .n.q3{color:var(--tt-rare)} #tt .n.q2{color:var(--tt-unc)}
+#tt .row{display:flex;justify-content:space-between;gap:16px}
+#tt .eq{color:var(--tt-equip)}
+#tt .mut{color:var(--tt-muted)}
+#tt .set{color:var(--tt-gold);margin-top:6px}
+#tt .src{color:var(--tt-gold);margin-top:6px;font-size:12px}
+#tt .hint{color:var(--tt-muted);font-size:11px;margin-top:6px;font-family:var(--f-mono)}
+@media (max-width:1000px){.doll{grid-template-columns:1fr 1fr}.statsCol{grid-column:1/-1;order:-1}.stats{position:static}}
+@media (max-width:640px){.meters{margin-left:0;width:100%}.meter{flex:1;min-width:90px}.next{grid-template-columns:1fr}.doll{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="bgwar" aria-hidden="true"><svg viewBox="0 0 400 600" preserveAspectRatio="xMidYMax meet">
+  <g fill="currentColor">
+    <path d="M300 40 L314 34 L320 48 L238 252 L224 246 Z"/>
+    <path d="M204 236 L256 262 L250 274 L198 248 Z"/>
+    <path d="M214 258 L234 268 L222 298 L204 290 Z"/>
+    <path d="M190 64 C228 40 262 58 272 92 C248 80 224 82 206 96 Z"/>
+    <path d="M160 142 C160 96 184 76 206 76 C230 76 252 96 252 142 L248 172 L232 188 L180 188 L164 172 Z"/>
+    <path d="M106 208 C104 176 138 158 176 166 L186 212 C160 226 128 232 106 208 Z"/>
+    <path d="M304 208 C306 176 272 158 234 166 L224 212 C250 226 282 232 304 208 Z"/>
+    <path d="M150 196 L262 196 L276 332 L246 362 L166 362 L136 332 Z"/>
+    <path d="M262 206 L302 216 L242 292 L222 280 Z"/>
+    <path d="M158 362 L254 362 L264 414 L148 414 Z"/>
+    <path d="M160 414 L202 414 L198 542 L210 574 L148 574 L162 542 Z"/>
+    <path d="M212 414 L254 414 L252 542 L266 574 L204 574 L216 542 Z"/>
+    <path d="M64 232 L202 210 L212 402 C206 474 152 524 120 546 C88 516 56 464 58 402 Z"/>
+  </g>
+  <path d="M176 142 L236 142 L232 152 L180 152 Z" fill="var(--bg)"/>
+  <path d="M80 248 L192 230 L200 400 C196 460 152 502 122 524 C96 498 72 454 74 402 Z" fill="var(--bg)" opacity=".28"/>
+  <path d="M96 336 L134 302 L172 336 L172 360 L134 326 L96 360 Z" fill="var(--blood)"/>
+  <path d="M96 392 L134 358 L172 392 L172 416 L134 382 L96 416 Z" fill="var(--blood)"/>
+</svg></div>
+<header class="bar">
+  <div class="wrap">
+    <h1>Difu'sBisProRoute<small data-i="sub"></small></h1>
+    <div class="seg" role="group" id="specSeg" aria-label="Spec">
+      <button id="sp-prot" data-sp="prot" aria-pressed="true">Prot</button><button id="sp-fury" data-sp="fury" aria-pressed="false">Fury</button>
+    </div>
+    <div class="seg" role="group" id="facSeg">
+      <button id="fa" data-f="A" aria-pressed="true"></button><button id="fh" data-f="H" aria-pressed="false"></button>
+    </div>
+    <div class="seg" role="group" aria-label="Idioma / Language">
+      <button id="les" data-l="es" aria-pressed="true">ES</button><button id="len" data-l="en" aria-pressed="false">EN</button>
+    </div>
+    <div class="meters" id="meters"></div>
+    <a class="btn primary" id="simlink" href="https://www.wowsims.com/forever/warrior/protection/" target="_blank" rel="noopener"></a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="next" id="next" aria-live="polite"></section>
+  <div class="prog" id="prog"></div>
+  <div class="alerts" id="alerts"></div>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-route" aria-selected="true" data-v="route" data-i="tabRoute"></button>
+    <button role="tab" id="tab-gear" aria-selected="false" data-v="gear" data-i="tabGear"></button>
+    <button role="tab" id="tab-data" aria-selected="false" data-v="data" data-i="tabData"></button>
+  </nav>
+
+  <section id="v-route">
+    <div class="toolbar">
+      <label><input type="checkbox" id="showDone" checked> <span data-i="showDone"></span></label>
+      <label><input type="checkbox" id="showSkipped"> <span data-i="showSkipped"></span> (<span id="skipCount">0</span>)</label>
+      <span data-i="ttHint"></span>
+    </div>
+    <div id="route"></div>
+    <section class="laterBox" id="laterBox" hidden></section>
+  </section>
+
+  <section id="v-gear" hidden>
+    <div class="toolbar" style="margin-bottom:10px">
+      <span data-i="preset"></span>
+      <span class="presetBar" id="presetBar"></span>
+      <label><input type="checkbox" id="ench" checked> <span data-i="enchSim"></span></label>
+    </div>
+    <div class="doll"><div class="col" id="colL"></div><aside class="statsCol"><div class="panel stats" id="stats" aria-live="polite"></div></aside><div class="col" id="colR"></div></div>
+  </section>
+
+  <section id="v-data" hidden style="display:grid;gap:14px">
+    <div class="panel" id="howPanel"></div>
+    <div class="panel" id="srcPanel"></div>
+    <div class="panel">
+      <h3 data-i="gameTitle"></h3>
+      <p data-i="gameText"></p>
+      <div class="toolbar" style="margin:8px 0"><button class="btn primary" id="gimp" data-i="gimp"></button><button class="btn" id="gexp" data-i="gexp"></button></div>
+      <textarea id="gio" aria-label="ProtRoute string"></textarea>
+    </div>
+    <div class="panel">
+      <h3 data-i="ioTitle"></h3>
+      <p data-i="ioText"></p>
+      <div class="toolbar" style="margin:8px 0"><button class="btn" id="exp" data-i="exp"></button><button class="btn" id="imp" data-i="imp"></button><button class="btn" id="reset" data-i="reset"></button><span id="resetConfirm" hidden><button class="btn" id="resetYes" style="border-color:var(--bad);color:var(--bad)" data-i="resetYes"></button></span></div>
+      <textarea id="io" aria-label="Import / export"></textarea>
+    </div>
+  </section>
+  <section class="site-foot" aria-labelledby="dlT">
+    <div class="panel">
+      <h3 id="dlT" data-i="dlTitle"></h3>
+      <p data-i="dlText"></p>
+      <div class="toolbar" style="margin:8px 0">
+        <a class="btn primary" href="https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest" target="_blank" rel="noopener" data-i="dlBtn"></a>
+        <a class="btn" href="https://github.com/DifusBisProRoute/difusbisproroute.github.io" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+    <div class="panel" id="supPanel">
+      <h3 data-i="supTitle"></h3>
+      <p data-i="supText"></p>
+      <div class="toolbar" id="supLinks" style="margin:8px 0"></div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+<div id="tt" role="tooltip" hidden></div>
+
+<script>
+// ---------- UI STRINGS ----------
+const UI={
+ es:{sub:'Prot Warrior pre-raid · WoW Forever · nivel 60',A:'Alianza',H:'Horda',sim:'Simular en WoWSims ↗',tabRoute:'Ruta',tabGear:'Equipo (hasta 5 opciones por slot)',tabData:'Fuentes y progreso',
+  showDone:'Mostrar completados',showSkipped:'Mostrar omitidos',ttHint:'· Pasa el cursor (o toca) un ítem subrayado para ver su tooltip',preset:'Preset:',enchSim:'Incluir enchants en el sim',
+  defGear:'Defensa',capsT:'Caps de tanque',model:'Warrior nivel 60 vs jefe 63 · ítems + enchants + talentos de abajo · Humano, sin buffs',defL:'Defensa',hitL:'Hit',expL:'Pericia',crushL:'Anti-crush (fallo+esq.+parada+bloqueo)',critImm:'Inmune a críticos del jefe',dlTitle:'Descarga el addon',dlText:'Difu\'sBisProRoute para WoW Forever (Warrior Prot y Fury). Descomprime y copia la carpeta DifusBisProRoute en World of Warcraft\\_forever_\\Interface\\AddOns. En el juego: /difu.',dlBtn:'Descargar última versión',supTitle:'Apoya el proyecto',supText:'El addon es y será gratis. Si te sirve, puedes apoyarlo aquí: dale una estrella en GitHub, comparte la guía o, cuando estén disponibles, con una donación.',subF:'Fury Warrior (DPS, dual wield) pre-raid · WoW Forever · nivel 60',capsF:'Caps de Fury',modelF:'Warrior nivel 60 vs jefe 63 · ítems + enchants + Cruelty · Humano, sin buffs',hitNoteF:n=>`8% es el tope de los ataques especiales (Bloodthirst, Whirlwind); los golpes blancos con dos armas llegan a 27%. Máx. pre-raid con estas opciones: ${n}%.`,expNoteF:'Pericia: 23.5 EP por 1% hasta 6.5%; después no suma.',critTot:'Crítico total',apTot:'Poder de ataque',strT:'Fuerza',agiT:'Agilidad',mhL:'DPS mano derecha',ohL:'DPS mano izquierda',setOn:(n,b)=>`Bonus de set activo: ${n} (${b})`,epNoteF:'EP = pesos de WoW Forever BiS List para Fury (preset WoWSims Pre-BiS): Fuerza 2.2 · Agilidad 1.7 · AP 1 · 1% crit 31.6 · 1% hit 16.9 hasta 8% (luego 4.2) · 1% pericia 23.5 · DPS arma derecha 12.6 · izquierda 2.7. Procs (Hand of Justice, Felstriker) con su EP estimado; Ironfoe y Heart of Wyrmthalak sin valorar el proc.',hitShortF:n=>`Te falta ${n}% de hit para el 8%.`,pgOptF:'Optimizados (8% hit + máximo EP)',maxHitF:'Óptimo: 8% hit + EP',maxHitTipF:'Llega al 8% de hit y con eso fijo busca el máximo EP (crit, fuerza, AP, agilidad, pericia, DPS de armas). Prueba también con el set Devilsaur (+2% hit).',nocraftPF:'Sin crafteos ni AH: 8% hit + EP',tPresetSU:'Preset sixtyupgrades aplicado',tFury:(h,c,e)=>`Preset aplicado: ${h}% hit · ${c}% crit · ${e} EP`,
+  srcF:`<h3>Fuentes (Fury)</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warrior/fury/" target="_blank" rel="noopener">WoW Forever BiS List · Fury</a>: lista por EP (preset WoWSims Pre-BiS - Fury), Alianza y Horda.</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/fury-warrior/" target="_blank" rel="noopener">wowtbc.gg · Fury Warrior</a>: lista pre-raid.</li><li><a href="https://sixtyupgrades.com/forever/set/hAu4TBWuuxxm9Btn41BSHH" target="_blank" rel="noopener">sixtyupgrades · prebis without aids</a>: set de referencia (8.5% hit).</li><li>Stats de ítems fuera de esas listas: tooltips de Wowhead Forever.</li></ul>`,strL:'Fuerza (equipo)',apL:'Poder de ataque (equipo)',critL:'Crítico (equipo)',epNote:'EP = pesos de stats de WoW Forever BiS List para tanque (Aguante 1 · Fuerza 0.54 · Agilidad 0.44 · AP 0.24 · 1% crit 5.2 · Block value 0.53 · Armadura 0.035 · DPS de arma 1.16). Defensa y hit se tratan como topes.',critN:n=>`El jefe te crítica ${n}%`,missL:'Fallo (miss)',dodgeL:'Esquiva (dodge)',parryL:'Parada (parry)',blockL:'Bloqueo (block)',avoidL:'Evasión total',armorL:'Armadura',drL:'reducción',hpL:'Vida máxima (estimada)',maxHit:'Óptimo: 8% hit + 440 Def',maxHitTip:'Llega a 440 de Defensa y al 8% de hit, y con eso fijo elige el set con más EP (aguante, fuerza, AP, crit, armadura…)',tMaxHit:n=>`Preset Óptimo aplicado: ${n}% de hit, 440+ de Defensa y máximo EP`,tTank:n=>`Preset Tanque aplicado: ${n}% de hit, 440+ de Defensa y máximo aguante/armadura`,tNoCraft:(n,d)=>`Preset Sin crafteos ni AH aplicado: ${n}% de hit y ${d} de Defensa`,nocraftP:'Sin crafteos ni AH: 8% hit + 440 Def',nocraftTip:'Igual que Óptimo, pero solo con ítems de mazmorra, quest, vendedor o reputación: nada crafteado ni comprado en la casa de subastas',presetL:'Preset',presetPick:'Elegir preset…',pgLists:'Listas BiS',pgOpt:'Optimizados (8% hit + 440 Def)',pgMine:'Mis presets',tankP:'Tanque: 8% hit + 440 Def (aguante)',tankTip:'La versión original: llega a 440 de Defensa y 8% de hit, y con eso fijo prioriza solo aguante y armadura (ignora fuerza, AP, crit)',hitNote:(n)=>`Es un tope, no un mínimo: hit por encima del 8% no sirve. Pre-raid, con las opciones de esta guía, el máximo es ${n}% sin bajar de 440 de Defensa (preset Óptimo). WFB prioriza Defensa; el hit sube tu amenaza.`,talT:'Tus talentos',talNote:'Se actualizan solos al importar desde el addon.',staL:'Aguante',bvL:'Valor de bloqueo',cur:'actual',prevL:'Vista previa:',sbN:n=>`Con Shield Block activo (+75% bloqueo): ${n}%`,hit:'Hit',sta:'Stamina',armor:'Armor',steps:'pasos',nextEy:'Siguiente paso',unlocks:'desbloquea',complete:'Completar',skip:'Omitir',restore:'Restaurar',
+  routeDone:'Ruta completa',routeEmpty:'No hay pasos pendientes',routeDoneP:'Todo lo de tu lista está hecho u omitido. Simula tu set final en WoWSims.',routeEmptyP:'Marca qué ítems te faltan en Equipo.',
+  requires:'requiere',verify:'verificar fuente',nothing:'Nada que mostrar con estos filtros.',have:'Ya lo tengo',ignore:'Ignorar slot',hasLbl:'Tienes',target:'objetivo',wfbBis:'WFB BiS',wtbcBis:'WTBC BiS',verifyB:'VERIFICAR',
+  dupRing:n=>`${n} está en ambos anillos: es único, cambia uno.`,defShort:n=>`Te faltan ${n} de Defensa para 440, el cap que te hace inmune a los críticos del jefe.`,
+  later:'Para después',laterT:'Para después',laterHint:'No están completados ni omitidos: siguen en tu ruta, pero el siguiente paso los salta (y también lo que depende de ellos).',resume:'Retomar',tLater:'Paso movido a Para después',change:'Cambiar',hide:'Ocultar',optsN:n=>`${n} opciones`,savePreset:'+ Guardar preset',presetName:'Nombre del preset',save:'Guardar',cancel:'Cancelar',tPresetSaved:n=>`Preset "${n}" guardado`,tPresetApplied:n=>`Preset "${n}" aplicado`,tPresetDel:n=>`Preset "${n}" borrado`,delPreset:'Borrar preset',blockedLater:'Lo que sigue depende de pasos que dejaste para después.',
+  tDone:'Paso completado',tSkip:'Paso omitido de tu ruta',tRestore:'Paso restaurado',tPresetW:'Preset WoW Forever BiS List aplicado',tPresetT:'Preset wowtbc.gg aplicado',
+  ioTitle:'Exportar / importar progreso',ioText:'El progreso se guarda solo en este navegador. Para moverlo a otro equipo, copia el texto y pégalo allá.',exp:'Copiar progreso',imp:'Importar lo pegado',reset:'Reiniciar todo',resetYes:'Sí, borrar',
+  gameTitle:'Sincronizar con el addon Difu\'sBisProRoute',gameText:'En el juego escribe /difu export, copia el texto (Ctrl+C) y pégalo aquí. Para llevar tu plan al juego, usa "Copiar para el juego" y en el juego /difu import.',gimp:'Importar desde el juego',gexp:'Copiar para el juego',tGimp:n=>`Importado del juego: ${n} pasos hechos, ${n?'':''}ítems actualizados`,tGimpFail:'No es un texto de Difu\'sBisProRoute (debe empezar con PR1;)',
+  tCopied:'Progreso copiado',tCopyFail:'Selecciona y copia el texto',tImp:'Progreso importado',tImpFail:'El texto no es un progreso válido',tReset:'Progreso reiniciado',ioPh:'Pega aquí un progreso exportado',
+  how:`<h3>Cómo se arma la ruta</h3><p>Cada ítem que eliges en <b>Equipo</b> está atado a los pasos que lo desbloquean (llaves, quests, mazmorras, profesiones). La ruta junta esos pasos, les suma sus prerrequisitos y los ordena para que nunca hagas un paso antes de lo que lo abre. Si cambias un ítem, la ruta se recalcula.</p><ul><li><b>Completar</b> marca el paso como hecho y cuenta para tu progreso.</li><li><b>Omitir</b> lo saca de tu ruta y del total (por ejemplo, si un compañero tiene la llave de UBRS). Se restaura con "Mostrar omitidos".</li><li><b>Ya lo tengo</b> va en cada una de las 3 opciones. Si marcas la opción elegida del slot, la ruta saca los pasos que solo servían para ese ítem. Si marcas otra, queda registrada como lo que llevas puesto y la ruta sigue apuntando a la opción elegida (tu mejora).</li><li><b>Para después</b> deja el paso en tu ruta sin completarlo ni omitirlo; aparece al final de la Ruta y lo retomas cuando quieras.</li><li><b>Cambiar</b> en cada slot despliega sus 3 opciones; al elegir una se vuelve a cerrar.</li><li><b>+ Guardar preset</b> guarda tu selección actual con un nombre para volver a aplicarla.</li><li><b>Ignorar slot</b> excluye el slot de la ruta y del sim.</li></ul>`,
+  src:`<h3>Fuentes</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warrior/protection/" target="_blank" rel="noopener">WoW Forever BiS List</a>: lista por EP con caps de 440 Defense, 8% hit y 6.5% expertise (datos del 17 nov 2026). Badge <span class="b wfb">WFB</span>.</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/protection-warrior/" target="_blank" rel="noopener">wowtbc.gg</a>: lista pre-raid de la comunidad. Badge <span class="b wtbc">WTBC</span>.</li><li><a href="https://www.wowsims.com/forever/warrior/protection/" target="_blank" rel="noopener">WoWSims Forever</a>: el botón arma el mismo tipo de link que usa WoW Forever BiS List (equipo y enchants; talentos y consumibles quedan como los tengas en WoWSims).</li><li>Tooltips: armados con los stats que publican esas listas. Cada ítem enlaza a Wowhead Forever para el tooltip oficial.</li><li>Cadena T0.5 y Tarnished Undermine Real: guías de LepreStore y ConquestCapped. Los ítems con <span class="b warn">VERIFICAR</span> tienen fuente incierta.</li></ul>`},
+ en:{sub:'Prot Warrior pre-raid · WoW Forever · level 60',A:'Alliance',H:'Horde',sim:'Sim on WoWSims ↗',tabRoute:'Route',tabGear:'Gear (up to 5 options per slot)',tabData:'Sources & progress',
+  showDone:'Show completed',showSkipped:'Show skipped',ttHint:'· Hover (or tap) an underlined item to see its tooltip',preset:'Preset:',enchSim:'Include enchants in the sim',
+  defGear:'Defense',capsT:'Tank caps',model:'Level 60 Warrior vs level 63 boss · items + enchants + the talents below · Human, unbuffed',defL:'Defense',hitL:'Hit',expL:'Expertise',crushL:'Anti-crush (miss+dodge+parry+block)',critImm:'Immune to boss crits',dlTitle:'Download the addon',dlText:'Difu\'sBisProRoute for WoW Forever (Warrior Prot and Fury). Unzip and copy the DifusBisProRoute folder into World of Warcraft\\_forever_\\Interface\\AddOns. In game: /difu.',dlBtn:'Download latest version',supTitle:'Support the project',supText:'The addon is and will stay free. If it helps you, you can support it here: star it on GitHub, share the guide or, once available, donate.',subF:'Fury Warrior (DPS, dual wield) pre-raid · WoW Forever · level 60',capsF:'Fury caps',modelF:'Level 60 Warrior vs level 63 boss · items + enchants + Cruelty · Human, unbuffed',hitNoteF:n=>`8% is the cap for special attacks (Bloodthirst, Whirlwind); dual-wield white swings go up to 27%. Pre-raid max with these options: ${n}%.`,expNoteF:'Expertise: 23.5 EP per 1% up to 6.5%; nothing after that.',critTot:'Total crit',apTot:'Attack power',strT:'Strength',agiT:'Agility',mhL:'Main-hand DPS',ohL:'Off-hand DPS',setOn:(n,b)=>`Set bonus active: ${n} (${b})`,epNoteF:'EP = WoW Forever BiS List Fury weights (WoWSims Pre-BiS preset): Strength 2.2 · Agility 1.7 · AP 1 · 1% crit 31.6 · 1% hit 16.9 up to 8% (then 4.2) · 1% expertise 23.5 · main-hand DPS 12.6 · off-hand 2.7. Procs (Hand of Justice, Felstriker) use their estimated EP; Ironfoe and Heart of Wyrmthalak procs are not valued.',hitShortF:n=>`You are ${n}% hit short of 8%.`,pgOptF:'Optimized (8% hit + max EP)',maxHitF:'Optimal: 8% hit + EP',maxHitTipF:'Reaches 8% hit, then picks the set with the most EP (crit, strength, AP, agility, expertise, weapon DPS). Also tries the Devilsaur set (+2% hit).',nocraftPF:'No crafts or AH: 8% hit + EP',tPresetSU:'sixtyupgrades preset applied',tFury:(h,c,e)=>`Preset applied: ${h}% hit · ${c}% crit · ${e} EP`,
+  srcF:`<h3>Sources (Fury)</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warrior/fury/" target="_blank" rel="noopener">WoW Forever BiS List · Fury</a>: EP-based list (WoWSims Pre-BiS - Fury preset), Alliance and Horde.</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/fury-warrior/" target="_blank" rel="noopener">wowtbc.gg · Fury Warrior</a>: pre-raid list.</li><li><a href="https://sixtyupgrades.com/forever/set/hAu4TBWuuxxm9Btn41BSHH" target="_blank" rel="noopener">sixtyupgrades · prebis without aids</a>: reference set (8.5% hit).</li><li>Stats for items outside those lists: Wowhead Forever tooltips.</li></ul>`,strL:'Strength (gear)',apL:'Attack power (gear)',critL:'Crit (gear)',epNote:'EP = WoW Forever BiS List tank stat weights (Stamina 1 · Strength 0.54 · Agility 0.44 · AP 0.24 · 1% crit 5.2 · Block value 0.53 · Armor 0.035 · Weapon DPS 1.16). Defense and hit are treated as caps.',critN:n=>`Boss crits you ${n}%`,missL:'Miss',dodgeL:'Dodge',parryL:'Parry',blockL:'Block',avoidL:'Total avoidance',armorL:'Armor',drL:'reduction',hpL:'Max health (estimated)',maxHit:'Optimal: 8% hit + 440 Def',maxHitTip:'Reaches 440 Defense and 8% hit, then picks the set with the most EP (stamina, strength, AP, crit, armor…)',tMaxHit:n=>`Optimal preset applied: ${n}% hit, 440+ Defense and max EP`,tTank:n=>`Tank preset applied: ${n}% hit, 440+ Defense and max stamina/armor`,tNoCraft:(n,d)=>`No crafts / AH preset applied: ${n}% hit and ${d} Defense`,nocraftP:'No crafts or AH: 8% hit + 440 Def',nocraftTip:'Same as Optimal, but only dungeon, quest, vendor or reputation items: nothing crafted or bought on the Auction House',presetL:'Preset',presetPick:'Choose preset…',pgLists:'BiS lists',pgOpt:'Optimized (8% hit + 440 Def)',pgMine:'My presets',tankP:'Tank: 8% hit + 440 Def (stamina)',tankTip:'The original version: reaches 440 Defense and 8% hit, then only favors stamina and armor (ignores strength, AP, crit)',hitNote:(n)=>`It is a cap, not a minimum: hit above 8% is wasted. Pre-raid, with this guide's options, the most you can get is ${n}% without dropping below 440 Defense (Optimal preset). WFB prioritizes Defense; hit raises your threat.`,talT:'Your talents',talNote:'Updated automatically when you import from the addon.',staL:'Stamina',bvL:'Block value',cur:'current',prevL:'Preview:',sbN:n=>`With Shield Block up (+75% block): ${n}%`,hit:'Hit',sta:'Stamina',armor:'Armor',steps:'steps',nextEy:'Next step',unlocks:'unlocks',complete:'Complete',skip:'Skip',restore:'Restore',
+  routeDone:'Route complete',routeEmpty:'No pending steps',routeDoneP:'Everything on your list is done or skipped. Sim your final set on WoWSims.',routeEmptyP:'Mark which items you still need in Gear.',
+  requires:'requires',verify:'verify source',nothing:'Nothing to show with these filters.',have:'I have it',ignore:'Ignore slot',hasLbl:'You have',target:'target',wfbBis:'WFB BiS',wtbcBis:'WTBC BiS',verifyB:'VERIFY',
+  dupRing:n=>`${n} is in both ring slots: it is unique, change one.`,defShort:n=>`You are ${n} Defense short of 440, the cap that makes you immune to boss crits.`,
+  later:'Later',laterT:'Later',laterHint:'Not completed or skipped: they stay on your route, but the next step skips them (and whatever depends on them).',resume:'Resume',tLater:'Step moved to Later',change:'Change',hide:'Hide',optsN:n=>`${n} options`,savePreset:'+ Save preset',presetName:'Preset name',save:'Save',cancel:'Cancel',tPresetSaved:n=>`Preset "${n}" saved`,tPresetApplied:n=>`Preset "${n}" applied`,tPresetDel:n=>`Preset "${n}" deleted`,delPreset:'Delete preset',blockedLater:'What comes next depends on steps you left for later.',
+  tDone:'Step completed',tSkip:'Step removed from your route',tRestore:'Step restored',tPresetW:'WoW Forever BiS List preset applied',tPresetT:'wowtbc.gg preset applied',
+  ioTitle:'Export / import progress',ioText:'Progress is saved only in this browser. To move it to another device, copy the text and paste it there.',exp:'Copy progress',imp:'Import pasted text',reset:'Reset everything',resetYes:'Yes, delete',
+  gameTitle:'Sync with the Difu\'sBisProRoute addon',gameText:'In game type /difu export, copy the text (Ctrl+C) and paste it here. To take your plan into the game, use "Copy for the game" and then /difu import in game.',gimp:'Import from the game',gexp:'Copy for the game',tGimp:n=>`Imported from the game: ${n} steps done, items updated`,tGimpFail:'Not a Difu\'sBisProRoute string (it must start with PR1;)',
+  tCopied:'Progress copied',tCopyFail:'Select and copy the text',tImp:'Progress imported',tImpFail:'That text is not valid progress',tReset:'Progress reset',ioPh:'Paste exported progress here',
+  how:`<h3>How the route is built</h3><p>Each item you pick in <b>Gear</b> is tied to the steps that unlock it (keys, quests, dungeons, professions). The route collects those steps, adds their prerequisites and orders them so you never do a step before whatever opens it. Change an item and the route recalculates.</p><ul><li><b>Complete</b> marks the step as done and counts toward progress.</li><li><b>Skip</b> removes it from your route and from the total (for example, a groupmate has the UBRS key). Restore it with "Show skipped".</li><li><b>I have it</b> sits on each of the 3 options. Mark the slot's selected option and the route drops the steps that were only needed for it. Mark another one and it is recorded as what you wear; the route keeps targeting the selected option (your upgrade).</li><li><b>Later</b> keeps the step on your route without completing or skipping it; it appears at the end of the Route and you resume it when you want.</li><li><b>Change</b> on each slot opens its 3 options; picking one closes it again.</li><li><b>+ Save preset</b> stores your current selection under a name so you can apply it again.</li><li><b>Ignore slot</b> drops the slot from the route and the sim.</li></ul>`,
+  src:`<h3>Sources</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warrior/protection/" target="_blank" rel="noopener">WoW Forever BiS List</a>: EP-based list with 440 Defense, 8% hit and 6.5% expertise caps (data from Nov 17, 2026). Badge <span class="b wfb">WFB</span>.</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/protection-warrior/" target="_blank" rel="noopener">wowtbc.gg</a>: community pre-raid list. Badge <span class="b wtbc">WTBC</span>.</li><li><a href="https://www.wowsims.com/forever/warrior/protection/" target="_blank" rel="noopener">WoWSims Forever</a>: the button builds the same link format WoW Forever BiS List uses (gear and enchants; talents and consumables stay as you have them in WoWSims).</li><li>Tooltips: built from the stats those lists publish. Every item links to Wowhead Forever for the official tooltip.</li><li>T0.5 chain and Tarnished Undermine Real: LepreStore and ConquestCapped guides. Items marked <span class="b warn">VERIFY</span> have an uncertain source.</li></ul>`}
+};
+
+// ---------- DATA ----------
+const WH = id => `https://www.wowhead.com/forever/item=${id}`;
+const PHASES = [
+  {id:'prep', name:{es:'Preparación',en:'Preparation'}, hint:{es:'en paralelo desde el día 1',en:'in parallel from day 1'}},
+  {id:'keys', name:{es:'Llaves y accesos',en:'Keys & attunements'}, hint:{es:'abren mazmorras y quests',en:'open dungeons and quests'}},
+  {id:'quest', name:{es:'Quests sueltas',en:'Standalone quests'}, hint:{es:'',en:''}},
+  {id:'dun', name:{es:'Mazmorras',en:'Dungeons'}, hint:{es:'agrupa los drops por run',en:'group drops per run'}},
+  {id:'t05', name:{es:'Cadena Tier 0.5 (Heroism)',en:'Tier 0.5 chain (Heroism)'}, hint:{es:'la línea más larga: empieza temprano',en:'the longest line: start early'}}
+];
+const DM={es:'Deliana · Ironforge',en:'Deliana · Ironforge'}, MK={es:'Mokvar · Orgrimmar',en:'Mokvar · Orgrimmar'};
+const NODES = [
+ {id:'reals',phase:'prep',title:{es:'Farmea Tarnished Undermine Real',en:'Farm Tarnished Undermine Real'},where:{es:'Pix Xizzix · Booty Bay (ambas facciones)',en:'Pix Xizzix · Booty Bay (both factions)'},
+  desc:{es:'Caen de los jefes de BRD, LBRS, UBRS, Dire Maul, Scholomance y Stratholme (~1 por jefe). Cada run de esta ruta suma Reals. Tope ~165–250: compra antes de llegar. Anillo/capa 75, trinkets 125. Los trinkets de Undermine son únicos entre sí.',
+        en:'They drop from bosses in BRD, LBRS, UBRS, Dire Maul, Scholomance and Stratholme (~1 per boss). Every run on this route adds Reals. Cap ~165–250: buy before you hit it. Ring/cloak 75, trinkets 125. Undermine trinkets are unique with each other.'},deps:[]},
+ {id:'ah',phase:'prep',title:{es:'Subasta: piezas BoE',en:'Auction House: BoE pieces'},where:{es:'Casa de subastas',en:'Auction House'},
+  desc:{es:'World drops que se compran: Stockade Pauldrons, Medallion of Grand Marshal Morris, Myrmidon\'s Signet. Suelen caer en DM, Strat y BRD.',en:'World drops you can buy: Stockade Pauldrons, Medallion of Grand Marshal Morris, Myrmidon\'s Signet. They usually drop in DM, Strat and BRD.'},deps:[]},
+ {id:'craft',phase:'prep',title:{es:'Encarga piezas crafteadas BoE',en:'Order crafted BoE pieces'},where:{es:'Herrero (Blacksmithing)',en:'Blacksmith'},
+  desc:{es:'Prot: Enchanted Thorium Helm / Breastplate. Fury: Lionheart Helm, Titanic Leggings, Persuader, Annihilator, Heartseeker. Pide a un herrero con los planos o compra en subasta.',en:'Prot: Enchanted Thorium Helm / Breastplate. Fury: Lionheart Helm, Titanic Leggings, Persuader, Annihilator, Heartseeker. Ask a blacksmith with the plans or buy on the AH.'},deps:[]},
+ {id:'bs',phase:'prep',title:{es:'Blacksmithing: planos Sentinel\'s',en:'Blacksmithing: Sentinel\'s plans'},where:{A:{es:'Stondry Darkhammer · Redridge',en:'Stondry Darkhammer · Redridge'},H:{es:'Gor\'mak · The Barrens',en:'Gor\'mak · The Barrens'}},
+  desc:{es:'Planos por 90 Merchant\'s Favor (Craftsman\'s Writs). Sentinel\'s Waistguard es BoP: tienes que ser herrero tú. Sentinel\'s Pauldrons y Sentinel\'s Gloves: fuente de planos sin confirmar.',en:'Plans cost 90 Merchant\'s Favor (Craftsman\'s Writs). Sentinel\'s Waistguard is BoP: you must be the blacksmith. Sentinel\'s Pauldrons and Sentinel\'s Gloves: plan source unconfirmed.'},deps:[]},
+ {id:'eng',phase:'prep',title:{es:'Ingeniería 300 para Force Reactive Disk',en:'Engineering 300 for Force Reactive Disk'},where:{es:'Profesión',en:'Profession'},
+  desc:{es:'El escudo requiere Engineering (300) para equiparse, no solo para craftearse.',en:'The shield requires Engineering (300) to equip, not just to craft.'},deps:[]},
+ {id:'plans',phase:'prep',title:{es:'Consigue planos nuevos de Forever',en:'Find new Forever plans'},where:{es:'Fuente aún desconocida',en:'Source not known yet'},
+  desc:{es:'Azerothium Legplates, Heavy Thorium Gauntlets, Ironwood Blade (BS 300, usan Malleable Essence of Nature + Legionite Bar). Jagged Obsidian Shield: en Classic sus planos venían de raid. Mientras no aparezca la fuente, usa otra opción.',en:'Azerothium Legplates, Heavy Thorium Gauntlets, Ironwood Blade (BS 300, using Malleable Essence of Nature + Legionite Bar). Jagged Obsidian Shield: in Classic its plans came from a raid. Until a source shows up, use another option.'},deps:[]},
+ {id:'key_dm',phase:'keys',title:{es:'Crescent Key (Dire Maul)',en:'Crescent Key (Dire Maul)'},where:{es:'Dire Maul East · Pusillin',en:'Dire Maul East · Pusillin'},
+  desc:{es:'Persigue a Pusillin en DM East; la llave abre las puertas interiores de DM West y North. En la misma run, Alzzin the Wildshaper suelta Ring of Demonic Potency.',en:'Chase Pusillin in DM East; the key opens the inner doors of DM West and North. On the same run, Alzzin the Wildshaper drops Ring of Demonic Potency.'},deps:[]},
+ {id:'key_scholo',phase:'keys',title:{es:'Skeleton Key (Scholomance)',en:'Skeleton Key (Scholomance)'},where:{A:{es:'Chillwind Camp · Western Plaguelands',en:'Chillwind Camp · Western Plaguelands'},H:{es:'The Bulwark · Western Plaguelands',en:'The Bulwark · Western Plaguelands'}},
+  desc:{es:'Cadena Scholomance → Skeletal Fragments → Mold Rhymes With... → Fire Plume Forged → Araj\'s Scarab → The Key to Scholomance.',en:'Chain: Scholomance → Skeletal Fragments → Mold Rhymes With... → Fire Plume Forged → Araj\'s Scarab → The Key to Scholomance.'},deps:[]},
+ {id:'key_ubrs',phase:'keys',title:{es:'Seal of Ascension (UBRS)',en:'Seal of Ascension (UBRS)'},where:{es:'LBRS → Wyrmbog, Dustwallow Marsh',en:'LBRS → Wyrmbog, Dustwallow Marsh'},
+  desc:{es:'Vaelan en LBRS; junta Gem of Spirestone (Highlord Omokk), Gem of Smolderweb (Mother Smolderweb), Gem of Bloodaxe (Overlord Wyrmthalak) y el Unadorned Seal. Forja con Emberstrife. Omítelo si tu grupo tiene llave.',en:'Vaelan in LBRS; collect Gem of Spirestone (Highlord Omokk), Gem of Smolderweb (Mother Smolderweb), Gem of Bloodaxe (Overlord Wyrmthalak) and the Unadorned Seal. Forge it with Emberstrife. Skip it if your group has a key.'},deps:[]},
+ {id:'ad_honored',phase:'keys',title:{es:'Argent Dawn Honored',en:'Argent Dawn Honored'},where:{es:'Plaguelands',en:'Plaguelands'},
+  desc:{es:'Necesario para comprar el Hallowed Brazier (Three Kings of Flame). Scourgestones y runs de Strat/Scholo con Argent Dawn Commission.',en:'Required to buy the Hallowed Brazier (Three Kings of Flame). Scourgestones and Strat/Scholo runs with the Argent Dawn Commission.'},deps:[]},
+ {id:'q_hyjal',phase:'quest',title:{es:'Cadena de Mount Hyjal → Work Well Done',en:'Mount Hyjal chain → Work Well Done'},where:{es:'Mount Hyjal · Tiala Whitemane / Ketharas',en:'Mount Hyjal · Tiala Whitemane / Ketharas'},
+  desc:{es:'Empieza con The Staff of the Mountain; cuatro quests hasta Work Well Done. Recompensa: Horn of Ve\'han. También da reputación con Guardians of Hyjal.',en:'Starts with The Staff of the Mountain; four quests up to Work Well Done. Reward: Horn of Ve\'han. Also grants Guardians of Hyjal reputation.'},deps:[]},
+ {id:'q_codex',phase:'quest',title:{es:'Codex of Defense → Royal Seal of Eldre\'Thalas',en:'Codex of Defense → Royal Seal of Eldre\'Thalas'},where:{es:'Dire Maul West · biblioteca',en:'Dire Maul West · library'},
+  desc:{es:'Compra o lootea el libro Codex of Defense (BoE de jefes de DM) y entrégalo en la biblioteca de DM West con los materiales que pide.',en:'Buy or loot the Codex of Defense book (BoE from DM bosses) and turn it in at the DM West library with the required materials.'},deps:['key_dm']},
+ {id:'q_dreams',phase:'quest',title:{es:'In Dreams (Tirion Fordring)',en:'In Dreams (Tirion Fordring)'},where:{es:'Eastern Plaguelands',en:'Eastern Plaguelands'},
+  desc:{es:'Cadena de Tirion Fordring. Elige Ornate Adamantium Breastplate como recompensa.',en:'Tirion Fordring\'s chain. Pick Ornate Adamantium Breastplate as the reward.'},deps:[]},
+ {id:'q_gorewood',phase:'quest',title:{es:'Gorewood Bow',en:'Gorewood Bow'},where:{es:'Eastern Plaguelands',en:'Eastern Plaguelands'},
+  desc:{A:{es:'Quest Order Must Be Restored.',en:'Quest Order Must Be Restored.'},H:{es:'Quest The Scarlet Oracle, Demetria.',en:'Quest The Scarlet Oracle, Demetria.'}},deps:[]},
+ {id:'q_head',phase:'quest',title:{es:'Head Scratcher (Greatflank Flayer)',en:'Head Scratcher (Greatflank Flayer)'},where:{es:'Quest nueva de Forever (Horda)',en:'New Forever quest (Horde)'},
+  desc:{es:'Recompensa: Greatflank Flayer. Ubicación exacta: búscala en Wowhead Forever.',en:'Reward: Greatflank Flayer. Look up the exact location on Wowhead Forever.'},deps:[],verify:true},
+ {id:'dun_brd',phase:'dun',title:{es:'Blackrock Depths',en:'Blackrock Depths'},where:{es:'Blackrock Mountain',en:'Blackrock Mountain'},
+  desc:{es:'Golem Lord Argelmach: Naglering. Emperor Dagran Thaurissan: Hand of Justice. Legplates of the Eternal Guardian (drop de BRD).',en:'Golem Lord Argelmach: Naglering. Emperor Dagran Thaurissan: Hand of Justice. Legplates of the Eternal Guardian (BRD drop).'},deps:[]},
+ {id:'dun_dmw',phase:'dun',title:{es:'Dire Maul West',en:'Dire Maul West'},where:{es:'Feralas',en:'Feralas'},
+  desc:{es:'Immol\'thar: Evil Eye Pendant, Vigilance Charm. Prince Tortheldrin: Timeworn Mace.',en:'Immol\'thar: Evil Eye Pendant, Vigilance Charm. Prince Tortheldrin: Timeworn Mace.'},deps:['key_dm']},
+ {id:'dun_dmn',phase:'dun',title:{es:'Dire Maul North (Tribute)',en:'Dire Maul North (Tribute)'},where:{es:'Feralas',en:'Feralas'},
+  desc:{es:'Run de tributo (no mates a los guardias). Redoubt Cloak sale del cofre de Mizzle the Crafty.',en:'Tribute run (do not kill the guards). Redoubt Cloak comes from Mizzle the Crafty\'s chest.'},deps:['key_dm']},
+ {id:'dun_scholo',phase:'dun',title:{es:'Scholomance',en:'Scholomance'},where:{es:'Western Plaguelands',en:'Western Plaguelands'},
+  desc:{es:'Ras Frostwhisper: Boneclenched Gauntlets, Intricately Runed Shield. Kirtonos: Boots of Valor. Deathbone Girdle (drop de Scholo).',en:'Ras Frostwhisper: Boneclenched Gauntlets, Intricately Runed Shield. Kirtonos: Boots of Valor. Deathbone Girdle (Scholo drop).'},deps:['key_scholo']},
+ {id:'dun_strat',phase:'dun',title:{es:'Stratholme',en:'Stratholme'},where:{es:'Eastern Plaguelands',en:'Eastern Plaguelands'},
+  desc:{es:'Cannon Master Willey: Willey\'s Portable Howitzer. Nerub\'enkan: Carapace Spine Crossbow. Stonespine: Stoneskin Gargoyle Cape.',en:'Cannon Master Willey: Willey\'s Portable Howitzer. Nerub\'enkan: Carapace Spine Crossbow. Stonespine: Stoneskin Gargoyle Cape.'},deps:[]},
+ {id:'dun_ubrs',phase:'dun',title:{es:'Upper Blackrock Spire',en:'Upper Blackrock Spire'},where:{es:'Blackrock Mountain',en:'Blackrock Mountain'},desc:{es:'Gyth: Gyth\'s Skull.',en:'Gyth: Gyth\'s Skull.'},deps:['key_ubrs']},
+ {id:'dun_new',phase:'dun',title:{es:'Alcaz Prison',en:'Alcaz Prison'},where:{es:'Mazmorra nueva de Forever',en:'New Forever dungeon'},desc:{es:'Iron-Wrought Cuffs; The Questioner: Fingerbreaker Stamp.',en:'Iron-Wrought Cuffs; The Questioner: Fingerbreaker Stamp.'},deps:[]},
+ {id:'summon',phase:'dun',title:{es:'Summon de Kormok / Jarien & Sothos',en:'Kormok / Jarien & Sothos summon'},where:{es:'Scholomance / Stratholme (Brazier of Beckoning)',en:'Scholomance / Stratholme (Brazier of Beckoning)'},
+  desc:{es:'Kormok suelta Band of the Steadfast Hero; Sothos & Jarien sueltan Legplates of Vigilance. Se invocan con el brazier de la cadena T0.5 (piezas del amuleto de Valthalak). Sin la cadena, únete a alguien que tenga ese jefe asignado.',en:'Kormok drops Band of the Steadfast Hero; Sothos & Jarien drop Legplates of Vigilance. They are summoned with the T0.5 chain brazier (Valthalak amulet pieces). Without the chain, join someone who has that boss assigned.'},deps:[]},
+ {id:'dun_dme',phase:'dun',title:{es:'Dire Maul East',en:'Dire Maul East'},where:{es:'Feralas',en:'Feralas'},
+  desc:{es:'Zevrim Thornhoof: Satyr\'s Bow (+1% hit). No necesita la Crescent Key.',en:'Zevrim Thornhoof: Satyr\'s Bow (+1% hit). Does not need the Crescent Key.'},deps:[]},
+ {id:'dun_blackmaw',phase:'dun',title:{es:'Blackmaw Hold',en:'Blackmaw Hold'},where:{es:'Mazmorra nueva de Forever',en:'New Forever dungeon'},
+  desc:{es:'Bonesnout the Unbroken: Spike Crested Bracers (+0.9% hit).',en:'Bonesnout the Unbroken: Spike Crested Bracers (+0.9% hit).'},deps:[]},
+ {id:'dun_shaper',phase:'dun',title:{es:'The Shaper\'s Terrace',en:'The Shaper\'s Terrace'},where:{es:'Mazmorra nueva de Forever',en:'New Forever dungeon'},
+  desc:{es:'Venomridge: Venomvessel Ring (+1.1% hit). Titanosaur: Gargantuan Wristguards (+0.8% hit). Thunderhoof: Deep Jungle Rifle (+0.5% hit). Direhorn Matriarch: Scaleguard Scimitar.',en:'Venomridge: Venomvessel Ring (+1.1% hit). Titanosaur: Gargantuan Wristguards (+0.8% hit). Thunderhoof: Deep Jungle Rifle (+0.5% hit). Direhorn Matriarch: Scaleguard Scimitar.'},deps:[]},
+ {id:'rep_wsg',phase:'keys',title:{es:'Silverwing Sentinels: Exaltado',en:'Silverwing Sentinels: Exalted'},where:{es:'Warsong Gulch · Illiyana Moonblaze (Ashenvale)',en:'Warsong Gulch · Illiyana Moonblaze (Ashenvale)'},
+  desc:{es:'Reputación de Warsong Gulch. Desbloquea Sentinel\'s Plate Legguards (+1% hit, 39 aguante).',en:'Warsong Gulch reputation. Unlocks Sentinel\'s Plate Legguards (+1% hit, 39 stamina).'},deps:[]},
+ {id:'rep_av',phase:'keys',title:{es:'Alterac Valley: Exaltado',en:'Alterac Valley: Exalted'},where:{A:{es:'Stormpike Guard · Thanthaldis Snowgleam (Ironforge)',en:'Stormpike Guard · Thanthaldis Snowgleam (Ironforge)'},H:{es:'Frostwolf Clan · Jekyll Flandring (Orgrimmar)',en:'Frostwolf Clan · Jekyll Flandring (Orgrimmar)'}},
+  desc:{es:'Reputación de Alterac Valley. Desbloquea Don Julio\'s Band (+1% hit, +1% crit, 14 AP) y The Immovable Object (2291 armadura, 66 block value).',en:'Alterac Valley reputation. Unlocks Don Julio\'s Band (+1% hit, +1% crit, 14 AP) and The Immovable Object (2291 armor, 66 block value).'},deps:[]},
+ {id:'dun_lbrs',phase:'dun',title:{es:'Lower Blackrock Spire',en:'Lower Blackrock Spire'},where:{es:'Blackrock Mountain',en:'Blackrock Mountain'},desc:{es:'Overlord Wyrmthalak, Ghok Bashguud, Shadow Hunter Vosh\'gajin, Omokk.',en:'Overlord Wyrmthalak, Ghok Bashguud, Shadow Hunter Vosh\'gajin, Omokk.'},deps:[]},
+ {id:'dun_mara',phase:'dun',title:{es:'Maraudon',en:'Maraudon'},where:{es:'Desolace',en:'Desolace'},desc:{es:'Princess Theradras: Blackstone Ring (+1% hit, 20 AP).',en:'Princess Theradras: Blackstone Ring (+1% hit, 20 AP).'},deps:[]},
+ {id:'lw',phase:'prep',title:{es:'Encarga piezas de Leatherworking',en:'Order Leatherworking pieces'},where:{es:'Peletero (Leatherworking) o subasta',en:'Leatherworker or Auction House'},desc:{es:'Timbermaw Tunic, Dawn Armor, Devilsaur Gauntlets/Leggings (2 piezas = +2% hit), Warbear Woolies, Timbermaw Brawlers.',en:'Timbermaw Tunic, Dawn Armor, Devilsaur Gauntlets/Leggings (2 pieces = +2% hit), Warbear Woolies, Timbermaw Brawlers.'},deps:[]},
+ {id:'prof_bs',phase:'prep',title:{es:'Blacksmithing 290 (Radiant Girdle of the Dawn)',en:'Blacksmithing 290 (Radiant Girdle of the Dawn)'},where:{es:'Profesión',en:'Profession'},desc:{es:'Solo herreros pueden usarlo: mejora del Girdle of the Dawn.',en:'Blacksmiths only: upgrade of the Girdle of the Dawn.'},deps:[]},
+ {id:'rep_theramore',phase:'keys',title:{es:'Theramore Expeditionary Force: Exaltado',en:'Theramore Expeditionary Force: Exalted'},where:{es:'Dustwallow Marsh',en:'Dustwallow Marsh'},desc:{es:'Reputación nueva de Forever. Theramore Epaulets y Theramore Gloves.',en:'New Forever reputation. Theramore Epaulets and Theramore Gloves.'},deps:[]},
+ {id:'dmf',phase:'prep',title:{es:'Feria de la Luna Negra: 1200 tickets',en:'Darkmoon Faire: 1200 tickets'},where:{es:'Gelvas Grimegate (Feria)',en:'Gelvas Grimegate (Faire)'},desc:{es:'Amulet of the Darkmoon.',en:'Amulet of the Darkmoon.'},deps:[]},
+ {id:'wpl_rare',phase:'quest',title:{es:'Raros de Western Plaguelands',en:'Western Plaguelands rares'},where:{es:'Western Plaguelands',en:'Western Plaguelands'},desc:{es:'Skeletal Acolyte (Krol Blade) y Scarlet Executioner (Scarlet Executioner\'s Guise).',en:'Skeletal Acolyte (Krol Blade) and Scarlet Executioner (Scarlet Executioner\'s Guise).'},deps:[]},
+ {id:'q_voodoo',phase:'quest',title:{es:'Voodoo Feathers (Sunken Temple)',en:'Voodoo Feathers (Sunken Temple)'},where:{es:'Swamp of Sorrows · Sunken Temple',en:'Swamp of Sorrows · Sunken Temple'},desc:{es:'Recompensa: Fury Visor (+1% hit, +1% crit).',en:'Reward: Fury Visor (+1% hit, +1% crit).'},deps:[]},
+ {id:'q_falrin',phase:'quest',title:{es:'Falrin\'s Vendetta (Dire Maul)',en:'Falrin\'s Vendetta (Dire Maul)'},where:{es:'Dire Maul West · Falrin Treeshaper',en:'Dire Maul West · Falrin Treeshaper'},desc:{es:'Recompensa: Beads of Ogre Might (+1% hit, 24 AP).',en:'Reward: Beads of Ogre Might (+1% hit, 24 AP).'},deps:['dun_dmw']},
+ {id:'q_sharpbeak',phase:'quest',title:{es:'Saving Sharpbeak (Hinterlands)',en:'Saving Sharpbeak (Hinterlands)'},where:{es:'The Hinterlands · Aerie Peak',en:'The Hinterlands · Aerie Peak'},desc:{es:'Recompensa: Cleansed Vilebranch Medallion (+0.7% hit, 14 AP).',en:'Reward: Cleansed Vilebranch Medallion (+0.7% hit, 14 AP).'},deps:[]},
+ {id:'q_korrak',phase:'quest',title:{es:'The Legend of Korrak (Alterac Valley)',en:'The Legend of Korrak (Alterac Valley)'},where:{es:'Alterac Valley',en:'Alterac Valley'},desc:{es:'Recompensa: Bloodseeker (ballesta, +8 fuerza, +7 agilidad).',en:'Reward: Bloodseeker (crossbow, +8 strength, +7 agility).'},deps:[]},
+ {id:'q_revantusk',phase:'quest',title:{es:'Job Opening: Guard Captain of Revantusk Village',en:'Job Opening: Guard Captain of Revantusk Village'},where:{es:'The Hinterlands · Revantusk (Horda)',en:'The Hinterlands · Revantusk (Horde)'},
+  desc:{es:'Recompensa: Rune of the Guard Captain (+0.7% hit). También la vende Primal Torntusk.',en:'Reward: Rune of the Guard Captain (+0.7% hit). Primal Torntusk also sells it.'},deps:[]},
+ {id:'t0',phase:'t05',title:{es:'Junta las piezas Battlegear of Valor (T0)',en:'Collect Battlegear of Valor (T0)'},where:{es:'Varias mazmorras',en:'Several dungeons'},
+  desc:{es:'Cada paso T0.5 consume la pieza T0 del mismo slot. Bracers y Belt: BoE/trash. Gauntlets: Ramstein (Strat). Boots: Kirtonos (Scholo). Legplates: Baron Rivendare (Strat). Spaulders: Warchief Rend (UBRS). Helm: Darkmaster Gandling (Scholo). Breastplate: General Drakkisath (UBRS). Confirma en Wowhead.',
+        en:'Each T0.5 step consumes the T0 piece of the same slot. Bracers and Belt: BoE/trash. Gauntlets: Ramstein (Strat). Boots: Kirtonos (Scholo). Legplates: Baron Rivendare (Strat). Spaulders: Warchief Rend (UBRS). Helm: Darkmaster Gandling (Scholo). Breastplate: General Drakkisath (UBRS). Confirm on Wowhead.'},deps:[]},
+ {id:'t1',phase:'t05',title:{es:'An Earnest Proposition → Wristguards of Heroism',en:'An Earnest Proposition → Wristguards of Heroism'},where:{A:DM,H:MK},
+  desc:{A:{es:'Bracers of Valor + 15 Winterspring Blood Samples + 20g.',en:'Bracers of Valor + 15 Winterspring Blood Samples + 20g.'},H:{es:'Bracers of Valor + 15 Silithus Venom Samples + 20g.',en:'Bracers of Valor + 15 Silithus Venom Samples + 20g.'}},deps:['t0']},
+ {id:'t2',phase:'t05',title:{es:'Mux: Ectoplasmic Distiller y Fel Elemental Rod',en:'Mux: Ectoplasmic Distiller and Fel Elemental Rod'},where:{es:'Mux Manascrambler · Gadgetzan',en:'Mux Manascrambler · Gadgetzan'},
+  desc:{es:'A Supernatural Device → The Ectoplasmic Distiller (Delicate Arcanite Converter, 4 Greater Eternal Essence, 10 Stonescale Oil, 25 Volcanic Ash, 40g) → Hunting for Ectoplasm (Silithus, Winterspring, EPL) → A Portable Power Source (Magma Lord Bokk) → A Shifty Merchant (Darkwhisper Gorge).',
+        en:'A Supernatural Device → The Ectoplasmic Distiller (Delicate Arcanite Converter, 4 Greater Eternal Essence, 10 Stonescale Oil, 25 Volcanic Ash, 40g) → Hunting for Ectoplasm (Silithus, Winterspring, EPL) → A Portable Power Source (Magma Lord Bokk) → A Shifty Merchant (Darkwhisper Gorge).'},deps:['t1']},
+ {id:'t3',phase:'t05',title:{es:'Just Compensation → Waistguard of Heroism',en:'Just Compensation → Waistguard of Heroism'},where:{A:DM,H:MK},desc:{es:'Entrega Belt y Gauntlets of Valor.',en:'Turn in Belt and Gauntlets of Valor.'},deps:['t2']},
+ {id:'t4',phase:'t05',title:{es:'Anthion: rescata a Ysida (Baron run)',en:'Anthion: rescue Ysida (Baron run)'},where:{es:'Stratholme',en:'Stratholme'},
+  desc:{es:'In Search of Anthion → Dead Man\'s Plea (run del Baron con la quest activa) → Proof of Life.',en:'In Search of Anthion → Dead Man\'s Plea (Baron run with the quest active) → Proof of Life.'},deps:['t3']},
+ {id:'t5',phase:'t05',title:{es:'Banner of Provocation',en:'Banner of Provocation'},where:{es:'Dire Maul · Falrin Treeshaper',en:'Dire Maul · Falrin Treeshaper'},
+  desc:{es:'Anthion\'s Strange Request (3 Dark Iron Bars, 20 Enchanted Leather, 3 Mooncloth, 4 Cured Rugged Hides) → Anthion\'s Old Friend → Falrin\'s Vendetta (25 Ogre Warbeads) → The Instigator\'s Enchantment.',
+        en:'Anthion\'s Strange Request (3 Dark Iron Bars, 20 Enchanted Leather, 3 Mooncloth, 4 Cured Rugged Hides) → Anthion\'s Old Friend → Falrin\'s Vendetta (25 Ogre Warbeads) → The Instigator\'s Enchantment.'},deps:['t4','key_dm']},
+ {id:'t6',phase:'t05',title:{es:'The Challenge: Theldren',en:'The Challenge: Theldren'},where:{es:'BRD · Ring of Law',en:'BRD · Ring of Law'},desc:{es:'Usa el estandarte en la arena y mata al grupo de Theldren.',en:'Use the banner in the arena and kill Theldren\'s group.'},deps:['t5']},
+ {id:'t7',phase:'t05',title:{es:'Anthion\'s Parting Words → Pauldrons + Sabatons of Heroism',en:'Anthion\'s Parting Words → Pauldrons + Sabatons of Heroism'},where:{A:DM,H:MK},
+  desc:{es:'Entrega Boots, Legplates y Spaulders of Valor. Si usas Boots of Valor como pies, las pierdes aquí.',en:'Turn in Boots, Legplates and Spaulders of Valor. If you wear Boots of Valor, you lose them here.'},deps:['t6']},
+ {id:'t8',phase:'t05',title:{es:'Bodley: Three Kings of Flame',en:'Bodley: Three Kings of Flame'},where:{es:'Blackrock Mountain',en:'Blackrock Mountain'},
+  desc:{es:'Incendicite of Incendius (BRD), Ember of Emberseer (UBRS), Cinder of Cynders (Silithus) y Hallowed Brazier (Argent Dawn Honored).',en:'Incendicite of Incendius (BRD), Ember of Emberseer (UBRS), Cinder of Cynders (Silithus) and Hallowed Brazier (Argent Dawn Honored).'},deps:['t7','ad_honored','key_ubrs']},
+ {id:'t9',phase:'t05',title:{es:'Left Piece del amuleto (summon asignado)',en:'Amulet Left Piece (assigned summon)'},where:{es:'LBRS / DM East / Strat / Scholo',en:'LBRS / DM East / Strat / Scholo'},
+  desc:{es:'Components of Importance te asigna un jefe: Mor Grayhoof, Isalien, Jarien & Sothos o Kormok. Si te toca Kormok o Jarien & Sothos, ese summon suelta Band of the Steadfast Hero / Legplates of Vigilance.',en:'Components of Importance assigns a boss: Mor Grayhoof, Isalien, Jarien & Sothos or Kormok. If you get Kormok or Jarien & Sothos, that summon drops Band of the Steadfast Hero / Legplates of Vigilance.'},deps:['t8']},
+ {id:'t10',phase:'t05',title:{es:'Alcaz Island + Right Piece del amuleto',en:'Alcaz Island + amulet Right Piece'},where:{es:'Dustwallow Marsh + segundo summon',en:'Dustwallow Marsh + second summon'},
+  desc:{es:'I See Alcaz Island in Your Future (20 Bloodkelp) → More Components of Importance → segundo summon asignado.',en:'I See Alcaz Island in Your Future (20 Bloodkelp) → More Components of Importance → second assigned summon.'},deps:['t9']},
+ {id:'t11',phase:'t05',title:{es:'Mea Culpa: Lord Valthalak',en:'Mea Culpa: Lord Valthalak'},where:{es:'UBRS · sala de The Beast',en:'UBRS · The Beast\'s room'},
+  desc:{es:'Final Preparations (40 Blackrock Bracers + Flask of Supreme Power) → invoca y mata a Lord Valthalak.',en:'Final Preparations (40 Blackrock Bracers + Flask of Supreme Power) → summon and kill Lord Valthalak.'},deps:['t10']},
+ {id:'t12',phase:'t05',title:{es:'Saving the Best for Last → Faceguard + Chestguard of Heroism',en:'Saving the Best for Last → Faceguard + Chestguard of Heroism'},where:{A:DM,H:MK},
+  desc:{es:'Back to the Beginning y entrega Helm + Breastplate of Valor. Fin de la cadena.',en:'Back to the Beginning, then turn in Helm + Breastplate of Valor. End of the chain.'},deps:['t11']}
+];
+
+// item fields: id, n, q (quality), il (item level), rl (req level), ty (type key), bind, st, fx (effect keys), dmg, src {es,en}, req, bis, verify, flag, fac, set
+const S_=(es,en)=>({es,en});
+const SET_H='Battlegear of Heroism';
+const SLOTS_PROT = [
+ {k:'head',n:S_('Cabeza','Head'),ench:{n:'Lesser Arcanum of Voracity',ws:1507,st:{sta:8}},opts:[
+  {id:226869,n:'Faceguard of Heroism',q:4,il:60,ty:'plate',bind:'bop',set:SET_H,st:{armor:556,sta:33,str:18,def:9},src:S_('Quest T0.5 · Saving the Best for Last','T0.5 quest · Saving the Best for Last'),req:['t12'],bis:['wfbA','wfbH','wtbc']},
+  {id:12620,n:'Enchanted Thorium Helm',q:3,il:62,rl:57,ty:'plate',bind:'boe',st:{armor:526,sta:25,str:12,def:9},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft']},
+  {id:12952,n:'Gyth\'s Skull',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:509,sta:20,def:9},src:S_('Gyth · UBRS','Gyth · UBRS'),req:['dun_ubrs']},
+  {id:13404,n:'Mask of the Unforgiven',q:3,il:57,rl:52,ty:'leather',bind:'bop',st:{armor:132,sta:13,def:6,hit:2,crit:1},src:S_('The Unforgiven · Stratholme','The Unforgiven · Stratholme'),req:['dun_strat'],bis:['hit','ep']}]},
+ {k:'neck',n:S_('Cuello','Neck'),ench:{n:'Enchant Necklace - Deflection',ws:925,st:{def:5}},opts:[
+  {id:13091,n:'Medallion of Grand Marshal Morris',q:3,il:57,rl:52,ty:'neck',bind:'boe',st:{sta:7,def:10},src:S_('World drop BoE (subasta)','BoE world drop (AH)'),req:['ah'],bis:['wfbA','wfbH']},
+  {id:275736,n:'Horn of Ve\'han',q:3,il:61,ty:'neck',bind:'bop',st:{sta:10,hit:1.3,def:5},src:S_('Quest · Work Well Done (Mount Hyjal)','Quest · Work Well Done (Mount Hyjal)'),req:['q_hyjal'],bis:['wtbc']},
+  {id:18381,n:'Evil Eye Pendant',q:3,il:62,rl:57,ty:'neck',bind:'bop',st:{agi:15,def:7},src:S_('Immol\'thar · DM West','Immol\'thar · DM West'),req:['dun_dmw']}]},
+ {k:'shoulder',n:S_('Hombros','Shoulders'),opts:[
+  {id:14552,n:'Stockade Pauldrons',q:4,il:55,rl:50,ty:'plate',bind:'boe',st:{armor:472,sta:20,def:10,sp:12},src:S_('World drop BoE (subasta)','BoE world drop (AH)'),req:['ah'],bis:['wfbA','wfbH']},
+  {id:226867,n:'Pauldrons of Heroism',q:3,il:65,ty:'plate',bind:'bop',set:SET_H,st:{armor:507,sta:18,str:12,agi:10,def:5},src:S_('Quest T0.5 · Anthion\'s Parting Words','T0.5 quest · Anthion\'s Parting Words'),req:['t7'],bis:['wtbc']},
+  {id:250577,n:'Sentinel\'s Pauldrons',q:3,il:47,rl:42,ty:'plate',bind:'bop',st:{armor:375,sta:13,str:8,def:10},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['bs'],verify:true}]},
+ {k:'back',n:S_('Capa','Back'),ench:{n:'Enchant Cloak - Superior Defense',ws:1889,st:{armor:70}},opts:[
+  {id:18495,n:'Redoubt Cloak',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{armor:45,sta:15,def:7},src:S_('Mizzle the Crafty · DM North (tributo)','Mizzle the Crafty · DM North (tribute)'),req:['dun_dmn'],bis:['wfbA','wfbH']},
+  {id:272415,n:'Stalwart Cloak',q:3,il:65,rl:60,ty:'back',bind:'bop',st:{armor:126,sta:14,hit:1},src:S_('Pix Xizzix · 75 Reals','Pix Xizzix · 75 Reals'),req:['reals'],bis:['wtbc']},
+  {id:13397,n:'Stoneskin Gargoyle Cape',q:3,il:62,rl:57,ty:'back',bind:'bop',st:{armor:94,sta:14,str:7,agi:8},src:S_('Stonespine · Stratholme','Stonespine · Stratholme'),req:['dun_strat']}]},
+ {k:'chest',n:S_('Pecho','Chest'),ench:{n:'Wild Leather Armor Kit',ws:8719,st:{def:4,sta:10}},opts:[
+  {id:226872,n:'Chestguard of Heroism',q:4,il:60,ty:'plate',bind:'bop',set:SET_H,st:{armor:684,sta:29,str:18,agi:12,def:9},src:S_('Quest T0.5 · Saving the Best for Last','T0.5 quest · Saving the Best for Last'),req:['t12'],bis:['wfbA','wfbH','wtbc']},
+  {id:12618,n:'Enchanted Thorium Breastplate',q:3,il:63,rl:58,ty:'plate',bind:'boe',st:{armor:657,sta:26,str:12,def:9},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft']},
+  {id:15413,n:'Ornate Adamantium Breastplate',q:3,il:63,rl:52,ty:'plate',bind:'bop',st:{armor:807,sta:22,str:9,def:10},src:S_('Quest · In Dreams','Quest · In Dreams'),req:['q_dreams']},
+  {id:14624,n:'Deathbone Chestplate',q:3,il:61,rl:56,ty:'plate',bind:'bop',set:'Deathbone Guardian',st:{armor:637,sta:16,int:11,def:17},src:S_('Scholomance','Scholomance'),req:['dun_scholo'],bis:['hit']}]},
+ {k:'wrist',n:S_('Muñecas','Wrist'),ench:{n:'Enchant Bracer - Superior Deflection',ws:8214,st:{def:9}},opts:[
+  {id:250582,n:'Sentinel\'s Wristguards',q:3,il:50,rl:45,ty:'plate',bind:'bop',st:{armor:231,sta:11,str:6,def:8},src:S_('Crafteado · planos 90 Merchant\'s Favor','Crafted · plans 90 Merchant\'s Favor'),req:['bs'],bis:['wfbA','wfbH']},
+  {id:226865,n:'Wristguards of Heroism',q:3,il:65,ty:'plate',bind:'bop',set:SET_H,st:{armor:296,sta:16,str:8,agi:3,def:3},src:S_('Quest T0.5 · An Earnest Proposition','T0.5 quest · An Earnest Proposition'),req:['t1'],bis:['wtbc']},
+  {id:287023,n:'Iron-Wrought Cuffs',q:3,il:53,rl:48,ty:'plate',bind:'bop',st:{armor:244,sta:8,spi:7,def:8},src:S_('Alcaz Prison','Alcaz Prison'),req:['dun_new']},
+  {id:280061,n:'Spike Crested Bracers',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:274,sta:10,ap:20,hit:0.9},src:S_('Bonesnout the Unbroken · Blackmaw Hold','Bonesnout the Unbroken · Blackmaw Hold'),req:['dun_blackmaw'],fac:'A',bis:['hit']},
+  {id:280010,n:'Gargantuan Wristguards',q:3,il:63,rl:58,ty:'plate',bind:'bop',st:{armor:287,sta:11,spi:5,ap:20,hit:0.8},src:S_('Titanosaur · The Shaper\'s Terrace','Titanosaur · The Shaper\'s Terrace'),req:['dun_shaper'],fac:'H',bis:['hit']}]},
+ {k:'hands',n:S_('Manos','Hands'),ench:{n:'Wild Leather Armor Kit',ws:8719,st:{def:4,sta:10}},opts:[
+  {id:14525,n:'Boneclenched Gauntlets',q:3,il:62,rl:57,ty:'plate',bind:'bop',st:{armor:404,sta:15,str:16,def:7},src:S_('Ras Frostwhisper · Scholomance','Ras Frostwhisper · Scholomance'),req:['dun_scholo'],bis:['wfbA']},
+  {id:250552,n:'Sentinel\'s Gloves',q:3,il:55,rl:50,ty:'plate',bind:'bop',st:{armor:361,sta:16,str:9,def:11},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['bs'],bis:['wfbH'],verify:true},
+  {id:279264,n:'Heavy Thorium Gauntlets',q:4,il:65,rl:60,ty:'plate',bind:'boe',st:{armor:461,sta:14,str:21,def:12},src:S_('Crafteado · planos sin fuente conocida','Crafted · plans with no known source'),req:['plans'],bis:['wtbc'],verify:true}]},
+ {k:'waist',n:S_('Cintura','Waist'),opts:[
+  {id:250572,n:'Sentinel\'s Waistguard',q:3,il:55,rl:50,ty:'plate',bind:'bop',st:{armor:324,sta:14,str:13,def:10},src:S_('Crafteado BoP · 90 Merchant\'s Favor','Crafted BoP · 90 Merchant\'s Favor'),req:['bs'],bis:['wfbA','wfbH'],flag:S_('BoP: tienes que ser herrero','BoP: you must be a blacksmith')},
+  {id:226866,n:'Waistguard of Heroism',q:3,il:65,ty:'plate',bind:'bop',set:SET_H,st:{armor:380,sta:18,str:13,agi:5,def:7},src:S_('Quest T0.5 · Just Compensation','T0.5 quest · Just Compensation'),req:['t3'],bis:['wtbc']},
+  {id:14620,n:'Deathbone Girdle',q:3,il:61,rl:56,ty:'plate',bind:'bop',set:'Deathbone Guardian',st:{armor:358,sta:15,int:11,def:9},src:S_('Scholomance','Scholomance'),req:['dun_scholo']}]},
+ {k:'legs',n:S_('Piernas','Legs'),ench:{n:'Wild Leather Armor Kit',ws:8719,st:{def:4,sta:10}},opts:[
+  {id:22328,n:'Legplates of Vigilance',q:3,il:63,rl:58,ty:'plate',bind:'bop',st:{armor:575,sta:22,def:15,hit:1},src:S_('Sothos & Jarien (summon) · Stratholme','Sothos & Jarien (summon) · Stratholme'),req:['summon'],bis:['wfbA','wfbH']},
+  {id:279265,n:'Azerothium Legplates',q:4,il:65,rl:60,ty:'plate',bind:'boe',st:{armor:646,sta:27,str:24,agi:18},src:S_('Crafteado · planos sin fuente conocida','Crafted · plans with no known source'),req:['plans'],bis:['wtbc'],verify:true},
+  {id:11927,n:'Legplates of the Eternal Guardian',q:3,il:57,rl:52,ty:'plate',bind:'bop',st:{armor:682,def:15,blk:2},src:S_('Blackrock Depths','Blackrock Depths'),req:['dun_brd']},
+  {id:237825,n:'Sentinel\'s Plate Legguards',q:4,il:78,rl:60,ty:'plate',bind:'bop',st:{armor:768,sta:39,str:27,hit:1,crit:2},src:S_('Silverwing Sentinels Exaltado · Warsong Gulch','Silverwing Sentinels Exalted · Warsong Gulch'),req:['rep_wsg'],fac:'A',bis:['hit']}]},
+ {k:'feet',n:S_('Pies','Feet'),ench:{n:'Wild Leather Armor Kit',ws:8719,st:{def:4,sta:10}},opts:[
+  {id:226871,n:'Sabatons of Heroism',q:4,il:60,ty:'plate',bind:'bop',set:SET_H,st:{armor:470,sta:26,str:12,def:3,hit:0.7},src:S_('Quest T0.5 · Anthion\'s Parting Words','T0.5 quest · Anthion\'s Parting Words'),req:['t7'],bis:['wfbA','wfbH','wtbc']},
+  {id:250562,n:'Sentinel\'s Sabatons',q:3,il:52,rl:47,ty:'plate',bind:'bop',st:{armor:376,sta:13,str:12,def:9},src:S_('Crafteado · Merchant\'s Favor','Crafted · Merchant\'s Favor'),req:['bs']},
+  {id:16734,n:'Boots of Valor',q:3,il:59,rl:54,ty:'plate',bind:'bop',set:'Battlegear of Valor',st:{armor:424,sta:20,str:9,agi:5,def:2},src:S_('Kirtonos · Scholomance','Kirtonos · Scholomance'),req:['dun_scholo'],flag:S_('Se consume en Anthion\'s Parting Words','Consumed by Anthion\'s Parting Words')},
+  {id:226857,n:'Battleboots of Heroism',q:4,il:60,ty:'plate',bind:'bop',st:{armor:470,sta:20,str:20,hit:1},src:S_('Mokvar / Deliana · T0.5 (versión DPS de Sabatons of Heroism)','Mokvar / Deliana · T0.5 (DPS version of Sabatons of Heroism)'),req:['t7'],bis:['hit','ep']}]},
+ {k:'finger1',n:S_('Anillo 1','Ring 1'),opts:[
+  {id:272409,n:'Ring of Awareness',q:3,il:65,rl:60,ty:'finger',bind:'bop',uniq:1,st:{sta:10,str:8,def:9},src:S_('Pix Xizzix · 75 Reals','Pix Xizzix · 75 Reals'),req:['reals'],bis:['wfbA','wfbH','wtbc']},
+  {id:11669,n:'Naglering',q:3,il:59,rl:54,ty:'finger',bind:'bop',st:{armor:60,sta:10,def:5},fx:['nag'],src:S_('Golem Lord Argelmach · BRD','Golem Lord Argelmach · BRD'),req:['dun_brd']},
+  {id:18315,n:'Ring of Demonic Potency',q:3,il:59,rl:54,ty:'finger',bind:'bop',st:{sta:10,def:7,hp5:12},src:S_('Alzzin the Wildshaper · DM East','Alzzin the Wildshaper · DM East'),req:['key_dm']},
+  {id:280015,n:'Venomvessel Ring',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sta:11,spi:9,hit:1.1},src:S_('Venomridge · The Shaper\'s Terrace','Venomridge · The Shaper\'s Terrace'),req:['dun_shaper'],bis:['hit']},
+  {id:19325,n:'Don Julio\'s Band',q:3,il:60,rl:58,ty:'finger',bind:'bop',st:{sta:10,ap:14,hit:1,crit:1},src:S_('Alterac Valley Exaltado · vendedor de reputación','Alterac Valley Exalted · reputation vendor'),req:['rep_av'],bis:['ep']}]},
+ {k:'finger2',n:S_('Anillo 2','Ring 2'),opts:[
+  {id:22331,n:'Band of the Steadfast Hero',q:3,il:62,rl:57,ty:'finger',bind:'bop',st:{sta:12,str:7,def:7},src:S_('Kormok (summon) · Scholomance','Kormok (summon) · Scholomance'),req:['summon','key_scholo'],bis:['wfbH','wtbc']},
+  {id:2246,n:'Myrmidon\'s Signet',q:4,il:58,rl:53,ty:'finger',bind:'boe',st:{sta:17,str:11,agi:7},src:S_('World drop BoE (subasta)','BoE world drop (AH)'),req:['ah'],bis:['wfbA']},
+  {id:18315,n:'Ring of Demonic Potency',q:3,il:59,rl:54,ty:'finger',bind:'bop',st:{sta:10,def:7,hp5:12},src:S_('Alzzin the Wildshaper · DM East','Alzzin the Wildshaper · DM East'),req:['key_dm']},
+  {id:272408,n:'Cutthroat\'s Signet',q:3,il:65,rl:60,ty:'finger',bind:'bop',st:{sta:8,agi:14,hit:1},src:S_('Pix Xizzix · 75 Reals','Pix Xizzix · 75 Reals'),req:['reals'],bis:['hit']},
+  {id:19325,n:'Don Julio\'s Band',q:3,il:60,rl:58,ty:'finger',bind:'bop',st:{sta:10,ap:14,hit:1,crit:1},src:S_('Alterac Valley Exaltado · vendedor de reputación','Alterac Valley Exalted · reputation vendor'),req:['rep_av'],bis:['ep']}]},
+ {k:'trinket1',n:S_('Trinket 1','Trinket 1'),opts:[
+  {id:18466,n:'Royal Seal of Eldre\'Thalas',q:3,il:62,rl:54,ty:'trinket',bind:'bop',st:{bv:30},src:S_('Quest · Codex of Defense (DM)','Quest · Codex of Defense (DM)'),req:['q_codex'],bis:['wfbA','wfbH']},
+  {id:18370,n:'Vigilance Charm',q:3,il:62,rl:57,ty:'trinket',bind:'bop',st:{str:10},fx:['vig'],src:S_('Immol\'thar · DM West','Immol\'thar · DM West'),req:['dun_dmw'],bis:['wtbc']},
+  {id:11815,n:'Hand of Justice',q:3,il:58,rl:53,ty:'trinket',bind:'bop',st:{ap:12},fx:['hoj'],src:S_('Emperor Thaurissan · BRD','Emperor Thaurissan · BRD'),req:['dun_brd']},
+  {id:276743,n:'Fingerbreaker Stamp',q:3,il:53,rl:48,ty:'trinket',bind:'bop',st:{def:6},fx:['fin'],src:S_('The Questioner · Alcaz Prison','The Questioner · Alcaz Prison'),req:['dun_new'],fac:'A',bis:['hit']},
+  {id:19120,n:'Rune of the Guard Captain',q:2,il:51,rl:46,ty:'trinket',bind:'bop',st:{ap:14,hit:0.7},src:S_('Quest · Revantusk (Hinterlands)','Quest · Revantusk (Hinterlands)'),req:['q_revantusk'],fac:'H',bis:['hit']}]},
+ {k:'trinket2',n:S_('Trinket 2','Trinket 2'),opts:[
+  {id:272440,n:'Defender\'s Grip Stabilizer',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:2,st:{def:13},fx:['dgs'],src:S_('Pix Xizzix · 125 Reals','Pix Xizzix · 125 Reals'),req:['reals'],bis:['wfbA','wtbc']},
+  {id:272437,n:'Adaptive Combat Assistant',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:2,st:{exp:1.1},fx:['aca'],src:S_('Pix Xizzix · 125 Reals','Pix Xizzix · 125 Reals'),req:['reals'],bis:['wfbH']},
+  {id:276743,n:'Fingerbreaker Stamp',q:3,il:53,rl:48,ty:'trinket',bind:'bop',st:{def:6},fx:['fin'],src:S_('The Questioner · Alcaz Prison','The Questioner · Alcaz Prison'),req:['dun_new']}]},
+ {k:'mainhand',n:S_('Arma','Main hand'),ench:{n:'Enchant Weapon - Crusader',ws:1900,st:{}},opts:[
+  {id:280022,n:'Scaleguard Scimitar',q:3,il:63,rl:58,ty:'sword1',bind:'bop',dmg:{dps:41.36,spd:2.2},st:{sta:8,ap:14,bv:12},src:S_('Direhorn Matriarch · The Shaper\'s Terrace','Direhorn Matriarch · The Shaper\'s Terrace'),req:['dun_shaper'],bis:['wfbA']},
+  {id:281587,n:'Greatflank Flayer',q:3,il:60,rl:54,ty:'axe1',bind:'bop',dmg:{dps:39.35,spd:2.3},st:{sta:11,str:5,def:3},src:S_('Quest · Head Scratcher (Horda)','Quest · Head Scratcher (Horde)'),req:['q_head'],bis:['wfbH'],fac:'H'},
+  {id:279259,n:'Ironwood Blade',q:4,il:65,rl:60,ty:'sword1',bind:'boe',dmg:{min:79,max:148,dps:47.3,spd:2.4},st:{sta:12,str:8,hit:1},src:S_('Crafteado · planos sin fuente conocida','Crafted · plans with no known source'),req:['plans'],bis:['wtbc'],verify:true},
+  {id:18376,n:'Timeworn Mace',q:3,il:62,rl:57,ty:'mace1',bind:'bop',dmg:{dps:40.68,spd:2.2},st:{armor:50,sta:11,str:7},src:S_('Prince Tortheldrin · DM West','Prince Tortheldrin · DM West'),req:['dun_dmw'],fac:'A'},
+  {id:22384,n:'Persuader',q:4,il:63,rl:58,ty:'mace1',bind:'boe',dmg:{dps:45.71,spd:2.8},st:{hit:1,crit:1},src:S_('Crafteado (Blacksmithing) · planos por confirmar','Crafted (Blacksmithing) · plans to be confirmed'),req:['craft'],verify:true,bis:['hit']}]},
+ {k:'offhand',n:S_('Escudo','Off hand'),ench:{n:'Enchant Shield - Excellent Stamina',ws:7663,st:{sta:12}},opts:[
+  {id:18168,n:'Force Reactive Disk',q:4,il:65,rl:60,ty:'shield',bind:'boe',st:{armor:2548,sta:11,bv:44},fx:['frd'],prof:'Engineering (300)',src:S_('Crafteado (Engineering)','Crafted (Engineering)'),req:['eng'],bis:['wfbA','wfbH'],flag:S_('Requiere Engineering 300 para equiparlo','Requires Engineering 300 to equip')},
+  {id:22198,n:'Jagged Obsidian Shield',q:4,il:70,rl:60,ty:'shield',bind:'boe',st:{armor:2645,bv:48},fx:['jag'],src:S_('Crafteado (Blacksmithing) · planos por confirmar','Crafted (Blacksmithing) · plans to be confirmed'),req:['plans'],bis:['wtbc'],verify:true},
+  {id:18696,n:'Intricately Runed Shield',q:3,il:62,rl:57,ty:'shield',bind:'bop',st:{armor:2121,sta:8,bv:62,sp:6},src:S_('Ras Frostwhisper · Scholomance','Ras Frostwhisper · Scholomance'),req:['dun_scholo']},
+  {id:19321,n:'The Immovable Object',q:3,il:60,rl:58,ty:'shield',bind:'bop',st:{armor:2291,sta:14,bv:66},src:S_('Alterac Valley Exaltado · vendedor de reputación','Alterac Valley Exalted · reputation vendor'),req:['rep_av'],bis:['ep']}]},
+ {k:'ranged',n:S_('Rango','Ranged'),opts:[
+  {id:16996,n:'Gorewood Bow',q:3,il:62,rl:56,ty:'bow',bind:'bop',dmg:{min:55,max:104,dps:31.8,spd:2.5},st:{sta:9,agi:3,str:2},src:S_('Quest · Eastern Plaguelands','Quest · Eastern Plaguelands'),req:['q_gorewood'],bis:['wfbA','wfbH','wtbc']},
+  {id:13380,n:'Willey\'s Portable Howitzer',q:3,il:61,rl:56,ty:'gun',bind:'bop',dmg:{dps:31.21,spd:2.9},st:{sta:9,ap:10},src:S_('Cannon Master Willey · Stratholme','Cannon Master Willey · Stratholme'),req:['dun_strat']},
+  {id:18738,n:'Carapace Spine Crossbow',q:3,il:61,rl:56,ty:'xbow',bind:'bop',dmg:{min:82,max:124,dps:31.21,spd:3.3},st:{sta:9,agi:5},src:S_('Nerub\'enkan · Stratholme','Nerub\'enkan · Stratholme'),req:['dun_strat']},
+  {id:18323,n:'Satyr\'s Bow',q:3,il:58,rl:53,ty:'bow',bind:'bop',dmg:{dps:29.79,spd:2.4},st:{ap:4,hit:1},src:S_('Zevrim Thornhoof · Dire Maul East','Zevrim Thornhoof · Dire Maul East'),req:['dun_dme'],bis:['hit']},
+  {id:280020,n:'Deep Jungle Rifle',q:3,il:63,rl:58,ty:'gun',bind:'bop',dmg:{dps:32.26,spd:3.1},st:{sta:5,ap:14,hit:0.5},src:S_('Thunderhoof · The Shaper\'s Terrace','Thunderhoof · The Shaper\'s Terrace'),req:['dun_shaper'],fac:'H',bis:['hit']}]}
+];
+
+// ---------- FURY (dual wield DPS) ----------
+// Sources: WoW Forever BiS List (Fury, A/H), wowtbc.gg Forever pre-raid, sixtyupgrades "prebis without aids" (bis: su).
+// Stats taken from each site / Wowhead Forever tooltips (Forever values, e.g. Truestrike Shoulders 1.5% hit).
+const SLOTS_FURY = [
+ {k:'head',n:S_('Cabeza','Head'),ench:{n:'Lesser Arcanum of Voracity',ws:1506,st:{str:8}},opts:[
+  {id:12640,n:'Lionheart Helm',q:4,il:61,rl:56,ty:'plate',bind:'boe',st:{armor:565,str:18,crit:2,hit:2},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['wfbA','wfbH','wtbc','su']},
+  {id:12587,n:'Eye of Rend',q:3,il:63,rl:58,ty:'leather',bind:'bop',st:{armor:143,sta:17,str:15,crit:1.5,hit:0.5},src:S_('Warchief Rend Blackhand · UBRS','Warchief Rend Blackhand · UBRS'),req:['dun_ubrs']},
+  {id:20521,n:'Fury Visor',q:3,il:52,rl:50,ty:'plate',bind:'bop',st:{armor:445,str:18,spi:9,crit:1,hit:1},src:S_('Quest · Voodoo Feathers (Sunken Temple)','Quest · Voodoo Feathers (Sunken Temple)'),req:['q_voodoo']},
+  {id:284086,n:'Scarlet Executioner\'s Guise',q:3,il:62,rl:57,ty:'leather',bind:'bop',st:{armor:141,str:24,spi:17,hit:1.5},src:S_('Scarlet Executioner · Western Plaguelands','Scarlet Executioner · Western Plaguelands'),req:['wpl_rare'],bis:['hit']},
+  {id:13404,n:'Mask of the Unforgiven',q:3,il:57,rl:52,ty:'leather',bind:'bop',st:{armor:132,sta:13,def:6,crit:1,hit:2},src:S_('The Unforgiven · Stratholme','The Unforgiven · Stratholme'),req:['dun_strat'],bis:['hit']}]},
+ {k:'neck',n:S_('Cuello','Neck'),ench:{n:'Enchant Necklace - Strength',ws:856,st:{str:5}},opts:[
+  {id:15411,n:'Mark of Fordring',q:3,il:63,rl:52,ty:'neck',bind:'bop',st:{ap:26,crit:1},src:S_('Quest · In Dreams (Tirion Fordring)','Quest · In Dreams (Tirion Fordring)'),req:['q_dreams'],bis:['wfbA','wfbH','wtbc','su']},
+  {id:19491,n:'Amulet of the Darkmoon',q:4,il:65,rl:60,ty:'neck',bind:'bop',st:{sta:10,str:10,agi:19},src:S_('Feria de la Luna Negra · 1200 tickets','Darkmoon Faire · 1200 tickets'),req:['dmf']},
+  {id:22150,n:'Beads of Ogre Might',q:3,il:63,rl:58,ty:'neck',bind:'bop',st:{sta:7,ap:24,hit:1},src:S_('Quest · Falrin\'s Vendetta (Dire Maul)','Quest · Falrin\'s Vendetta (Dire Maul)'),req:['q_falrin'],bis:['hit']},
+  {id:22340,n:'Pendant of Celerity',q:3,il:63,rl:58,ty:'neck',bind:'bop',st:{agi:10,hit:1},src:S_('Lord Valthalak · UBRS (summon)','Lord Valthalak · UBRS (summon)'),req:['t11']},
+  {id:277202,n:'Artifact Seeker\'s Pendant',q:3,il:58,rl:50,ty:'neck',bind:'bop',st:{sta:14,str:9,agi:8},src:S_('Quest · Greater Friend of the Library','Quest · Greater Friend of the Library'),req:['dun_dmw']}]},
+ {k:'shoulder',n:S_('Hombros','Shoulders'),opts:[
+  {id:22241,n:'Dark Warder\'s Pauldrons',q:3,il:57,rl:52,ty:'leather',bind:'bop',st:{armor:122,sta:7,str:11,agi:17},src:S_('Warder Stilgiss · BRD','Warder Stilgiss · BRD'),req:['dun_brd'],bis:['wfbA','wfbH']},
+  {id:12927,n:'Truestrike Shoulders',q:3,il:61,rl:56,ty:'leather',bind:'bop',st:{armor:129,sta:10,ap:24,hit:1.5},src:S_('Pyroguard Emberseer · UBRS','Pyroguard Emberseer · UBRS'),req:['dun_ubrs'],bis:['su','hit']},
+  {id:271956,n:'Theramore Epaulets',q:4,il:65,rl:60,ty:'mail',bind:'bop',st:{armor:312,sta:12,agi:27,crit:1},src:S_('Theramore Expeditionary Force · Exaltado','Theramore Expeditionary Force · Exalted'),req:['rep_theramore'],fac:'A',bis:['wtbc']},
+  {id:14503,n:'Death\'s Clutch',q:3,il:62,rl:57,ty:'leather',bind:'bop',st:{armor:131,sta:10,str:10,agi:10,int:10,hit:0.6},src:S_('Ras Frostwhisper · Scholomance','Ras Frostwhisper · Scholomance'),req:['dun_scholo']},
+  {id:19058,n:'Golden Mantle of the Dawn',q:3,il:61,rl:56,ty:'leather',bind:'bop',st:{armor:129,sta:20,str:13,agi:11},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw']}]},
+ {k:'back',n:S_('Capa','Back'),ench:{n:'Enchant Cloak - Agility',ws:7667,st:{agi:5}},opts:[
+  {id:272414,n:'Howler\'s Furs',q:3,il:65,rl:60,ty:'back',bind:'bop',st:{armor:46,sta:8,ap:28,hit:1},src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals'],bis:['wfbA','wfbH','hit']},
+  {id:13340,n:'Cape of the Black Baron',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{armor:45,agi:15,ap:20},src:S_('Baron Rivendare · Stratholme','Baron Rivendare · Stratholme'),req:['dun_strat'],bis:['wtbc','su']},
+  {id:22337,n:'Shroud of Domination',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{armor:45,sta:8,str:17},src:S_('Lord Valthalak · UBRS (summon)','Lord Valthalak · UBRS (summon)'),req:['t11']},
+  {id:11626,n:'Blackveil Cape',q:3,il:53,rl:48,ty:'back',bind:'bop',st:{armor:38,str:6,agi:14,spi:4},src:S_('High Interrogator Gerstahn · BRD','High Interrogator Gerstahn · BRD'),req:['dun_brd']}]},
+ {k:'chest',n:S_('Pecho','Chest'),ench:{n:'Enchant Chest - Greater Stats',ws:1891,st:{str:4,agi:4,sta:4,int:4,spi:4}},opts:[
+  {id:252484,n:'Timbermaw Tunic',q:4,il:61,rl:56,ty:'leather',bind:'boe',st:{armor:187,str:33,agi:18,crit:1},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw'],bis:['wfbA','wfbH','su']},
+  {id:252483,n:'Dawn Armor',q:4,il:61,rl:56,ty:'leather',bind:'boe',st:{armor:187,agi:37,crit:1,hit:1},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw'],bis:['wtbc']},
+  {id:11726,n:'Savage Gladiator Chain',q:4,il:57,rl:52,ty:'mail',bind:'bop',set:'The Gladiator',st:{armor:369,sta:18,str:16,agi:14,crit:1.5},src:S_('Gorosh the Dervish · BRD','Gorosh the Dervish · BRD'),req:['dun_brd']},
+  {id:13944,n:'Tombstone Breastplate',q:3,il:62,rl:57,ty:'leather',bind:'bop',st:{armor:174,sta:12,str:12,crit:2},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo']},
+  {id:226862,n:'Breastplate of Heroism',q:4,il:60,ty:'plate',bind:'bop',set:SET_H,st:{armor:684,sta:26,str:21,agi:13,hit:1},src:S_('Quest T0.5 · Saving the Best for Last (versión DPS)','T0.5 quest · Saving the Best for Last (DPS version)'),req:['t12'],bis:['hit']}]},
+ {k:'wrist',n:S_('Muñecas','Wrist'),ench:{n:'Enchant Bracer - Superior Strength',ws:1885,st:{str:9}},opts:[
+  {id:12936,n:'Battleborn Armbraces',q:3,il:63,rl:58,ty:'plate',bind:'bop',st:{armor:287,spi:7,crit:1,hit:1},src:S_('Warchief Rend Blackhand · UBRS','Warchief Rend Blackhand · UBRS'),req:['dun_ubrs'],bis:['wfbA','wfbH','wtbc','su','hit']},
+  {id:13400,n:'Vambraces of the Sadist',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:274,sta:8,str:7,crit:1},src:S_('Timmy the Cruel · Stratholme','Timmy the Cruel · Stratholme'),req:['dun_strat']},
+  {id:18375,n:'Bracers of the Eclipse',q:3,il:62,rl:57,ty:'leather',bind:'bop',st:{armor:76,sta:9,agi:10,ap:24},src:S_('Prince Tortheldrin · Dire Maul West','Prince Tortheldrin · Dire Maul West'),req:['dun_dmw']},
+  {id:280061,n:'Spike Crested Bracers',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:274,sta:10,ap:20,hit:0.9},src:S_('Bonesnout the Unbroken · Blackmaw Hold','Bonesnout the Unbroken · Blackmaw Hold'),req:['dun_blackmaw'],fac:'A',bis:['hit']},
+  {id:280010,n:'Gargantuan Wristguards',q:3,il:63,rl:58,ty:'plate',bind:'bop',st:{armor:287,sta:11,spi:5,ap:20,hit:0.8},src:S_('Titanosaur · The Shaper\'s Terrace','Titanosaur · The Shaper\'s Terrace'),req:['dun_shaper'],fac:'H',bis:['hit']}]},
+ {k:'hands',n:S_('Manos','Hands'),ench:{n:'Enchant Gloves - Superior Strength',ws:2563,st:{str:15}},opts:[
+  {id:226861,n:'Gauntlets of Heroism',q:4,il:55,ty:'plate',bind:'bop',set:SET_H,st:{armor:393,sta:14,str:18,crit:1},src:S_('Quest T0.5 · Just Compensation (versión DPS)','T0.5 quest · Just Compensation (DPS version)'),req:['t3'],bis:['wfbA','wfbH']},
+  {id:15063,n:'Devilsaur Gauntlets',q:3,il:58,rl:53,ty:'leather',bind:'boe',set:'Devilsaur Armor',st:{armor:103,sta:9,ap:28,crit:1},src:S_('Crafteado (Leatherworking) · set Devilsaur: 2 piezas = +2% hit','Crafted (Leatherworking) · Devilsaur set: 2 pieces = +2% hit'),req:['lw'],bis:['su']},
+  {id:271948,n:'Theramore Gloves',q:4,il:65,rl:60,ty:'leather',bind:'bop',st:{armor:123,sta:15,str:11,agi:27},src:S_('Theramore Expeditionary Force · Exaltado','Theramore Expeditionary Force · Exalted'),req:['rep_theramore'],fac:'A',bis:['wtbc']},
+  {id:19049,n:'Timbermaw Brawlers',q:3,il:61,rl:56,ty:'leather',bind:'boe',st:{armor:107,sta:9,str:21,agi:14},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw']},
+  {id:13162,n:'Reiver Claws',q:3,il:61,rl:56,ty:'plate',bind:'bop',st:{armor:398,sta:15,str:11,crit:1},src:S_('Overlord Wyrmthalak · LBRS','Overlord Wyrmthalak · LBRS'),req:['dun_lbrs']}]},
+ {k:'waist',n:S_('Cintura','Waist'),opts:[
+  {id:272403,n:'Valiant\'s Waistguard',q:4,il:60,rl:60,ty:'plate',bind:'bop',st:{armor:385,sta:11,str:14,agi:24},src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals'],bis:['wfbA','wfbH','su']},
+  {id:227814,n:'Radiant Girdle of the Dawn',q:4,il:65,rl:60,ty:'plate',bind:'bop',st:{armor:415,sta:14,str:27,crit:1},prof:'Blacksmithing (290)',src:S_('Vendedor · requiere Blacksmithing 290','Vendor · requires Blacksmithing 290'),req:['prof_bs'],bis:['wtbc']},
+  {id:19044,n:'Might of the Timbermaw',q:3,il:58,rl:53,ty:'leather',bind:'boe',st:{armor:93,sta:9,str:21,agi:14},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw']},
+  {id:13959,n:'Omokk\'s Girth Restrainer',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:353,sta:9,str:14,crit:1},src:S_('Quest · LBRS','Quest · LBRS'),req:['dun_lbrs']},
+  {id:22232,n:'Marksman\'s Girdle',q:3,il:61,rl:56,ty:'mail',bind:'bop',st:{armor:202,agi:21,hit:1},src:S_('Urok Doomhowl · UBRS','Urok Doomhowl · UBRS'),req:['dun_ubrs'],bis:['hit']}]},
+ {k:'legs',n:S_('Piernas','Legs'),ench:{n:'Lesser Arcanum of Voracity',ws:1506,st:{str:8}},opts:[
+  {id:22385,n:'Titanic Leggings',q:4,il:60,rl:55,ty:'plate',bind:'boe',st:{armor:598,str:30,crit:1,hit:2},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['wfbA','wfbH','wtbc','hit']},
+  {id:15062,n:'Devilsaur Leggings',q:3,il:60,rl:55,ty:'leather',bind:'boe',set:'Devilsaur Armor',st:{armor:148,sta:12,ap:46,crit:1},src:S_('Crafteado (Leatherworking) · set Devilsaur: 2 piezas = +2% hit','Crafted (Leatherworking) · Devilsaur set: 2 pieces = +2% hit'),req:['lw'],bis:['su']},
+  {id:237825,n:'Sentinel\'s Plate Legguards',q:4,il:78,rl:60,ty:'plate',bind:'bop',st:{armor:768,sta:39,str:27,crit:2,hit:1},src:S_('Silverwing Sentinels Exaltado · Warsong Gulch','Silverwing Sentinels Exalted · Warsong Gulch'),req:['rep_wsg'],fac:'A',bis:['hit']},
+  {id:15065,n:'Warbear Woolies',q:3,il:57,rl:52,ty:'leather',bind:'boe',st:{armor:142,sta:12,str:28,agi:18},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw']},
+  {id:13498,n:'Handcrafted Mastersmith Leggings',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:548,sta:12,str:25,exp:1},src:S_('Goraluk Anvilcrack · UBRS','Goraluk Anvilcrack · UBRS'),req:['dun_ubrs']}]},
+ {k:'feet',n:S_('Pies','Feet'),ench:{n:'Enchant Boots - Greater Agility',ws:1887,st:{agi:7}},opts:[
+  {id:287033,n:'Furbolg Berserker\'s Boots',q:3,il:58,rl:53,ty:'plate',bind:'bop',st:{armor:417,str:18,spi:9,exp:1},src:S_('Blackmaw Devotee · Blackmaw Hold','Blackmaw Devotee · Blackmaw Hold'),req:['dun_blackmaw'],bis:['wfbA','wfbH']},
+  {id:226857,n:'Battleboots of Heroism',q:4,il:60,ty:'plate',bind:'bop',set:SET_H,st:{armor:470,sta:20,str:20,hit:1},src:S_('Quest T0.5 · Anthion\'s Parting Words (versión DPS)','T0.5 quest · Anthion\'s Parting Words (DPS version)'),req:['t7'],bis:['su','hit']},
+  {id:13967,n:'Windreaver Greaves',q:3,il:61,rl:56,ty:'mail',bind:'bop',st:{armor:247,agi:20,int:4,hit:1},src:S_('Kirtonos the Herald · Scholomance','Kirtonos the Herald · Scholomance'),req:['dun_scholo'],bis:['wtbc','hit']},
+  {id:12555,n:'Battlechaser\'s Greaves',q:3,il:55,rl:50,ty:'plate',bind:'bop',st:{armor:397,sta:8,str:14,agi:13},src:S_('Blackrock Depths','Blackrock Depths'),req:['dun_brd']},
+  {id:275618,n:'Scalegut Treaders',q:3,il:58,rl:53,ty:'mail',bind:'boe',st:{armor:236,agi:8,ap:38},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw']}]},
+ {k:'finger1',n:S_('Anillo 1','Ring 1'),opts:[
+  {id:12548,n:'Magni\'s Will',q:3,il:60,rl:50,ty:'finger',bind:'bop',st:{sta:8,str:7,crit:1},src:S_('Quest · The Princess\'s Surprise (BRD)','Quest · The Princess\'s Surprise (BRD)'),req:['dun_brd'],fac:'A',bis:['wfbA']},
+  {id:13098,n:'Painweaver Band',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sta:9,ap:12,crit:1},src:S_('General Drakkisath · UBRS','General Drakkisath · UBRS'),req:['dun_ubrs'],bis:['wfbH']},
+  {id:272408,n:'Cutthroat\'s Signet',q:3,il:65,rl:60,ty:'finger',bind:'bop',st:{sta:8,agi:14,hit:1},src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals'],bis:['wtbc','hit']},
+  {id:19325,n:'Don Julio\'s Band',q:4,il:60,rl:55,ty:'finger',bind:'bop',st:{sta:10,ap:14,crit:1,hit:1},src:S_('Alterac Valley Exaltado · vendedor de reputación','Alterac Valley Exalted · reputation vendor'),req:['rep_av'],bis:['su','hit','ep']},
+  {id:17713,n:'Blackstone Ring',q:3,il:54,rl:49,ty:'finger',bind:'bop',st:{sta:6,ap:20,hit:1},src:S_('Princess Theradras · Maraudon','Princess Theradras · Maraudon'),req:['dun_mara'],bis:['hit']},
+  {id:260219,n:'Engraved Band',q:3,il:62,rl:47,ty:'finger',bind:'bop',st:{str:14,spi:10,crit:0.5},src:S_('Quest · Blackmaw Reclamation','Quest · Blackmaw Reclamation'),req:['dun_blackmaw'],fac:'H'}]},
+ {k:'finger2',n:S_('Anillo 2','Ring 2'),opts:[
+  {id:260219,n:'Engraved Band',q:3,il:62,rl:47,ty:'finger',bind:'bop',st:{str:14,spi:10,crit:0.5},src:S_('Quest · Blackmaw Reclamation','Quest · Blackmaw Reclamation'),req:['dun_blackmaw'],bis:['wfbA','wfbH']},
+  {id:13098,n:'Painweaver Band',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sta:9,ap:12,crit:1},src:S_('General Drakkisath · UBRS','General Drakkisath · UBRS'),req:['dun_ubrs'],bis:['wtbc']},
+  {id:272408,n:'Cutthroat\'s Signet',q:3,il:65,rl:60,ty:'finger',bind:'bop',st:{sta:8,agi:14,hit:1},src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals'],bis:['su','hit']},
+  {id:19325,n:'Don Julio\'s Band',q:4,il:60,rl:55,ty:'finger',bind:'bop',st:{sta:10,ap:14,crit:1,hit:1},src:S_('Alterac Valley Exaltado · vendedor de reputación','Alterac Valley Exalted · reputation vendor'),req:['rep_av'],bis:['hit','ep']},
+  {id:17713,n:'Blackstone Ring',q:3,il:54,rl:49,ty:'finger',bind:'bop',st:{sta:6,ap:20,hit:1},src:S_('Princess Theradras · Maraudon','Princess Theradras · Maraudon'),req:['dun_mara'],bis:['hit']}]},
+ {k:'trinket1',n:S_('Trinket 1','Trinket 1'),opts:[
+  {id:11815,n:'Hand of Justice',q:3,il:58,rl:53,ty:'trinket',bind:'bop',st:{ap:12},fx:['hoj'],pe:39.9,src:S_('Emperor Dagran Thaurissan · BRD','Emperor Dagran Thaurissan · BRD'),req:['dun_brd'],bis:['wfbA','wfbH']},
+  {id:13965,n:'Blackhand\'s Breadth',q:3,il:63,rl:55,ty:'trinket',bind:'bop',st:{crit:1},fx:['bhb'],src:S_('Quest · For The Horde! / General Drakkisath\'s Demise (UBRS)','Quest · For The Horde! / General Drakkisath\'s Demise (UBRS)'),req:['dun_ubrs'],bis:['su']},
+  {id:18537,n:'Counterattack Lodestone',q:3,il:63,rl:58,ty:'trinket',bind:'bop',st:{ap:30},fx:['cal'],src:S_('Mizzle the Crafty · Dire Maul North (tributo)','Mizzle the Crafty · Dire Maul North (tribute)'),req:['dun_dmn'],bis:['wtbc']},
+  {id:272437,n:'Adaptive Combat Assistant',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:2,st:{exp:1.1},fx:['aca'],src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals']},
+  {id:270275,n:'Cleansed Vilebranch Medallion',q:2,il:51,rl:40,ty:'trinket',bind:'bop',st:{ap:14,hit:0.7},src:S_('Quest · Saving Sharpbeak (Hinterlands)','Quest · Saving Sharpbeak (Hinterlands)'),req:['q_sharpbeak'],fac:'A',bis:['hit']},
+  {id:19120,n:'Rune of the Guard Captain',q:2,il:51,rl:46,ty:'trinket',bind:'bop',st:{ap:14,hit:0.7},src:S_('Quest · Revantusk (Hinterlands)','Quest · Revantusk (Hinterlands)'),req:['q_revantusk'],fac:'H',bis:['hit']}]},
+ {k:'trinket2',n:S_('Trinket 2','Trinket 2'),opts:[
+  {id:280065,n:'Behemoth Bones',q:3,il:61,rl:56,ty:'trinket',bind:'bop',st:{ap:34},fx:['beh'],src:S_('Blackmaw Behemoth · Blackmaw Hold','Blackmaw Behemoth · Blackmaw Hold'),req:['dun_blackmaw'],bis:['wfbA','wfbH']},
+  {id:13965,n:'Blackhand\'s Breadth',q:3,il:63,rl:55,ty:'trinket',bind:'bop',st:{crit:1},fx:['bhb'],src:S_('Quest · For The Horde! / General Drakkisath\'s Demise (UBRS)','Quest · For The Horde! / General Drakkisath\'s Demise (UBRS)'),req:['dun_ubrs'],bis:['wtbc']},
+  {id:22321,n:'Heart of Wyrmthalak',q:3,il:61,rl:56,ty:'trinket',bind:'bop',st:{},fx:['wyrm'],src:S_('Overlord Wyrmthalak · LBRS','Overlord Wyrmthalak · LBRS'),req:['dun_lbrs'],bis:['su']},
+  {id:18537,n:'Counterattack Lodestone',q:3,il:63,rl:58,ty:'trinket',bind:'bop',st:{ap:30},fx:['cal'],src:S_('Mizzle the Crafty · Dire Maul North (tributo)','Mizzle the Crafty · Dire Maul North (tribute)'),req:['dun_dmn']},
+  {id:272437,n:'Adaptive Combat Assistant',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:2,st:{exp:1.1},fx:['aca'],src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals']}]},
+ {k:'mainhand',n:S_('Mano derecha','Main hand'),ench:{n:'Enchant Weapon - Crusader',ws:1900,st:{}},opts:[
+  {id:22384,n:'Persuader',q:4,il:63,rl:58,ty:'mace1',bind:'boe',dmg:{dps:45.71,spd:2.8},st:{crit:1,hit:1},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['wfbA','wfbH','hit']},
+  {id:12940,n:'Dal\'Rend\'s Sacred Charge',q:3,il:63,rl:58,ty:'sword1',bind:'bop',set:'Dal\'Rend\'s Arms',dmg:{dps:41.43,spd:2.8},st:{str:4,crit:1},src:S_('Warchief Rend Blackhand · UBRS','Warchief Rend Blackhand · UBRS'),req:['dun_ubrs']},
+  {id:11684,n:'Ironfoe',q:4,il:60,rl:55,ty:'mace1',bind:'bop',dmg:{min:73,max:136,dps:43.54,spd:2.4},st:{},fx:['iron'],src:S_('Emperor Dagran Thaurissan · BRD (drop raro)','Emperor Dagran Thaurissan · BRD (rare drop)'),req:['dun_brd'],bis:['su']},
+  {id:12798,n:'Annihilator',q:3,il:63,rl:58,ty:'axe1',bind:'boe',dmg:{min:69,max:129,dps:41.25,spd:2.4},st:{ap:14},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['wtbc']},
+  {id:2244,n:'Krol Blade',q:4,il:56,rl:51,ty:'sword1',bind:'bop',dmg:{dps:40.89,spd:2.8},st:{sta:5,str:7,crit:1},src:S_('Skeletal Acolyte · Western Plaguelands','Skeletal Acolyte · Western Plaguelands'),req:['wpl_rare']}]},
+ {k:'offhand',n:S_('Mano izquierda','Off hand'),ench:{n:'Enchant Weapon - Crusader',ws:1900,st:{}},opts:[
+  {id:12590,n:'Felstriker',q:4,il:63,rl:58,ty:'dagger',bind:'bop',dmg:{dps:45.59,spd:1.7},st:{},fx:['fel'],pe:58.6,src:S_('Warchief Rend Blackhand · UBRS','Warchief Rend Blackhand · UBRS'),req:['dun_ubrs'],bis:['wfbA','wfbH']},
+  {id:13204,n:'Bashguuder',q:3,il:60,rl:55,ty:'mace1',bind:'bop',dmg:{min:49,max:93,dps:39.44,spd:1.8},st:{str:9},fx:['bash'],src:S_('Ghok Bashguud · LBRS','Ghok Bashguud · LBRS'),req:['dun_lbrs'],bis:['wtbc']},
+  {id:22384,n:'Persuader',q:4,il:63,rl:58,ty:'mace1',bind:'boe',dmg:{dps:45.71,spd:2.8},st:{crit:1,hit:1},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['su','hit']},
+  {id:12783,n:'Heartseeker',q:3,il:63,rl:58,ty:'dagger',bind:'boe',dmg:{dps:41.32,spd:1.9},st:{agi:4,crit:1},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft']},
+  {id:280021,n:'Tooth of the Matriarch',q:3,il:63,rl:58,ty:'dagger',bind:'bop',dmg:{dps:41.47,spd:1.7},st:{agi:10,crit:0.5},src:S_('Direhorn Matriarch · The Shaper\'s Terrace','Direhorn Matriarch · The Shaper\'s Terrace'),req:['dun_shaper']}]},
+ {k:'ranged',n:S_('Rango','Ranged'),opts:[
+  {id:2100,n:'Precisely Calibrated Boomstick',q:4,il:48,rl:43,ty:'gun',bind:'bop',dmg:{dps:27.78,spd:2.7},st:{agi:7,crit:0.5},src:S_('Alcaz Prison','Alcaz Prison'),req:['dun_new'],bis:['wfbA','wfbH']},
+  {id:19107,n:'Bloodseeker',q:3,il:63,ty:'xbow',bind:'bop',dmg:{min:85,max:128,dps:32.27,spd:3.3},st:{str:8,agi:7},src:S_('Quest · The Legend of Korrak (Alterac Valley)','Quest · The Legend of Korrak (Alterac Valley)'),req:['q_korrak'],bis:['wtbc','su']},
+  {id:280020,n:'Deep Jungle Rifle',q:3,il:63,rl:58,ty:'gun',bind:'bop',dmg:{dps:32.26,spd:3.1},st:{sta:5,ap:14,hit:0.5},src:S_('Thunderhoof · The Shaper\'s Terrace','Thunderhoof · The Shaper\'s Terrace'),req:['dun_shaper'],bis:['hit']},
+  {id:18323,n:'Satyr\'s Bow',q:3,il:58,rl:53,ty:'bow',bind:'bop',dmg:{dps:29.79,spd:2.4},st:{ap:4,hit:1},src:S_('Zevrim Thornhoof · Dire Maul East','Zevrim Thornhoof · Dire Maul East'),req:['dun_dme'],bis:['hit']},
+  {id:12653,n:'Riphook',q:3,il:59,rl:54,ty:'bow',bind:'bop',dmg:{dps:30.23,spd:2.2},st:{ap:22},src:S_('Shadow Hunter Vosh\'gajin · LBRS','Shadow Hunter Vosh\'gajin · LBRS'),req:['dun_lbrs']}]}
+];
+
+// set bonuses that matter for the model / optimizer
+const SET_BONUS={'Devilsaur Armor':{need:2,st:{hit:2}}};
+
+const SPEC_SLOTS={prot:SLOTS_PROT,fury:SLOTS_FURY};
+let SLOTS=SLOTS_PROT;
+
+// tooltip vocabulary (game items keep their English names; tooltip lines translate)
+const TT={
+ es:{bop:'Se liga al recogerlo',boe:'Se liga al equiparlo',uniq:'Único',uniq2:'Único: Undermine Trinket (1)',ilvl:'Nivel de objeto',req:'Requiere nivel',reqp:'Requiere',
+  slot:{head:'Cabeza',neck:'Cuello',shoulder:'Hombros',back:'Espalda',chest:'Pecho',wrist:'Muñeca',hands:'Manos',waist:'Cintura',legs:'Piernas',feet:'Pies',finger1:'Dedo',finger2:'Dedo',trinket1:'Abalorio',trinket2:'Abalorio',mainhand:'Una mano',offhand:'Mano izquierda',ranged:'A distancia'},
+  ty:{plate:'Placas',leather:'Cuero',mail:'Malla',dagger:'Daga',neck:'',back:'Tela',finger:'',trinket:'',sword1:'Espada',axe1:'Hacha',mace1:'Maza',shield:'Escudo',bow:'Arco',gun:'Arma de fuego',xbow:'Ballesta'},
+  armor:'armadura',block:'bloqueo',stamina:'Aguante',strength:'Fuerza',agility:'Agilidad',intellect:'Intelecto',spirit:'Espíritu',dmg:'Daño',speed:'Velocidad',dps:'daño por segundo',
+  eq:'Equipar:',use:'Uso:',def:n=>`Aumenta la defensa en +${n}.`,hit:n=>`Mejora tu probabilidad de golpear un ${n}%.`,crit:n=>`Mejora tu probabilidad de conseguir un golpe crítico un ${n}%.`,bv:n=>`Aumenta el valor de bloqueo de tu escudo en ${n}.`,ap:n=>`+${n} poder de ataque.`,exp:n=>`Aumenta tu pericia un ${n}%.`,blk:n=>`Aumenta tu probabilidad de bloquear ataques con un escudo un ${n}%.`,hp5:n=>`Restaura ${n} de salud cada 5 s.`,sp:n=>`Aumenta el daño y la sanación de hechizos hasta en ${n}.`,
+  fx:{fel:'Probabilidad al golpear: todos tus ataques aciertan y son críticos durante 3 s.',iron:'Equipar: tus ataques pueden darte 2 ataques extra en el siguiente golpe.',wyrm:'Equipar: tus ataques pueden infligir 112-168 de daño de Fuego.',bash:'Probabilidad al golpear: reduce la armadura del objetivo en 100 (hasta 3 veces).',bhb:'Uso: marca al objetivo, +5% de crítico contra él durante 20 s (5 min).',cal:'Uso: desarma al siguiente atacante cuerpo a cuerpo (activable).',beh:'Uso: te cura a ti y al aliado más cercano 480-530 (5 min).',nag:'Equipar: Inflige 3 de daño Arcano al atacante cuando te golpean.',vig:'Uso: Aumenta tu probabilidad de esquivar un 20% durante 20 s o hasta esquivar 3 ataques.',hoj:'Equipar: 1% de probabilidad al golpear cuerpo a cuerpo de obtener un ataque extra.',dgs:'Uso: Aumenta tu probabilidad de bloqueo un 8% durante 15 s. Efecto doble en Fortalezas y Ciudades. (6 min de reutilización)',aca:'Uso: Absorbe 450 de daño durante 15 s. Si expira antes, inflige 90–110 de daño de Naturaleza a los enemigos en cuerpo a cuerpo. (5 min)',fin:'Equipar: Aumenta la Fuerza en 38 mientras sufres un Sangrado.',frd:'Equipar: Al bloquear, libera una descarga eléctrica que daña a los enemigos cercanos. Puede dañar el escudo.',jag:'Equipar: Al recibir un hechizo dañino, 5% de silenciar al lanzador durante 3 s.'},
+  set:'Conjunto',src:'Fuente',open:'Tooltip oficial: botón Wowhead ↗ en la pestaña Equipo'},
+ en:{bop:'Binds when picked up',boe:'Binds when equipped',uniq:'Unique',uniq2:'Unique-Equipped: Undermine Trinket (1)',ilvl:'Item Level',req:'Requires Level',reqp:'Requires',
+  slot:{head:'Head',neck:'Neck',shoulder:'Shoulder',back:'Back',chest:'Chest',wrist:'Wrist',hands:'Hands',waist:'Waist',legs:'Legs',feet:'Feet',finger1:'Finger',finger2:'Finger',trinket1:'Trinket',trinket2:'Trinket',mainhand:'One-Hand',offhand:'Off Hand',ranged:'Ranged'},
+  ty:{plate:'Plate',leather:'Leather',mail:'Mail',dagger:'Dagger',neck:'',back:'Cloth',finger:'',trinket:'',sword1:'Sword',axe1:'Axe',mace1:'Mace',shield:'Shield',bow:'Bow',gun:'Gun',xbow:'Crossbow'},
+  armor:'Armor',block:'Block',stamina:'Stamina',strength:'Strength',agility:'Agility',intellect:'Intellect',spirit:'Spirit',dmg:'Damage',speed:'Speed',dps:'damage per second',
+  eq:'Equip:',use:'Use:',def:n=>`Increased Defense +${n}.`,hit:n=>`Improves your chance to hit by ${n}%.`,crit:n=>`Improves your chance to get a critical strike by ${n}%.`,bv:n=>`Increases the block value of your shield by ${n}.`,ap:n=>`+${n} Attack Power.`,exp:n=>`Increases your expertise by ${n}%.`,blk:n=>`Increases your chance to block attacks with a shield by ${n}%.`,hp5:n=>`Restores ${n} health per 5 sec.`,sp:n=>`Increases damage and healing done by magical spells and effects by up to ${n}.`,
+  fx:{fel:'Chance on hit: all attacks are guaranteed to land and will be critical strikes for the next 3 sec.',iron:'Equip: attacks have a chance to grant 2 extra attacks on your next swing.',wyrm:'Equip: melee and ranged attacks have a chance to deal 112 to 168 Fire damage.',bash:'Chance on hit: punctures the target\'s armor, lowering it by 100 (stacks 3).',bhb:'Use: marks your target, +5% crit chance against it for 20 sec (5 min).',cal:'Use: disarms the next melee attacker that strikes you.',beh:'Use: heals you and your nearest ally for 480 to 530 (5 min).',nag:'Equip: When struck in combat inflicts 3 Arcane damage to the attacker.',vig:'Use: Increases your chance to Dodge by 20% for 20 sec or until you Dodge 3 attacks.',hoj:'Equip: 1% chance on melee hit to gain 1 extra attack.',dgs:'Use: Increases your Block chance by 8% for 15 sec. Doubled in Strongholds and Cities. (6 Min Cooldown)',aca:'Use: Absorbs 450 damage for 15 sec. If it expires early, deals 90 to 110 Nature damage to enemies in melee range. (5 Min Cooldown)',fin:'Equip: Increases Strength by 38 while affected by a Bleed.',frd:'Equip: When the shield blocks, it releases an electrical charge that damages all nearby enemies. This also has a chance of damaging the shield.',jag:'Equip: When struck by a harmful spell, the caster has a 5% chance to be silenced for 3 sec.'},
+  set:'Set',src:'Source',open:'Official tooltip: Wowhead ↗ button in the Gear tab'}
+};
+
+const NODE = Object.fromEntries(NODES.map((n,i)=>[n.id,{...n,i}]));
+const PH_RANK = Object.fromEntries(PHASES.map((p,i)=>[p.id,i]));
+// item index by id (with slot) + by name for auto-linking in step text
+const ITEM={};
+function indexItems(){ for(const k in ITEM) delete ITEM[k];
+  [SLOTS].concat(Object.values(SPEC_SLOTS).filter(x=>x!==SLOTS)).forEach(L=>L.forEach(sl=>sl.opts.forEach(o=>{ if(!ITEM[o.id]) ITEM[o.id]={...o,slot:sl.k}; }))); }
+indexItems();
+const NAMES=Object.values(ITEM).map(o=>o.n).sort((a,b)=>b.length-a.length);
+const BYNAME=Object.fromEntries(Object.values(ITEM).map(o=>[o.n,o.id]));
+
+// ---------- STATE ----------
+const KEY='prot-route:v1';
+const DEF = ()=>({spec:'prot', faction:'A', lang:'es', sel:{A:{},H:{}}, offSlot:{}, have:{}, steps:{}, ench:true, showDone:true, showSkipped:false, tab:'route', presets:[], laterOpen:true, talents:{a:5,d:5,s:5,t:0,c:5}});
+let S = DEF();
+try{ const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(DEF(),JSON.parse(raw)); }catch(e){}
+const SK=()=>S.spec==='prot'?S.faction:S.spec+S.faction;
+const SEL=()=>S.sel[SK()]||(S.sel[SK()]={});
+const IS_FURY=()=>S.spec==='fury';
+function applySpec(){ SLOTS=SPEC_SLOTS[S.spec]||SLOTS_PROT; indexItems(); }
+applySpec();
+// Support links shown only on the website (never inside the addon: Blizzard UI add-on policy).
+// Fill in the URLs to show them; empty entries are hidden.
+const SUPPORT=[
+  {n:'GitHub ★',u:'https://github.com/DifusBisProRoute/difusbisproroute.github.io'},
+  {n:'Ko-fi',u:''},{n:'Patreon',u:''},{n:'PayPal',u:''},
+  {n:'YouTube',u:''},{n:'Twitch',u:''},{n:'Discord',u:''},
+];
+function renderSupport(){ const el=$('supLinks'); if(!el) return;
+  el.innerHTML=SUPPORT.filter(x=>x.u).map(x=>`<a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.n)}</a>`).join(''); }
+const save=()=>{ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} };
+const U=k=>UI[S.lang][k];
+const tx = v => { if(v==null) return ''; if(typeof v==='string') return v; if(v.A) v=v[S.faction]||v.A; return v[S.lang]??v.es; };
+const optsFor = sl => sl.opts.filter(o=>!o.fac||o.fac===S.faction).slice(0,5);
+function selected(sl){
+  const os=optsFor(sl), id=SEL()[sl.k];
+  return os.find(o=>o.id===id) || os.find(o=>(o.bis||[]).includes('wfb'+S.faction)) || os[0];
+}
+function preset(tag){ SLOTS.forEach(sl=>{ const o=optsFor(sl).find(o=>(o.bis||[]).includes(tag)); if(o) SEL()[sl.k]=o.id; }); }
+
+// ---------- ROUTE ----------
+function computeRoute(){
+  const need=new Map(); // node -> Set(item ids)
+  SLOTS.forEach(sl=>{
+    if(S.offSlot[sl.k]) return;
+    const o=selected(sl); if(S.have[o.id]) return;
+    const walk=id=>{ const n=NODE[id]; if(!n) return; if(!need.has(id)) need.set(id,new Set()); need.get(id).add(o.id); n.deps.forEach(walk); };
+    o.req.forEach(walk);
+  });
+  const ids=[...need.keys()], done=new Set(), order=[];
+  const key=id=>PH_RANK[NODE[id].phase]*1000+NODE[id].i;
+  while(order.length<ids.length){
+    const ready=ids.filter(id=>!done.has(id)&&NODE[id].deps.every(d=>!need.has(d)||done.has(d))).sort((a,b)=>key(a)-key(b));
+    if(!ready.length) break;
+    done.add(ready[0]); order.push(ready[0]);
+  }
+  return {order, need};
+}
+const st = id => S.steps[id]||'pending';
+const resolved=id=>st(id)==='done'||st(id)==='skipped';
+const nextStep=(order,need)=>order.find(id=>st(id)==='pending' && NODE[id].deps.every(d=>!need.has(d)||resolved(d)));
+const OPEN={}; // expanded slot cards (per session)
+
+// ---------- STATS ----------
+// Tank model: level 60 Warrior vs level 63 boss (skill 315). Talents from the WFB preset 5/15/31:
+// Deflection +5% parry, Anticipation +10 defense, Shield Specialization +5% block. Human base stats.
+const MODEL={baseAgi:80,baseSta:110,baseHP:1689,anticip:10,deflect:5,shieldSpec:5,bossSkill:315,bossLvl:63,defCap:440,hitCap:8,expCap:6.5,crushCap:102.4};
+// WoW Forever BiS List tank stat weights (EP). Defense and hit are handled as constraints (440 / 8%), not weights.
+const EPW={sta:1,str:0.539,agi:0.443,armor:0.035,ap:0.235,crit:5.235,dodge:1.461,parry:1.957,bv:0.53,blk:0.087,exp:19.3,def:0.17};
+function epOf(o,k){ let e=0; const s=o.st||{}; for(const w in EPW) e+=(s[w]||0)*EPW[w]; if(o.dmg&&o.dmg.dps) e+=o.dmg.dps*(k==='ranged'?1:1.157); return e; }
+// Fury (dual wield) model: level 60 vs boss 63. Hit 8% (special attacks; white DW swings need 27%),
+// expertise 6.5%. Crit = agility/20 + gear + Cruelty. AP = 160 + 2×strength + gear AP. Human base stats.
+const FMODEL={baseStr:120,baseAgi:80,baseSta:110,baseHP:1689,hitCap:8,whiteCap:27,expCap:6.5};
+// WoW Forever BiS List Fury weights (WoWSims preset "Pre-BiS - Fury"): hit 16.9 EP/% to 8%, then 4.21 to 27%; expertise 23.5/% to 6.5%.
+const EPW_F={str:2.2,agi:1.7,ap:1,crit:31.64,sta:0.1,exp:23.5,hit:4.21};
+function epFury(o,k){ let e=0; const s=o.st||{}; for(const w in EPW_F) e+=(s[w]||0)*EPW_F[w];
+  if(o.dmg&&o.dmg.dps) e+= k==='mainhand'?o.dmg.dps*12.59+(o.dmg.spd||0)*23.9 : k==='offhand'?o.dmg.dps*2.66 : o.dmg.dps*1;
+  return e+(o.pe||0); }
+function setBonus(picks){ const cnt={}, out={}; picks.forEach(o=>{ if(o&&o.set&&SET_BONUS[o.set]) cnt[o.set]=(cnt[o.set]||0)+1; });
+  for(const k in cnt) if(cnt[k]>=SET_BONUS[k].need) for(const st in SET_BONUS[k].st) out[st]=(out[st]||0)+SET_BONUS[k].st[st]; return out; }
+function calcFury(over){
+  const g={hit:0,sta:0,str:0,agi:0,armor:0,exp:0,ap:0,crit:0}; let ep=0; const picks=[]; let mh=0, oh=0;
+  SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]) return; const o=(over&&over[sl.k])||selected(sl); picks.push(o);
+    for(const k in g){ g[k]+=(o.st[k]||0); if(S.ench&&sl.ench) g[k]+=(sl.ench.st[k]||0); } ep+=epFury(o,sl.k);
+    if(sl.k==='mainhand'&&o.dmg) mh=o.dmg.dps; if(sl.k==='offhand'&&o.dmg) oh=o.dmg.dps; });
+  const sb=setBonus(picks); for(const k in sb){ g[k]=(g[k]||0)+sb[k]; ep+=(sb[k]||0)*(EPW_F[k]||0); }
+  if(S.ench) ep+=SLOTS.reduce((a,sl)=>a+(!S.offSlot[sl.k]&&sl.ench?Object.entries(sl.ench.st).reduce((x,[k,v])=>x+v*(EPW_F[k]||0),0):0),0);
+  ep+=Math.min(g.hit,FMODEL.hitCap)*(16.9-4.21) - Math.max(0,g.hit-FMODEL.whiteCap)*4.21 - Math.max(0,g.exp-FMODEL.expCap)*23.5;
+  const T=Object.assign({c:5},S.talents||{});
+  const str=FMODEL.baseStr+g.str, agi=FMODEL.baseAgi+g.agi, sta=FMODEL.baseSta+g.sta;
+  return {fury:true,hit:g.hit,exp:g.exp,str,agi,sta,ap:160+str*2+g.ap,crit:agi/20+g.crit+T.c,gcrit:g.crit,hp:FMODEL.baseHP+20+(sta-20)*10,armor:g.armor+agi*2,mh,oh,ep,set:sb};
+}
+function calc(over){
+  if(IS_FURY()) return calcFury(over);
+  const g={def:0,hit:0,sta:0,agi:0,armor:0,exp:0,blk:0,dodge:0,parry:0,bv:0,str:0,ap:0,crit:0};
+  let ep=0;
+  SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]) return; const o=(over&&over[sl.k])||selected(sl);
+    for(const k in g){ g[k]+=(o.st[k]||0); if(S.ench&&sl.ench) g[k]+=(sl.ench.st[k]||0); } ep+=epOf(o,sl.k); });
+  const T=Object.assign({a:5,d:5,s:5,t:0},S.talents||{});
+  const D=300+T.a*4+g.def, d=(D-MODEL.bossSkill)*0.04;
+  const agi=MODEL.baseAgi+g.agi, sta=MODEL.baseSta+g.sta;
+  const miss=5+d, dodge=agi/20+d+g.dodge, parry=5+T.d+d+g.parry, block=5+T.s+d+g.blk;
+  const crit=Math.max(0,5-d), armor=g.armor*(1+T.t*0.02)+agi*2, dr=Math.min(75,armor/(armor+400+85*MODEL.bossLvl)*100);
+  return {D,hit:g.hit,exp:g.exp,miss,dodge,parry,block,crit,avoid:miss+dodge+parry,full:miss+dodge+parry+block,armor,dr,hp:MODEL.baseHP+20+(sta-20)*10,sta,bv:g.bv,
+    def:g.def,str:g.str,ap:g.ap+g.str*2,critP:g.crit,ep};
+}
+const totals=()=>calc();
+// Best hit while keeping the 440 defense cap: DP over slots on item defense (capped at what is needed).
+// mode 'ep' = WFB stat weights (default) · 'tank' = the original version: only Stamina + armor
+// noCraft: only items you loot / get from quests, vendors or reputation (no crafting, no Auction House)
+const CRAFT_REQ=['craft','bs','plans','eng','ah','lw','prof_bs'];
+const isCraftOrAH=o=>o.bind==='boe'||(o.req||[]).some(r=>CRAFT_REQ.includes(r));
+function optimizeHit(useUnverified,mode,noCraft){
+  if(IS_FURY()){ // try with and without forcing each 2-piece set bonus (Devilsaur = +2% hit)
+    let best=runOpt(useUnverified,mode,noCraft,null);
+    for(const name in SET_BONUS){ const forced={};
+      SLOTS.forEach(sl=>{ const o=optsFor(sl).find(o=>o.set===name&&!(noCraft&&isCraftOrAH(o))&&(useUnverified||!o.verify)); if(o&&!S.offSlot[sl.k]) forced[sl.k]=o; });
+      if(Object.keys(forced).length<SET_BONUS[name].need) continue;
+      const r=runOpt(useUnverified,mode,noCraft,{forced,st:SET_BONUS[name].st});
+      if(r&&(r.h>best.h||(r.h===best.h&&r.score>best.score))) best=r; }
+    return best; }
+  return runOpt(useUnverified,mode,noCraft,null);
+}
+function runOpt(useUnverified,mode,noCraft,variant){
+  const fury=IS_FURY();
+  const T=Object.assign({a:5,d:5,s:5,t:0},S.talents||{});
+  const enchDef=S.ench?SLOTS.reduce((a,sl)=>a+(!S.offSlot[sl.k]&&sl.ench&&sl.ench.st.def||0),0):0;
+  const need=fury?0:Math.max(0,MODEL.defCap-300-T.a*4-enchDef), HC=Math.round((fury?FMODEL.hitCap:MODEL.hitCap)*10);
+  // state: defense (capped at need) x hit in tenths (capped at the cap) -> best score (EP or survivability)
+  const h0=variant&&variant.st.hit||0;
+  let dp=new Map([['0|'+Math.min(HC,Math.round(h0*10)),{d:0,h:Math.min(HC,Math.round(h0*10)),score:h0*(fury?EPW_F.hit:0),hit:h0,pick:{}}]]);
+  SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]) return;
+    let opts=optsFor(sl); const f=opts.filter(o=>useUnverified||!o.verify); if(f.length) opts=f;
+    if(noCraft){ opts=opts.filter(o=>!isCraftOrAH(o)); if(!opts.length) return; }
+    if(variant&&variant.forced[sl.k]) opts=[variant.forced[sl.k]];
+    const nx=new Map();
+    for(const v of dp.values()) for(const o of opts){
+      if((sl.k==='finger2'&&v.pick.finger1===o.id)||(sl.k==='trinket2'&&v.pick.trinket1===o.id)) continue; // unique
+      const nd=Math.min(need,v.d+(o.st.def||0)), hit=v.hit+(o.st.hit||0), nh=Math.min(HC,Math.round(hit*10));
+      const score=v.score+(fury?epFury(o,sl.k):mode==='tank'?(o.st.sta||0)+(o.st.armor||0)/20:epOf(o,sl.k)), key=nd+'|'+nh, cur=nx.get(key);
+      if(!cur||score>cur.score) nx.set(key,{d:nd,h:nh,score,hit,pick:Object.assign({},v.pick,{[sl.k]:o.id})}); }
+    dp=nx; });
+  let best=null;
+  for(const v of dp.values()){ if(v.d<need) continue; if(!best||v.h>best.h||(v.h===best.h&&v.score>best.score)) best=v; }
+  if(!best) best=[...dp.values()].sort((x,y)=>y.d-x.d||y.h-x.h)[0];
+  return best;
+}
+
+// ---------- WOWSIMS LINK (same proto format WoW Forever BiS List uses) ----------
+const WS_ORDER=['head','neck','shoulder','back','chest','wrist','hands','waist','legs','feet','finger1','finger2','trinket1','trinket2','mainhand','offhand','ranged'];
+function pbVar(o,n){while(n>127){o.push((n&127)|128);n=Math.floor(n/128)}o.push(n)}
+function pbInt(o,f,n){if(n){pbVar(o,f*8);pbVar(o,n)}}
+function pbMsg(o,f,b){pbVar(o,f*8+2);pbVar(o,b.length);for(const x of b)o.push(x)}
+async function simURL(){
+  const base=IS_FURY()?'https://www.wowsims.com/forever/warrior/dps/':'https://www.wowsims.com/forever/warrior/protection/';
+  if(typeof CompressionStream==='undefined') return base;
+  const eq=[];
+  WS_ORDER.forEach(k=>{ const sl=SLOTS.find(s=>s.k===k), it=[];
+    if(sl && !S.offSlot[k]){ const o=selected(sl); pbInt(it,1,o.id); if(S.ench&&sl.ench) pbInt(it,3,sl.ench.ws); }
+    pbMsg(eq,1,it); });
+  const pl=[]; pbInt(pl,54,2); pbMsg(pl,3,eq);
+  const set=[]; pbInt(set,15,2); pbMsg(set,3,pl);
+  try{
+    const stream=new Blob([new Uint8Array(set)]).stream().pipeThrough(new CompressionStream('deflate'));
+    const b=new Uint8Array(await new Response(stream).arrayBuffer()); let s=''; b.forEach(c=>s+=String.fromCharCode(c));
+    return base+'?i=g#'+btoa(s);
+  }catch(e){ return base; }
+}
+
+// ---------- TOOLTIP ----------
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const itemRef=id=>{ const o=ITEM[id]; return `<span class="it q${o.q}" tabindex="0" data-item="${id}">${esc(o.n)}</span>`; };
+// wrap known item names inside free text with tooltip refs
+const NAME_RE=new RegExp(NAMES.map(n=>n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');
+const linkify=text=>esc(text).replace(new RegExp(NAMES.map(n=>esc(n).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g'),m=>{ const raw=m.replace(/&amp;/g,'&'); const id=BYNAME[raw]; return id?itemRef(id):m; });
+
+function ttHTML(id){
+  const o=ITEM[id], T=TT[S.lang], s=o.st, L=[];
+  L.push(`<div class="n q${o.q}">${esc(o.n)}</div>`);
+  L.push(`<div>${o.bind==='boe'?T.boe:T.bop}</div>`);
+  if(o.uniq===1) L.push(`<div>${T.uniq}</div>`); if(o.uniq===2) L.push(`<div>${T.uniq2}</div>`);
+  L.push(`<div class="row"><span>${T.slot[o.slot]}</span><span>${T.ty[o.ty]||''}</span></div>`);
+  if(o.dmg){ const d=o.dmg; L.push(`<div class="row"><span>${d.min?`${d.min} - ${d.max} ${T.dmg}`:''}</span><span>${T.speed} ${d.spd.toFixed(2)}</span></div><div>(${d.dps.toFixed(1)} ${T.dps})</div>`); }
+  if(s.armor) L.push(`<div>${s.armor} ${T.armor}</div>`);
+  if(s.bv&&o.ty==='shield') L.push(`<div>${s.bv} ${T.block}</div>`);
+  [['sta','stamina'],['str','strength'],['agi','agility'],['int','intellect'],['spi','spirit']].forEach(([k,w])=>{ if(s[k]) L.push(`<div>+${s[k]} ${T[w]}</div>`); });
+  if(o.prof) L.push(`<div>${T.reqp} ${o.prof}</div>`);
+  if(o.rl) L.push(`<div>${T.req} ${o.rl}</div>`);
+  L.push(`<div class="mut">${T.ilvl} ${o.il}</div>`);
+  const eq=[];
+  if(s.def) eq.push(T.def(s.def)); if(s.hit) eq.push(T.hit(s.hit)); if(s.crit) eq.push(T.crit(s.crit)); if(s.exp) eq.push(T.exp(s.exp)); if(s.blk) eq.push(T.blk(s.blk));
+  if(s.bv&&o.ty!=='shield') eq.push(T.bv(s.bv)); if(s.ap) eq.push(T.ap(s.ap)); if(s.hp5) eq.push(T.hp5(s.hp5)); if(s.sp) eq.push(T.sp(s.sp));
+  eq.forEach(x=>L.push(`<div class="eq">${T.eq} ${x}</div>`));
+  (o.fx||[]).forEach(f=>L.push(`<div class="eq">${T.fx[f]}</div>`));
+  if(o.set) L.push(`<div class="set">${T.set}: ${esc(o.set)}</div>`);
+  L.push(`<div class="src">${T.src}: ${esc(tx(o.src))}</div>`);
+  L.push(`<div class="hint">${T.open}</div>`);
+  return L.join('');
+}
+const tt=$('tt'); let ttFor=null;
+function showTT(el,x,y){
+  const id=+el.dataset.item; if(!ITEM[id]) return;
+  if(ttFor!==id){ tt.innerHTML=ttHTML(id); ttFor=id; }
+  tt.hidden=false; placeTT(x,y);
+}
+function placeTT(x,y){
+  const w=tt.offsetWidth, h=tt.offsetHeight, vw=innerWidth, vh=innerHeight, m=12;
+  let l=x+16, t=y+16;
+  if(l+w>vw-m) l=Math.max(m,x-w-16);
+  if(t+h>vh-m) t=Math.max(m,y-h-16);
+  tt.style.left=l+'px'; tt.style.top=t+'px';
+}
+function hideTT(){ tt.hidden=true; ttFor=null; }
+document.addEventListener('pointerover',e=>{ if(e.pointerType==='touch') return; const el=e.target.closest('[data-item]'); if(el) showTT(el,e.clientX,e.clientY); });
+document.addEventListener('pointermove',e=>{ if(!tt.hidden&&e.pointerType!=='touch'&&e.target.closest('[data-item]')) placeTT(e.clientX,e.clientY); });
+document.addEventListener('pointerout',e=>{ if(e.pointerType==='touch') return; const el=e.target.closest('[data-item]'); if(el&&!el.contains(e.relatedTarget)) hideTT(); });
+document.addEventListener('focusin',e=>{ const el=e.target.closest('[data-item]'); if(el){ const r=el.getBoundingClientRect(); showTT(el,r.left,r.bottom); } });
+document.addEventListener('focusout',e=>{ if(e.target.closest('[data-item]')) hideTT(); });
+addEventListener('scroll',hideTT,{passive:true});
+
+// ---------- TANK STATS PANEL ----------
+let PREVIEW=null; // {slot, id}
+const f1=n=>n.toFixed(1), f2=n=>n.toFixed(2);
+function dl(a,b,fmt,lowerBetter){ const d=b-a; if(Math.abs(d)<0.005) return ''; const good=lowerBetter?d<0:d>0;
+  return `<span class="dl ${good?'up':'dn'}">${d>0?'+':''}${fmt(d)}</span>`; }
+function deltaChips(sl,o,cur){
+  if(o.id===cur.id) return `<span class="cur">${U('cur')}</span>`;
+  const a=calc(), b=calc({[sl.k]:o});
+  const parts=IS_FURY()?[['hit','Hit',x=>f1(x)+'%'],['crit','Crit',x=>f2(x)+'%'],['ap','AP',x=>Math.round(x)],['exp','Exp',x=>f1(x)+'%'],['ep','EP',f1]]:[['D','Def',x=>Math.round(x)],['hit','Hit',x=>f1(x)+'%'],['avoid',U('avoidL').split(' ')[0],x=>f2(x)+'%'],['block',U('blockL').split(' ')[0],x=>f2(x)+'%'],['armor','Arm',x=>Math.round(x)],['sta','Sta',x=>Math.round(x)],['ep','EP',f1]];
+  const out=parts.map(([k,lb,fmt])=>{ const d=b[k]-a[k]; if(Math.abs(d)<0.005) return ''; return `<span class="${d>0?'up':'dn'}">${d>0?'+':''}${fmt(d)} ${lb}</span>`; }).join('');
+  return out||'<span class="cur">=</span>';
+}
+function renderStatsFury(){
+  const a=calc(), p=PREVIEW?calc({[PREVIEW.slot]:ITEM[PREVIEW.id]}):null, v=p||a;
+  const bar=(lbl,key,cap,fmt,note,soft)=>{ const val=v[key], base=a[key], pct=Math.min(100,val/cap*100), bpct=Math.min(100,base/cap*100);
+    return `<div class="cap"><div class="row"><span>${lbl}</span><b>${fmt(val)} / ${fmt(cap)}${p?dl(base,val,fmt):''}</b></div>
+      <div class="track">${p?`<span class="ghost" style="width:${bpct}%"></span>`:''}<i class="${val>=cap?'ok':(soft?'soft':'')}" style="width:${pct}%;${p?'opacity:.85':''}"></i></div>${note?`<div class="note">${note}</div>`:''}</div>`; };
+  const n0=x=>String(Math.round(x)), pc1=x=>f1(x)+'%';
+  const line=(lbl,key,fmt)=>`<span>${lbl}</span><span></span><b>${fmt(v[key])}${p?dl(a[key],v[key],fmt):''}</b>`;
+  const T=Object.assign({c:5},S.talents||{});
+  $('stats').innerHTML=`<h3>${U('capsF')}</h3><p class="model">${U('modelF')}</p>
+    ${p?`<div class="note" style="font-size:12px;color:var(--gold);text-align:center">${U('prevL')} ${itemRef(PREVIEW.id)}</div>`:''}
+    ${bar(U('hitL'),'hit',FMODEL.hitCap,pc1,U('hitNoteF')(optimizeHit(false).hit.toFixed(1)),true)}
+    ${bar(U('expL'),'exp',FMODEL.expCap,pc1,U('expNoteF'),true)}
+    <div class="av">
+      ${line(U('critTot'),'crit',pc1)}${line(U('apTot'),'ap',n0)}${line(U('strT'),'str',n0)}${line(U('agiT'),'agi',n0)}
+      ${line(U('mhL'),'mh',f1)}${line(U('ohL'),'oh',f1)}
+      ${line(U('hpL'),'hp',n0)}${line(U('armorL'),'armor',n0)}${line('EP (WFB)','ep',f1)}
+    </div>
+    ${v.set&&v.set.hit?`<div class="note" style="text-align:center">${U('setOn')('Devilsaur Armor','+2% hit')}</div>`:''}
+    <p class="model">${U('epNoteF')}</p>
+    <div class="tal"><div class="row"><b>${U('talT')}</b><span>${U('talNote')}</span></div>
+      <label><span>Cruelty<small>+1% crit/rank</small></span><select id="tal-c" data-tal="c">${[0,1,2,3,4,5].map(r=>`<option ${T.c===r?'selected':''}>${r}</option>`).join('')}</select></label>
+    </div>`;
+}
+function renderStats(){
+  if(IS_FURY()) return renderStatsFury();
+  const a=calc(), p=PREVIEW?calc({[PREVIEW.slot]:ITEM[PREVIEW.id]}):null, v=p||a;
+  const bar=(lbl,key,cap,fmt,note,soft)=>{ const val=v[key], base=a[key], pct=Math.min(100,val/cap*100), bpct=Math.min(100,base/cap*100);
+    return `<div class="cap"><div class="row"><span>${lbl}</span><b>${fmt(val)} / ${fmt(cap)}${p?dl(base,val,fmt):''}</b></div>
+      <div class="track">${p?`<span class="ghost" style="width:${bpct}%"></span>`:''}<i class="${val>=cap?'ok':(soft?'soft':'')}" style="width:${pct}%;${p?'opacity:.85':''}"></i></div>${note?`<div class="note">${note}</div>`:''}</div>`; };
+  const pc=x=>f2(x)+'%', n0=x=>String(Math.round(x));
+  const line=(lbl,key,fmt,lowerBetter)=>`<span>${lbl}</span><span></span><b>${fmt(v[key])}${p?dl(a[key],v[key],fmt,lowerBetter):''}</b>`;
+  $('stats').innerHTML=`<h3>${U('capsT')}</h3><p class="model">${U('model')}</p>
+    ${p?`<div class="note" style="font-size:12px;color:var(--gold);text-align:center">${U('prevL')} ${itemRef(PREVIEW.id)}</div>`:''}
+    ${bar(U('defL'),'D',MODEL.defCap,n0, v.crit<=0?U('critImm'):U('critN')(f2(v.crit)))}
+    ${bar(U('hitL'),'hit',MODEL.hitCap,x=>f1(x)+'%',U('hitNote')(optimizeHit(false).hit.toFixed(1)),'soft')}
+    ${bar(U('expL'),'exp',MODEL.expCap,x=>f1(x)+'%')}
+    ${bar(U('crushL'),'full',MODEL.crushCap,pc,U('sbN')(f2(v.full+75)))}
+    <div class="av">
+      ${line(U('missL'),'miss',pc)}${line(U('dodgeL'),'dodge',pc)}${line(U('parryL'),'parry',pc)}${line(U('blockL'),'block',pc)}
+      ${line(U('avoidL'),'avoid',pc)}
+      ${line(U('armorL'),'armor',n0)}<span>${U('armorL')} (${U('drL')})</span><span></span><b>${f1(v.dr)}%${p?dl(a.dr,v.dr,f1):''}</b>
+      ${line(U('hpL'),'hp',n0)}${line(U('staL'),'sta',n0)}${line(U('bvL'),'bv',n0)}
+    </div>
+    <div class="av">
+      ${line(U('strL'),'str',n0)}${line(U('apL'),'ap',n0)}${line(U('critL'),'critP',x=>f1(x)+'%')}${line('EP (WFB)','ep',f1)}
+    </div>
+    <p class="model">${U('epNote')}</p>
+    <div class="tal"><div class="row"><b>${U('talT')}</b><span>${U('talNote')}</span></div>
+      ${[['a','Anticipation','+4 Def/rank (Forever)'],['d','Deflection','+1% parry/rank'],['s','Shield Specialization','+1% block/rank'],['t','Toughness','+2% armor/rank']].map(([k,n,h])=>
+        `<label><span>${n}<small>${h}</small></span><select id="tal-${k}" data-tal="${k}">${[0,1,2,3,4,5].map(r=>`<option ${((S.talents||{})[k]??(k==='t'?0:5))===r?'selected':''}>${r}</option>`).join('')}</select></label>`).join('')}
+    </div>`;
+}
+document.addEventListener('pointerover',e=>{ const o=e.target.closest('[data-pv]'); if(!o||S.tab!=='gear') return;
+  const [slot,id]=o.dataset.pv.split(':'); if(PREVIEW&&PREVIEW.slot===slot&&PREVIEW.id===+id) return;
+  const cur=selected(SLOTS.find(s=>s.k===slot)); PREVIEW=(cur.id===+id)?null:{slot,id:+id}; renderStats(); });
+document.addEventListener('pointerout',e=>{ const o=e.target.closest('[data-pv]'); if(!o||o.contains(e.relatedTarget)) return; if(PREVIEW){PREVIEW=null; renderStats();} });
+
+// ---------- RENDER ----------
+function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,1800)}
+const STL={def:'Def',hit:'Hit',sta:'Sta',str:'Str',agi:'Agi',armor:'Armor',bv:'BV',exp:'Exp',ap:'AP',int:'Int',spi:'Spi',hp5:'HP5',blk:'Block',sp:'SP',crit:'Crit'};
+const fmtSt=st=>Object.entries(st).map(([k,v])=>`${['hit','exp','blk','crit'].includes(k)?v+'%':'+'+v} ${STL[k]}`).join(' · ');
+
+function render(){
+  document.documentElement.lang=S.lang;
+  document.querySelectorAll('[data-i]').forEach(el=>el.textContent=U(el.dataset.i));
+  $('sp-prot').setAttribute('aria-pressed',!IS_FURY()); $('sp-fury').setAttribute('aria-pressed',IS_FURY());
+  document.querySelector('h1 small').textContent=U(IS_FURY()?'subF':'sub');
+  $('fa').textContent=U('A'); $('fh').textContent=U('H'); $('simlink').textContent=U('sim');
+  $('fa').setAttribute('aria-pressed',S.faction==='A'); $('fh').setAttribute('aria-pressed',S.faction==='H');
+  $('les').setAttribute('aria-pressed',S.lang==='es'); $('len').setAttribute('aria-pressed',S.lang==='en');
+  renderSupport(); $('howPanel').innerHTML=U('how'); $('srcPanel').innerHTML=U(IS_FURY()?'srcF':'src'); $('io').placeholder=U('ioPh');
+  hideTT();
+
+  const t=calc();
+  const m=(lbl,val,cap,unit,soft)=>{const pct=Math.min(100,val/cap*100);return `<div class="meter"><div class="lbl">${lbl}<b>${unit==='%'?val.toFixed(1):Math.round(val)}${unit} / ${cap}${unit}</b></div><div class="track"><i class="${val>=cap?'ok':(soft?'soft':'')}" style="width:${pct}%"></i></div></div>`};
+  $('meters').innerHTML = IS_FURY()? m(U('hit'),t.hit,FMODEL.hitCap,'%',true)+m(U('expL'),t.exp,FMODEL.expCap,'%',true)+`<div class="meter"><div class="lbl">${U('critTot')}<b>${t.crit.toFixed(1)}% · AP ${Math.round(t.ap)}</b></div></div>`
+    : m(U('defGear'),t.D,MODEL.defCap,'')+m(U('hit'),t.hit,MODEL.hitCap,'%',true)+m(U('crushL').split(' (')[0],t.full,MODEL.crushCap,'%');
+  simURL().then(u=>$('simlink').href=u);
+
+  const al=[];
+  const f1=selected(SLOTS.find(s=>s.k==='finger1')), f2=selected(SLOTS.find(s=>s.k==='finger2'));
+  if(!S.offSlot.finger1&&!S.offSlot.finger2&&f1.id===f2.id) al.push(U('dupRing')(itemRef(f1.id)));
+  SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]) return; const o=selected(sl); if(o.flag) al.push(`${itemRef(o.id)}: ${esc(tx(o.flag))}.`); });
+  if(!IS_FURY()&&t.D<MODEL.defCap) al.push(esc(U('defShort')(MODEL.defCap-Math.round(t.D))));
+  if(IS_FURY()&&t.hit<FMODEL.hitCap) al.push(esc(U('hitShortF')((FMODEL.hitCap-t.hit).toFixed(1))));
+  $('alerts').innerHTML=al.map(a=>`<div class="alert">${a}</div>`).join('');
+
+  const {order,need}=computeRoute();
+  const active=order.filter(id=>st(id)!=='skipped'), doneN=active.filter(id=>st(id)==='done').length;
+  $('skipCount').textContent=order.filter(id=>st(id)==='skipped').length;
+  $('prog').innerHTML=`<span>${doneN} / ${active.length} ${U('steps')}</span><div class="track"><i class="${doneN===active.length&&active.length?'ok':''}" style="width:${active.length?doneN/active.length*100:0}%"></i></div><span>${active.length?Math.round(doneN/active.length*100):0}%</span>`;
+  const items=id=>[...need.get(id)].map(itemRef);
+  const nx=nextStep(order,need);
+  if(nx){ const n=NODE[nx];
+    $('next').innerHTML=`<div style="min-width:0"><div class="eyebrow">${U('nextEy')} · ${esc(tx(PHASES[PH_RANK[n.phase]].name))}</div><h2>${linkify(tx(n.title))}</h2><p>${esc(tx(n.where))} — ${U('unlocks')}: ${items(nx).join(', ')}</p></div><div class="acts"><button class="btn primary" data-act="done" data-id="${nx}">${U('complete')}</button><button class="btn" data-act="later" data-id="${nx}">${U('later')}</button><button class="btn" data-act="skip" data-id="${nx}">${U('skip')}</button></div>`;
+  } else $('next').innerHTML=`<div><div class="eyebrow">${U('tabRoute')}</div><h2>${active.length?U('routeDone'):U('routeEmpty')}</h2><p>${order.some(id=>st(id)==='later')?U('blockedLater'):(active.length?U('routeDoneP'):U('routeEmptyP'))}</p></div>`;
+
+  let html='';
+  const stepHTML_=id=>{ const n=NODE[id], s=st(id);
+      const pend=n.deps.filter(d=>need.has(d)&&!resolved(d));
+      return `<article class="step ${s} ${id===nx?'isnext':''} ${pend.length&&s==='pending'?'blocked':''}">
+        <input type="checkbox" class="chk" id="c-${id}" aria-label="${U('complete')}: ${esc(tx(n.title))}" ${s==='done'?'checked':''} ${s==='skipped'?'disabled':''} data-act="toggle" data-id="${id}">
+        <div class="t">${linkify(tx(n.title))}<div class="where">${esc(tx(n.where))}</div></div>
+        <div class="sacts">${s==='skipped'||s==='later'?`<button class="link" data-act="restore" data-id="${id}">${s==='later'?U('resume'):U('restore')}</button>`:`${s==='pending'?`<button class="link" data-act="later" data-id="${id}">${U('later')}</button>`:''}<button class="link" data-act="skip" data-id="${id}">${U('skip')}</button>`}</div>
+        <div class="d">${linkify(tx(n.desc))}</div>
+        <div class="meta">${items(id).map(x=>`<span class="chip">${x}</span>`).join('')}${pend.length&&s==='pending'?`<span class="chip req">${U('requires')}: ${pend.map(d=>esc(tx(NODE[d].title))).join(' · ')}</span>`:''}${n.verify?`<span class="chip note">${U('verify')}</span>`:''}</div>
+      </article>`; };
+  PHASES.forEach(p=>{
+    const ids=order.filter(id=>NODE[id].phase===p.id && st(id)!=='later' && (S.showSkipped||st(id)!=='skipped') && (S.showDone||st(id)!=='done'));
+    if(!ids.length) return;
+    const tot=order.filter(id=>NODE[id].phase===p.id&&st(id)!=='skipped'), dn=tot.filter(id=>st(id)==='done').length;
+    html+=`<div class="phase"><h3>${esc(tx(p.name))} <span>${dn}/${tot.length}${tx(p.hint)?' · '+esc(tx(p.hint)):''}</span></h3>`;
+
+    ids.forEach(id=>{ html+=stepHTML_(id); });
+    html+='</div>';
+  });
+  $('route').innerHTML=html||`<p style="color:var(--muted)">${U('nothing')}</p>`;
+  const lat=order.filter(id=>st(id)==='later');
+  $('laterBox').hidden=!lat.length;
+  if(lat.length){ $('laterBox').innerHTML=`<details ${S.laterOpen?'open':''} id="laterDet"><summary><span>${U('laterT')}</span><span class="cnt">${lat.length}</span></summary><p class="lh">${U('laterHint')}</p><div class="phase">${lat.map(stepHTML_).join('')}</div></details>`; }
+
+  $('ench').checked=S.ench; $('showDone').checked=S.showDone; $('showSkipped').checked=S.showSkipped;
+  const cardHTML=sl=>{ const cur=selected(sl), off=!!S.offSlot[sl.k], open=!!OPEN[sl.k], all=optsFor(sl);
+    return `<section class="slot ${off?'off':''}"><header><h4>${esc(tx(sl.n))}</h4>${sl.ench?`<span class="ench">${esc(sl.ench.n)}</span>`:''}</header>
+    ${(open?all:[cur]).map(o=>{ const bs=o.bis||[], rid=`o-${sl.k}-${o.id}`;
+      return `<div class="opt ${S.have[o.id]?'owned':''} ${open?'':'solo'}" data-pv="${sl.k}:${o.id}"><input type="radio" name="s-${sl.k}" id="${rid}" value="${o.id}" data-slot="${sl.k}" ${o.id===cur.id?'checked':''}>
+        <label class="nm" for="${rid}">${itemRef(o.id)}</label><a class="wh" href="${WH(o.id)}" target="_blank" rel="noopener" aria-label="Wowhead: ${esc(o.n)}">Wowhead ↗</a>
+        <span class="st">${fmtSt(o.st)} · <b>EP ${(IS_FURY()?epFury(o,sl.k):epOf(o,sl.k)).toFixed(1)}</b></span><span class="src">${esc(tx(o.src))}</span>
+        <span class="badges">${bs.includes('wfb'+S.faction)?`<span class="b wfb">${U('wfbBis')}</span>`:''}${bs.includes('wtbc')?`<span class="b wtbc">${U('wtbcBis')}</span>`:''}${IS_FURY()&&bs.includes('su')?`<span class="b wtbc">sixtyupgrades</span>`:''}${o.verify?`<span class="b warn">${U('verifyB')}</span>`:''}</span>
+        ${open?`<span class="delta">${deltaChips(sl,o,cur)}</span>`:''}
+        <label class="own"><input type="checkbox" id="h-${sl.k}-${o.id}" data-have="${o.id}" ${S.have[o.id]?'checked':''}> ${U('have')}</label></div>`}).join('')}
+    ${(()=>{const own=optsFor(sl).filter(o=>S.have[o.id]);return own.length?`<div class="has">${U('hasLbl')}: ${own.map(o=>esc(o.n)).join(', ')}${S.have[cur.id]?'':' · '+U('target')+': '+esc(cur.n)}</div>`:''})()}
+    <footer><button class="tabk" data-open="${sl.k}" aria-expanded="${open}">${open?'▴ '+U('hide'):'▾ '+U('change')+' · '+U('optsN')(all.length)}</button><label><input type="checkbox" id="x-${sl.k}" data-off="${sl.k}" ${off?'checked':''}> ${U('ignore')}</label></footer></section>`};
+  const L=['head','neck','shoulder','back','chest','wrist','mainhand','offhand','ranged'], R=['hands','waist','legs','feet','finger1','finger2','trinket1','trinket2'];
+  const bySlot=k=>SLOTS.find(s=>s.k===k);
+  $('colL').innerHTML=L.map(k=>cardHTML(bySlot(k))).join('');
+  $('colR').innerHTML=R.map(k=>cardHTML(bySlot(k))).join('');
+  renderStats();
+  renderPresets();
+
+  ['route','gear','data'].forEach(v=>{ $('v-'+v).hidden=S.tab!==v; $('tab-'+v).setAttribute('aria-selected',S.tab===v); });
+  save();
+}
+
+// ---------- EVENTS ----------
+document.addEventListener('click',e=>{
+  const ref=e.target.closest('[data-item]');
+  if(ref){ // touch/tap: toggle tooltip; on a radio label the tap still selects the option
+    const id=+ref.dataset.item;
+    if(!tt.hidden&&ttFor===id&&!ref.closest('label')) hideTT(); else { showTT(ref,e.clientX,e.clientY); }
+  } else if(!e.target.closest('#tt')) hideTT();
+  const b=e.target.closest('[data-act]'); if(b&&b.tagName==='BUTTON'){ const id=b.dataset.id;
+    if(b.dataset.act==='done'){S.steps[id]='done';toast(U('tDone'))}
+    if(b.dataset.act==='skip'){S.steps[id]='skipped';toast(U('tSkip'))}
+    if(b.dataset.act==='later'){S.steps[id]='later';toast(U('tLater'))}
+    if(b.dataset.act==='restore'){delete S.steps[id];toast(U('tRestore'))}
+    render(); }
+  const f=e.target.closest('[data-f]'); if(f){S.faction=f.dataset.f;render()}
+  const sp=e.target.closest('[data-sp]'); if(sp&&sp.dataset.sp!==S.spec){S.spec=sp.dataset.sp; applySpec(); S.lastPre=''; PREVIEW=null; for(const k in OPEN) delete OPEN[k]; render()}
+  const l=e.target.closest('[data-l]'); if(l){S.lang=l.dataset.l;render()}
+  const tb=e.target.closest('[role=tab]'); if(tb){S.tab=tb.dataset.v;render()}
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') hideTT(); });
+document.addEventListener('toggle',e=>{ if(e.target.id==='laterDet'){ S.laterOpen=e.target.open; save(); } },true);
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.id==='preSel'){ applyPreset(el.value); return; }
+  if(el.dataset.act==='toggle'){ if(el.checked) S.steps[el.dataset.id]='done'; else delete S.steps[el.dataset.id]; }
+  else if(el.dataset.slot){ SEL()[el.dataset.slot]=+el.value; S.lastPre=''; delete OPEN[el.dataset.slot]; PREVIEW=null; }
+  else if(el.dataset.have){ if(el.checked) S.have[el.dataset.have]=true; else delete S.have[el.dataset.have]; }
+  else if(el.dataset.off){ if(el.checked) S.offSlot[el.dataset.off]=true; else delete S.offSlot[el.dataset.off]; }
+  else if(el.dataset.tal){ S.talents=Object.assign({a:5,d:5,s:5,t:0,c:5},S.talents||{}); S.talents[el.dataset.tal]=+el.value; }
+  else if(el.id==='ench') S.ench=el.checked;
+  else if(el.id==='showDone') S.showDone=el.checked;
+  else if(el.id==='showSkipped') S.showSkipped=el.checked;
+  else return;
+  render();
+});
+
+let PFORM=false;
+function renderPresets(){
+  const mine=S.presets.map((p,i)=>({p,i})).filter(x=>x.p.faction===S.faction&&(x.p.spec||'prot')===S.spec);
+  const mineOk=p=>p&&p.faction===S.faction&&(p.spec||'prot')===S.spec;
+  let cur=S.lastPre||''; if(cur&&!['wfb','wtbc','su','hit','tank','nocraft'].includes(cur)&&!mineOk(S.presets[+cur])) cur='';
+  const o=(v,l,t)=>`<option value="${v}" ${cur===v?'selected':''} ${t?`title="${esc(t)}"`:''}>${esc(l)}</option>`;
+  const curMine=/^\d+$/.test(cur)&&mineOk(S.presets[+cur]);
+  $('presetBar').innerHTML=`<select id="preSel" class="presel" aria-label="${U('presetL')}">
+      <option value="" ${cur?'':'selected'} disabled>${U('presetPick')}</option>
+      <optgroup label="${U('pgLists')}">${o('wfb','WoW Forever BiS List')}${o('wtbc','wowtbc.gg')}${IS_FURY()?o('su','sixtyupgrades'):''}</optgroup>
+      <optgroup label="${U(IS_FURY()?'pgOptF':'pgOpt')}">${IS_FURY()?o('hit',U('maxHitF'),U('maxHitTipF'))+o('nocraft',U('nocraftPF'),U('nocraftTip')):o('hit',U('maxHit'),U('maxHitTip'))+o('tank',U('tankP'),U('tankTip'))+o('nocraft',U('nocraftP'),U('nocraftTip'))}</optgroup>
+      ${mine.length?`<optgroup label="${U('pgMine')}">${mine.map(({p,i})=>o(String(i),p.name)).join('')}</optgroup>`:''}
+    </select>`+
+    (curMine?`<button class="btn" data-pdel="${cur}" aria-label="${U('delPreset')}: ${esc(S.presets[+cur].name)}">× ${U('delPreset')}</button>`:'')+
+    (PFORM?`<span class="pform"><input id="pname" maxlength="32" placeholder="${U('presetName')}" aria-label="${U('presetName')}"><button class="btn primary" data-pok>${U('save')}</button><button class="btn" data-pcancel>${U('cancel')}</button></span>`
+          :`<button class="btn" data-psave>${U('savePreset')}</button>`);
+}
+function applyPreset(k){
+  if(k==='wfb'){preset('wfb'+S.faction);toast(U('tPresetW'))} else if(k==='wtbc'){preset('wtbc');toast(U('tPresetT'))} else if(k==='su'){preset('su');toast(U('tPresetSU'))}
+  else if(k==='hit'||k==='tank'||k==='nocraft'){ const b=optimizeHit(false,k==='tank'?'tank':'ep',k==='nocraft'); Object.assign(SEL(),b.pick);
+    const c=calc(); toast(IS_FURY()?U('tFury')(b.hit.toFixed(1),c.crit.toFixed(1),Math.round(c.ep)):U(k==='tank'?'tTank':k==='nocraft'?'tNoCraft':'tMaxHit')(b.hit.toFixed(1),Math.round(c.D))); }
+  else { const p=S.presets[+k]; if(p){ Object.assign(SEL(),p.sel); toast(U('tPresetApplied')(p.name)); } }
+  S.lastPre=k; render();
+}
+document.addEventListener('click',e=>{
+  const pd=e.target.closest('[data-pdel]');
+  if(pd){ const p=S.presets[+pd.dataset.pdel]; if(p){ S.presets.splice(+pd.dataset.pdel,1); S.lastPre=''; toast(U('tPresetDel')(p.name)); render(); } return; }
+  if(e.target.closest('[data-psave]')){ PFORM=true; renderPresets(); const i=$('pname'); if(i) i.focus(); return; }
+  if(e.target.closest('[data-pcancel]')){ PFORM=false; renderPresets(); return; }
+  if(e.target.closest('[data-pok]')){ savePresetNow(); return; }
+  const ob=e.target.closest('[data-open]'); if(ob){ const k=ob.dataset.open; if(OPEN[k]) delete OPEN[k]; else OPEN[k]=true; PREVIEW=null; render(); }
+});
+document.addEventListener('keydown',e=>{ if(e.target.id==='pname'){ if(e.key==='Enter') savePresetNow(); if(e.key==='Escape'){PFORM=false;renderPresets();} } });
+function savePresetNow(){
+  const name=($('pname').value||'').trim() || `Preset ${S.presets.length+1}`;
+  const sel={}; SLOTS.forEach(sl=>sel[sl.k]=selected(sl).id);
+  S.presets.push({name,faction:S.faction,spec:S.spec,sel}); PFORM=false; render(); toast(U('tPresetSaved')(name));
+}
+$('exp').onclick=async()=>{ const txt=JSON.stringify(S); $('io').value=txt;
+  try{await navigator.clipboard.writeText(txt);toast(U('tCopied'))}catch(err){$('io').select();toast(U('tCopyFail'))} };
+$('imp').onclick=()=>{ try{ S=Object.assign(DEF(),JSON.parse($('io').value)); render(); toast(U('tImp')); }catch(err){ toast(U('tImpFail')); } };
+// game bridge: PR1;f=A;s=head:226869,...;h=id,id;d=step,step;k=step,step;x=slot,slot
+function toGame(){
+  const sel=SLOTS.map(sl=>`${sl.k}:${selected(sl).id}`).join(',');
+  const ids=Object.keys(S.steps);
+  return ['PR1','p='+S.spec,'f='+S.faction,'s='+sel,'h='+Object.keys(S.have).join(','),'d='+ids.filter(i=>S.steps[i]==='done').join(','),'k='+ids.filter(i=>S.steps[i]==='skipped').join(','),'l='+ids.filter(i=>S.steps[i]==='later').join(','),'x='+Object.keys(S.offSlot).join(',')].join(';');
+}
+function fromGame(str){
+  str=(str||'').trim(); if(!str.startsWith('PR1;')) throw new Error('bad');
+  const p={}; str.split(';').slice(1).forEach(kv=>{const i=kv.indexOf('='); if(i>0) p[kv.slice(0,i)]=kv.slice(i+1);});
+  const list=v=>(v||'').split(',').filter(Boolean);
+  if(p.f==='A'||p.f==='H') S.faction=p.f;
+  if(p.p==='prot'||p.p==='fury'){ S.spec=p.p; applySpec(); }
+  list(p.s).forEach(e=>{const [k,id]=e.split(':'); if(SLOTS.some(s=>s.k===k)) SEL()[k]=+id;});
+  S.have={}; list(p.h).forEach(id=>S.have[id]=true);
+  S.steps={}; list(p.d).forEach(id=>{if(NODE[id]) S.steps[id]='done'}); list(p.k).forEach(id=>{if(NODE[id]) S.steps[id]='skipped'}); list(p.l).forEach(id=>{if(NODE[id]) S.steps[id]='later'});
+  if(p.t){ const t={}; list(p.t).forEach(x=>{ const m=x.match(/^([adstc])(\d)$/); if(m) t[m[1]]=+m[2]; }); S.talents=Object.assign({a:5,d:5,s:5,t:0,c:5},t); }
+  S.offSlot={}; list(p.x).forEach(k=>S.offSlot[k]=true);
+  return list(p.d).length;
+}
+$('gimp').onclick=()=>{ try{ const n=fromGame($('gio').value); render(); toast(U('tGimp')(n)); }catch(err){ toast(U('tGimpFail')); } };
+$('gexp').onclick=async()=>{ const t=toGame(); $('gio').value=t; try{await navigator.clipboard.writeText(t);toast(U('tCopied'))}catch(err){$('gio').select();toast(U('tCopyFail'))} };
+$('reset').onclick=()=>{$('resetConfirm').hidden=false};
+$('resetYes').onclick=()=>{const lang=S.lang;S=DEF();S.lang=lang;$('resetConfirm').hidden=true;render();toast(U('tReset'))};
+render();
+</script>
+
+</body>
+</html>

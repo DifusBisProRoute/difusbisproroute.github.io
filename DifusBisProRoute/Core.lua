@@ -734,6 +734,29 @@ function PR.Status(id)
   return "pending"
 end
 
+-- Step descriptions mention every item a step can unlock: keep only the sentences about items you chose
+-- (current spec + selection), like the web guide.
+function PR.DescFor(n)
+  local text = PR.tx(n.desc) or ""
+  local chosen, all = {}, {}
+  for _, sl in ipairs(PR.SLOTS) do
+    if not PR.char.off[sl.k] then local o = PR.Selected(sl); if o then chosen[o.n] = true end end
+  end
+  for _, list in pairs(PR.SPEC_SLOTS) do
+    for _, sl in ipairs(list) do for _, o in ipairs(sl.opts) do if #o.n > 3 then all[o.n] = true end end end
+  end
+  local out = {}
+  -- split after ". " or "; " only, so decimals like "+1.1%" stay inside their sentence
+  for sen in (text:gsub("([%.;])%s+", "%1\n")):gmatch("[^\n]+") do
+    local hit, ok = false, false
+    for nm in pairs(all) do
+      if sen:find(nm, 1, true) then hit = true; if chosen[nm] then ok = true end end
+    end
+    if not hit or ok then out[#out + 1] = (sen:gsub("^%s+", "")) end
+  end
+  return table.concat(out, " ")
+end
+
 function PR.ComputeRoute()
   local need, items = {}, {}
   local function walk(id, itemId)

@@ -210,7 +210,10 @@ local function refreshSlot(b)
   b.warn:SetShown(o.verify and true or false)
   b.off:SetShown(PR.char.off[b.key] and true or false)
   b.icon:SetDesaturated(PR.char.off[b.key] and true or false)
-  b.label:SetText(H().qualityHex(o.q) .. PR.ItemName(o.id) .. "|r\n|cff9d9d9d" .. PR.tx(sl.n) .. "|r")
+  -- like the web: SLOT (grey) / item name (quality colour) / EP (+ ready check when you own it)
+  local own = PR.Has(o.id) and "  |TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12|t" or ""
+  b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n" .. H().qualityHex(o.q) .. PR.ItemName(o.id) ..
+    "|r\n|cffc69b6d" .. string.format("%.1f EP", PR.EP(o, sl.k)) .. "|r" .. own)
   b.label:SetWordWrap(true)
 end
 
@@ -374,6 +377,6 @@ function UI.UpdateDoll()
     b:ClearAllPoints()
     b:SetPoint("TOPLEFT", d, "TOPLEFT", (H().ROW_W - total) / 2 + (i - 1) * (SLOT_SIZE + 90), -top)
   end
-  d:SetHeight(top + SLOT_SIZE + 34)
+  d:SetHeight(top + SLOT_SIZE + 50) -- room for the 3-line labels under the weapons
   fillFlyout()
 end

@@ -332,17 +332,23 @@ function UI.Build()
 
   -- tabs (styled like the Primary/Secondary tabs)
   local ty = y0 - 118 - 12
-  UI.tab = "route"
+  -- Gear first (pick your items), then the Route that gets them. The last tab used is remembered.
+  UI.tab = (PR.char and PR.char.tab) or "gear"
   local tabs = {}
   local function mkTab(key, x)
-    local t = tabButton(f, 140)
+    local t = tabButton(f, 168)
+    t:SetHeight(32)
+    t.text:SetFontObject("GameFontNormalLarge")
     t:SetFrameLevel(area:GetFrameLevel() + 2)
-    t:SetPoint("TOPLEFT", 16 + x, ty)
-    t:SetScript("OnClick", function() UI.tab = key; UI.preview = nil; if UI.fly then UI.fly:Hide() end; UI.SafeUpdate() end)
+    t:SetPoint("TOPLEFT", 16 + x, ty + 2)
+    t:SetScript("OnClick", function()
+      UI.tab = key; if PR.char then PR.char.tab = key end
+      UI.preview = nil; if UI.fly then UI.fly:Hide() end; UI.SafeUpdate()
+    end)
     tabs[key] = t
     return t
   end
-  mkTab("route", 0); mkTab("gear", 148)
+  mkTab("gear", 0); mkTab("route", 176)
   f.tabs = tabs
   local sync = tabButton(f, 120); sync:SetFrameLevel(area:GetFrameLevel() + 2); sync:SetPoint("TOPRIGHT", -16, ty)
   sync:SetScript("OnClick", function() UI.ShowIO("export") end)
@@ -476,7 +482,8 @@ function UI.StepTooltip(owner, id)
   GameTooltip:AddLine(PR.tx(n.title), 1, 0.82, 0)
   GameTooltip:AddLine(PR.tx(n.where), 0.7, 0.7, 0.7, true)
   GameTooltip:AddLine(" ")
-  GameTooltip:AddLine(PR.tx(n.desc), 1, 1, 1, true)
+  local d = PR.DescFor(n)
+  if d ~= "" then GameTooltip:AddLine(d, 1, 1, 1, true) end
   if id == "reals" then GameTooltip:AddLine(string.format(PR.T("reals"), PR.CountReals()), 0.12, 1, 0) end
   if id == "t0" then GameTooltip:AddLine(string.format(PR.T("valor"), PR.ValorCount()), 0.12, 1, 0) end
   local items = PR.route.items[id]
@@ -506,7 +513,8 @@ function UI.Relabel()
   f.band.sub:SetText(PR.T(PR.IsFury() and "bandSubF" or "bandSub"))
   f.band.pts:SetText(f.band.specPoints and f.band.specPoints > 0 and tostring(f.band.specPoints) or "")
   if f.specBtns then for k, b in pairs(f.specBtns) do b:SetSelected(k == PR.spec) end end
-  f.tabs.route:SetText(PR.T("route")); f.tabs.gear:SetText(PR.T("gear")); f.syncBtn:SetText(PR.T("sync")); f.simBtn:SetText(PR.T("sim"))
+  f.tabs.gear:SetText("|TInterface\\Icons\\INV_Chest_Plate03:18:18:0:0|t  " .. PR.T("gear"))
+  f.tabs.route:SetText("|TInterface\\Icons\\INV_Misc_Map_01:18:18:0:0|t  " .. PR.T("route")); f.syncBtn:SetText(PR.T("sync")); f.simBtn:SetText(PR.T("sim"))
   f.next.complete:SetText(PR.T("complete")); f.next.skip:SetText(PR.T("skip")); f.next.later:SetText(PR.T("later"))
   f.showDone.label:SetText(PR.T("showDone")); f.showSkipped.label:SetText(PR.T("showSkipped"))
 end

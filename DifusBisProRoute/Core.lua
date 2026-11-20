@@ -51,7 +51,7 @@ PR.L = {
     armorL = "Armadura", hpL = "Vida aprox.", cur = "actual", ifPick = "Si eliges este ítem:",
     bandSub = "Ruta pre-raid · WoW Forever", bandSubF = "Ruta pre-raid DPS (dual wield) · WoW Forever", specProt = "Protection", specFury = "Fury", capsF = "Caps de Fury", modelF = "Ítems + enchants + Cruelty · Humano, sin buffs · vs jefe 63", secCapsF = "Caps", secOffF = "Daño", secMiscF = "Armas y vida", critTot = "Crítico total", apTot = "Poder de ataque", strT = "Fuerza", agiT = "Agilidad", mhL = "DPS mano derecha", ohL = "DPS mano izquierda", hitNoteF = "8%% = tope de especiales (blancos DW: 27%%) · máx. pre-raid: %.1f%%", expNoteF = "23.5 EP por 1%% hasta 6.5%%", talentsLiveF = "Talentos de tu personaje: Cruelty %d/5", talentsDefF = "No se pudieron leer tus talentos: se asume Cruelty 5/5", maxHitF = "Óptimo: 8% hit + EP", maxHitDoneF = "Preset Óptimo: %.1f%% de hit y máximo EP", nocraftPF = "Sin crafteos ni AH: 8% hit + EP", nocraftDoneF = "Preset Sin crafteos ni AH: %.1f%% de hit y máximo EP", pgOptF = "Optimizados (8% hit + máximo EP)", setOn = "Set activo: %s", secCaps = "Caps", secAvoid = "Evasión", secSurv = "Supervivencia", maxHit = "Óptimo (8% hit + 440 Def)", maxHitDone = "Preset Óptimo: %.1f%% de hit, 440+ Defensa y máximo EP", secOff = "Amenaza (EP)", tankP = "Tanque: 8% hit + 440 Def (aguante)", nocraftP = "Sin crafteos ni AH: 8% hit + 440 Def", nocraftDone = "Preset Sin crafteos ni AH: %.1f%% de hit con 440+ Defensa", presetPick = "Elegir preset...", pgLists = "Listas BiS", pgOpt = "Optimizados (8% hit + 440 Def)", pgMine = "Mis presets", tankDone = "Preset Tanque: %.1f%% de hit, 440+ Defensa y máximo aguante/armadura", strL = "Fuerza (equipo)", apL = "Poder de ataque (equipo)", critL = "Crítico (equipo)", epL = "EP (pesos WFB)",
     hitNote = "Tope, no mínimo · máx. pre-raid: %.1f%% con 440 Def (preset Óptimo)", maxHp = "Vida máxima", now = "Ahora", plan = "Plan",
-    talentsLive = "Talentos de tu personaje: Anticipation %d/5 · Deflection %d/5 · Shield Spec %d/5 · Toughness %d/5",
+    talentsLive = "Talentos de tu personaje: Anticipation %d/5 · Deflection %d/5 · Shield Spec %d/5",
     talentsDef = "No se pudieron leer tus talentos: se asume Anticipation 5/5 · Deflection 5/5 · Shield Spec 5/5", drL = "Reducción de daño", staL = "Aguante", bvL = "Valor de bloqueo", ignore = "Ignorar slot", slotHint = "Clic: cambiar entre las %d opciones. Clic derecho: ignorar slot.", later = "Después", laterT = "Para después", resume = "Retomar", change = "Cambiar (%d)", hide = "Ocultar",
     savePreset = "+ Guardar", presetName = "Nombre del preset:", presetSaved = "Preset guardado: %s", presetApplied = "Preset aplicado: %s",
     presetDel = "Preset borrado: %s", presetHint = "Clic: aplicar. Clic derecho: borrar.", blockedLater = "Lo que sigue depende de pasos que dejaste para después.",
@@ -76,7 +76,7 @@ PR.L = {
     armorL = "Armor", hpL = "Approx. health", cur = "current", ifPick = "If you pick this item:",
     bandSub = "Pre-raid route · WoW Forever", bandSubF = "Pre-raid DPS route (dual wield) · WoW Forever", specProt = "Protection", specFury = "Fury", capsF = "Fury caps", modelF = "Items + enchants + Cruelty · Human, unbuffed · vs boss 63", secCapsF = "Caps", secOffF = "Damage", secMiscF = "Weapons & health", critTot = "Total crit", apTot = "Attack power", strT = "Strength", agiT = "Agility", mhL = "Main-hand DPS", ohL = "Off-hand DPS", hitNoteF = "8%% = special attack cap (DW white: 27%%) · pre-raid max: %.1f%%", expNoteF = "23.5 EP per 1%% up to 6.5%%", talentsLiveF = "Your talents: Cruelty %d/5", talentsDefF = "Could not read your talents: assuming Cruelty 5/5", maxHitF = "Optimal: 8% hit + EP", maxHitDoneF = "Optimal preset: %.1f%% hit and max EP", nocraftPF = "No crafts or AH: 8% hit + EP", nocraftDoneF = "No crafts / AH preset: %.1f%% hit and max EP", pgOptF = "Optimized (8% hit + max EP)", setOn = "Set bonus: %s", secCaps = "Caps", secAvoid = "Avoidance", secSurv = "Survival", maxHit = "Optimal (8% hit + 440 Def)", maxHitDone = "Optimal preset: %.1f%% hit, 440+ Defense and max EP", secOff = "Threat (EP)", tankP = "Tank: 8% hit + 440 Def (stamina)", nocraftP = "No crafts or AH: 8% hit + 440 Def", nocraftDone = "No crafts / AH preset: %.1f%% hit with 440+ Defense", presetPick = "Choose preset...", pgLists = "BiS lists", pgOpt = "Optimized (8% hit + 440 Def)", pgMine = "My presets", tankDone = "Tank preset: %.1f%% hit, 440+ Defense and max stamina/armor", strL = "Strength (gear)", apL = "Attack power (gear)", critL = "Crit (gear)", epL = "EP (WFB weights)",
     hitNote = "A cap, not a minimum · pre-raid max: %.1f%% at 440 Def (Optimal preset)", maxHp = "Max health", now = "Now", plan = "Plan",
-    talentsLive = "Your talents: Anticipation %d/5 · Deflection %d/5 · Shield Spec %d/5 · Toughness %d/5",
+    talentsLive = "Your talents: Anticipation %d/5 · Deflection %d/5 · Shield Spec %d/5",
     talentsDef = "Could not read your talents: assuming Anticipation 5/5 · Deflection 5/5 · Shield Spec 5/5", drL = "Damage reduction", staL = "Stamina", bvL = "Block value", ignore = "Ignore slot", slotHint = "Click: switch between the %d options. Right-click: ignore slot.", later = "Later", laterT = "Later", resume = "Resume", change = "Change (%d)", hide = "Hide",
     savePreset = "+ Save", presetName = "Preset name:", presetSaved = "Preset saved: %s", presetApplied = "Preset applied: %s",
     presetDel = "Preset deleted: %s", presetHint = "Click: apply. Right-click: delete.", blockedLater = "What comes next depends on steps you left for later.",
@@ -421,16 +421,16 @@ PR.useEnchants = true
 -- Each talent is recognised three ways, so it works on any client language and on Forever's tree:
 -- 1) localized name, 2) its icon, 3) its classic tree position (tab, tier, column) with 5 max ranks.
 PR.TALENTS = {
-  anticip = { per = 4, pos = { 3, 1, 3 }, icon = "spell_nature_mirrorimage",                 -- Forever: +4 defense per rank
+  anticip = { per = 4, id = 12297, pos = { 3, 2, 1 }, icon = "spell_nature_mirrorimage",                 -- Forever: +4 defense per rank
     names = { "Anticipation", "Anticipación", "Antecipação", "Antizipation", "Anticipazione" } },
-  deflect = { per = 1, pos = { 1, 1, 2 }, icon = "ability_parry",                             -- +1% parry per rank
+  deflect = { per = 1, id = 16462, pos = { 1, 1, 2 }, icon = "ability_parry",                             -- +1% parry per rank
     names = { "Deflection", "Desvío", "Desviación", "Deflexão", "Abwehr", "Déviation", "Deviazione" } },
-  shieldSpec = { per = 1, pos = { 3, 1, 2 }, icon = "inv_shield_06",                          -- +1% block per rank
+  shieldSpec = { per = 1, id = 12298, pos = { 3, 1, 2 }, icon = "inv_shield_06",                          -- +1% block per rank
     names = { "Shield Specialization", "Especialización en escudos", "Especialización con escudos",
       "Especialização em Escudo", "Schildspezialisierung", "Spécialisation Bouclier", "Specializzazione in Scudi" } },
-  tough = { per = 2, pos = { 3, 2, 3 }, icon = "spell_holy_devotion",                         -- +2% armor from items per rank
+  tough = { per = 2, pos = { 0, 0, 0 }, icon = "spell_holy_devotion",                         -- +2% armor; not in the Forever warrior tree
     names = { "Toughness", "Dureza", "Robustez", "Zähigkeit", "Robustesse", "Robustezza" } },
-  cruelty = { per = 1, pos = { 2, 1, 3 }, icon = "ability_rogue_eviscerate",                  -- Fury: +1% crit per rank
+  cruelty = { per = 1, id = 12320, pos = { 2, 1, 3 }, icon = "ability_rogue_eviscerate",                  -- Fury: +1% crit per rank
     names = { "Cruelty", "Crueldad", "Crueldade", "Grausamkeit", "Cruauté", "Crudeltà" } },
 }
 PR.DEFAULT_RANKS = { anticip = 5, deflect = 5, shieldSpec = 5, tough = 0, cruelty = 5 }
@@ -476,31 +476,171 @@ local function fromTable(t)
     t.rank or t.currentRank or (t.selected and 1) or 0, t.maxRank or t.maxRanks or 5
 end
 
--- returns name, icon, tier, column, rank, maxRank (or nil when there is no talent at that index)
-local function talentAt(tab, i)
-  if GetTalentInfo then
-    local ok, a, b, c, d, e, f = pcall(GetTalentInfo, tab, i)
-    if ok then
-      if type(a) == "string" then return a, b, c, d, e, f end
-      local n, ic, ti, co, rk, mx = fromTable(a)
-      if n then return n, ic, ti, co, rk, mx end
-    else noteErr(a) end
+-- Calls fn(tab, name, icon, tier, column, rank, maxRank) for every talent the client exposes.
+--   classic clients: GetTalentInfo(tab, index)
+--   WoW Forever:     only C_SpecializationInfo.GetTalentInfo(query), and the query needs tier + column
+--                    ("query.tier must be specified"), so we walk the tree grid: tab x tier x column.
+PR.talentRaw = nil
+local function rawKeys(t)
+  local k = {}
+  for key, v in pairs(t) do k[#k + 1] = tostring(key) .. "=" .. tostring(v) end
+  table.sort(k)
+  return table.concat(k, ", ")
+end
+
+local function forEachTalentClassic(fn)
+  for tab = 1, numTabs() do
+    local n = 30
+    if GetNumTalents then
+      local ok, v = pcall(GetNumTalents, tab)
+      if ok and type(v) == "number" and v > 0 then n = v elseif not ok then noteErr(v) end
+    end
+    for i = 1, n do
+      local ok, a, b, c, d, e, f = pcall(GetTalentInfo, tab, i)
+      if ok then
+        if type(a) == "string" then fn(tab, a, b, c, d, e, f)
+        else
+          local nm, ic, ti, co, rk, mx = fromTable(a)
+          if nm then fn(tab, nm, ic, ti, co, rk, mx) end
+        end
+      else noteErr(a); break end
+    end
   end
-  local CS = C_SpecializationInfo
-  if CS and CS.GetTalentInfo then
-    local ok, t = pcall(CS.GetTalentInfo, { specializationIndex = tab, talentIndex = i, isInspect = false })
-    if ok then return fromTable(t) else noteErr(t) end
+end
+
+-- C_SpecializationInfo.GetTalentInfo(query): the query shape differs between clients, so we try
+-- several shapes on a few cells and keep the first one that returns a talent. Results can be a
+-- table or classic-style multiple values (name, icon, tier, column, rank, maxRank).
+local QUERY = {
+  { "spec+tier+col+group", function(tab, ti, co) return { specializationIndex = tab, tier = ti, column = co, groupIndex = 1, isInspect = false } end },
+  { "spec+tier+col",       function(tab, ti, co) return { specializationIndex = tab, tier = ti, column = co } end },
+  { "tier+col (no spec)",  function(tab, ti, co) return { tier = ti, column = co, groupIndex = 1, isInspect = false, target = "player" } end },
+  { "0-based spec/tier/col", function(tab, ti, co) return { specializationIndex = tab - 1, tier = ti - 1, column = co - 1 } end },
+  { "spec 1-based, tier/col 0-based", function(tab, ti, co) return { specializationIndex = tab, tier = ti - 1, column = co - 1 } end },
+  { "spec 0-based, tier/col 1-based", function(tab, ti, co) return { specializationIndex = tab - 1, tier = ti, column = co } end },
+  { "talentIndex", function(tab, ti, co) return { specializationIndex = tab, talentIndex = (ti - 1) * 4 + co, tier = ti, column = co } end },
+}
+PR.talentProbe = nil
+PR.talentQuery = nil -- index into QUERY once one works
+
+local function callCS(q)
+  local r = { pcall(C_SpecializationInfo.GetTalentInfo, q) }
+  if not r[1] then return false, r[2] end
+  local a = r[2]
+  if type(a) == "table" then
+    if not PR.talentRaw then PR.talentRaw = rawKeys(a) end
+    return true, fromTable(a)
+  elseif type(a) == "string" then
+    if not PR.talentRaw then
+      local parts = {}
+      for k = 2, math.min(#r, 10) do parts[#parts + 1] = tostring(r[k]) end
+      PR.talentRaw = "multi: " .. table.concat(parts, ", ")
+    end
+    return true, a, r[3], r[4], r[5], r[6], r[7]
   end
+  return true, nil, type(a)
+end
+
+local function pickQuery()
+  if PR.talentQuery then return PR.talentQuery end
+  local report = {}
+  for qi, Q in ipairs(QUERY) do
+    local nils, errs, firstErr, retType = 0, 0, nil, nil
+    for tab = 1, 3 do for ti = 1, 3 do for co = 1, 4 do
+      local ok, nm, ic = callCS(Q[2](tab, ti, co))
+      if not ok then errs = errs + 1; firstErr = firstErr or nm
+      elseif nm then
+        report[#report + 1] = Q[1] .. ": OK"
+        PR.talentProbe = table.concat(report, " | ")
+        PR.talentQuery = qi
+        return qi
+      else nils = nils + 1; retType = retType or ic end
+    end end end
+    report[#report + 1] = string.format("%s: %d %s, %d err%s", Q[1], nils, tostring(retType or "nil"), errs,
+      firstErr and (" (" .. tostring(firstErr):sub(1, 60) .. ")") or "")
+  end
+  PR.talentProbe = table.concat(report, " | ")
   return nil
 end
 
-local function numTalents(tab)
-  if GetNumTalents then
-    local ok, n = pcall(GetNumTalents, tab)
-    if ok and type(n) == "number" and n > 0 then return n end
-    if not ok then noteErr(n) end
+
+-- WoW Forever stores talents in the trait system (C_ClassTalents / C_Traits), like retail.
+-- Walk every node of the active config; the talent is identified by its spell ID (and name).
+local function spellName(id)
+  if not id then return nil end
+  if C_Spell and C_Spell.GetSpellName then local ok, n = pcall(C_Spell.GetSpellName, id); if ok and n then return n end end
+  if C_Spell and C_Spell.GetSpellInfo then local ok, i = pcall(C_Spell.GetSpellInfo, id); if ok and type(i) == "table" then return i.name end end
+  if GetSpellInfo then local ok, n = pcall(GetSpellInfo, id); if ok then return n end end
+end
+
+PR.talentTraits = nil -- diagnostics: "config N, trees T, nodes X, bought Y"
+local function forEachTrait(fn)
+  if not (C_Traits and C_Traits.GetConfigInfo and C_Traits.GetTreeNodes and C_Traits.GetNodeInfo
+          and C_ClassTalents and C_ClassTalents.GetActiveConfigID) then return false end
+  local okA, configID = pcall(C_ClassTalents.GetActiveConfigID)
+  if not okA then noteErr(configID); return false end
+  if not configID then PR.talentTraits = "no active config"; return false end
+  local okC, cfg = pcall(C_Traits.GetConfigInfo, configID)
+  if not okC then noteErr(cfg); return false end
+  if type(cfg) ~= "table" or type(cfg.treeIDs) ~= "table" then PR.talentTraits = "config " .. tostring(configID) .. " has no trees"; return false end
+  local nodes, bought, any = 0, 0, false
+  for _, treeID in ipairs(cfg.treeIDs) do
+    local okN, list = pcall(C_Traits.GetTreeNodes, treeID)
+    for _, nodeID in ipairs(okN and type(list) == "table" and list or {}) do
+      local okI, node = pcall(C_Traits.GetNodeInfo, configID, nodeID)
+      if okI and type(node) == "table" then
+        nodes = nodes + 1
+        local rank = node.ranksPurchased or node.activeRank or node.currentRank or 0
+        local maxRank = node.maxRanks or 5
+        local entryID = (node.activeEntry and node.activeEntry.entryID) or (node.entryIDs and node.entryIDs[1])
+        local spellID, name, icon
+        if entryID and C_Traits.GetEntryInfo and C_Traits.GetDefinitionInfo then
+          local okE, entry = pcall(C_Traits.GetEntryInfo, configID, entryID)
+          if okE and type(entry) == "table" and entry.definitionID then
+            local okD, def = pcall(C_Traits.GetDefinitionInfo, entry.definitionID)
+            if okD and type(def) == "table" then
+              spellID = def.spellID
+              name = (def.overrideName and def.overrideName ~= "") and def.overrideName or spellName(spellID)
+              icon = def.overrideIcon
+            end
+          end
+        end
+        if rank > 0 then bought = bought + 1 end
+        if name or spellID then
+          any = true
+          if not PR.talentRaw and rank > 0 then PR.talentRaw = rawKeys(node):sub(1, 200) end
+          fn(nil, name or ("spell " .. tostring(spellID)), icon, nil, nil, rank, maxRank, spellID)
+        end
+      end
+    end
   end
-  return 30 -- probe; talentAt() returns nil past the end
+  PR.talentTraits = string.format("config %s, trees %d, nodes %d, bought %d", tostring(configID), #cfg.treeIDs, nodes, bought)
+  return any
+end
+
+local function forEachTalent(fn)
+  if GetTalentInfo then return forEachTalentClassic(fn) end
+  if forEachTrait(fn) then return end
+  local CS = C_SpecializationInfo
+  if not (CS and CS.GetTalentInfo) then return end
+  local qi = pickQuery()
+  if not qi then return end
+  local build, seen = QUERY[qi][2], {}
+  for tab = 1, numTabs() do
+    for tier = 1, 9 do
+      for col = 1, 4 do
+        local ok, nm, ic, ti, co, rk, mx = callCS(build(tab, tier, col))
+        if not ok then noteErr(nm)
+        elseif nm then
+          local key = nm .. "|" .. tostring(ti or tier) .. "|" .. tostring(co or col)
+          if not seen[key] then
+            seen[key] = true
+            fn(tab, nm, ic, tier, col, rk, mx)
+          end
+        end
+      end
+    end
+  end
 end
 
 local function tabName(tab)
@@ -519,26 +659,23 @@ end
 
 -- Returns ranks (or nil if the talent API has no data yet) and how each talent was matched.
 function PR.ReadTalents()
-  local tabs = numTabs()
   local ranks, how, any = {}, {}, false
   local byName, byIcon, byPos = {}, {}, {}
-  for tab = 1, tabs do
-    for i = 1, numTalents(tab) do
-      local name, tex, tier, col, rank, maxRank = talentAt(tab, i)
-      if name then
-        any = true
-        rank = tonumber(rank) or 0
-        for key, t in pairs(PR.TALENTS) do
-          for _, nm in ipairs(t.names) do if name == nm then byName[key] = rank end end
-          if iconMatches(tex, t.icon) then byIcon[key] = rank end
-          if tab == t.pos[1] and tier == t.pos[2] and col == t.pos[3] and (tonumber(maxRank) or 5) == 5 then byPos[key] = rank end
-        end
-      end
+  local byId = {}
+  forEachTalent(function(tab, name, tex, tier, col, rank, maxRank, spellID)
+    any = true
+    rank = tonumber(rank) or 0
+    for key, t in pairs(PR.TALENTS) do
+      if spellID and t.id and spellID == t.id then byId[key] = rank end
+      for _, nm in ipairs(t.names) do if name == nm then byName[key] = rank end end
+      if iconMatches(tex, t.icon) then byIcon[key] = rank end
+      if tab == t.pos[1] and tier == t.pos[2] and col == t.pos[3] and (tonumber(maxRank) or 5) == 5 then byPos[key] = rank end
     end
-  end
+  end)
   if not any then return nil end -- talent data not loaded yet (or no usable API)
   for key in pairs(PR.TALENTS) do
-    if byName[key] then ranks[key], how[key] = byName[key], "name"
+    if byId[key] then ranks[key], how[key] = byId[key], "id"
+    elseif byName[key] then ranks[key], how[key] = byName[key], "name"
     elseif byIcon[key] then ranks[key], how[key] = byIcon[key], "icon"
     elseif byPos[key] then ranks[key], how[key] = byPos[key], "pos"
     else ranks[key], how[key] = 0, "none" end
@@ -557,25 +694,46 @@ function PR.DumpTalents()
   end
   api[#api + 1] = "C_SpecializationInfo.GetTalentInfo=" .. ((C_SpecializationInfo and C_SpecializationInfo.GetTalentInfo) and "yes" or "no")
   print(P .. "API: " .. table.concat(api, ", "))
-  local shown = 0
-  for tab = 1, numTabs() do
-    print(P .. "|cffffd100" .. tostring(tabName(tab)) .. "|r")
-    for i = 1, numTalents(tab) do
-      local name, tex, tier, col, rank, maxRank = talentAt(tab, i)
-      if name and (tonumber(rank) or 0) > 0 then
-        shown = shown + 1
+  local shown, total, lastTab = 0, 0, nil
+  PR.talentRaw, PR.talentQuery, PR.talentProbe, PR.talentTraits = nil, nil, nil, nil
+  forEachTalent(function(tab, name, tex, tier, col, rank, maxRank, spellID)
+    total = total + 1
+    if (tonumber(rank) or 0) > 0 then
+      if tab and tab ~= lastTab then print(P .. "|cffffd100" .. tostring(tabName(tab)) .. "|r"); lastTab = tab end
+      shown = shown + 1
+      if spellID then
+        print(string.format("  %s %s/%s  (spell %s)", tostring(name), tostring(rank), tostring(maxRank), tostring(spellID)))
+      else
         print(string.format("  %s %s/%s  (tier %s, col %s, icon %s)", tostring(name), tostring(rank), tostring(maxRank), tostring(tier), tostring(col), tostring(tex)))
       end
     end
+  end)
+  print(P .. string.format("%d talentos leídos, %d con puntos / %d talents read, %d with points", total, shown, total, shown))
+  if total == 0 then -- only when nothing was read: full diagnostics
+    if PR.talentRaw then print(P .. "raw: " .. PR.talentRaw:sub(1, 240)) end
+    if PR.talentTraits then print(P .. "traits: " .. PR.talentTraits) end
+    if PR.talentProbe then print(P .. "probe: " .. PR.talentProbe:sub(1, 400)) end
+    if C_SpecializationInfo then
+      local ks = {}
+      for k in pairs(C_SpecializationInfo) do ks[#ks + 1] = tostring(k) end
+      table.sort(ks)
+      print(P .. "C_SpecializationInfo: " .. table.concat(ks, ", "):sub(1, 400))
+    end
+    local other = {}
+    for _, n in ipairs({ "C_ClassTalents", "C_Traits", "C_Talent", "GetSpecialization", "GetNumSpecializations", "GetActiveTalentGroup", "GetTalentTreeRoles", "IsPlayerSpell" }) do
+      other[#other + 1] = n .. "=" .. (_G[n] and "yes" or "no")
+    end
+    print(P .. table.concat(other, ", "))
+  else
+    if PR.talentTraits then print(P .. "traits: " .. PR.talentTraits) end
   end
-  if shown == 0 then print(P .. "No se encontraron talentos con puntos / no talents with points found") end
   if PR.talentErr then print(P .. "|cffff5555API error:|r " .. PR.talentErr) end
   PR.liveRanks = PR.ReadTalents()
   local R, live = PR.Ranks()
   local how = PR.talentHow or {}
-  print(P .. (live and "OK" or "DEFAULT") .. string.format(": Anticipation %d (%s) · Deflection %d (%s) · Shield Spec %d (%s) · Toughness %d (%s) · Cruelty %d (%s)",
+  print(P .. (live and "OK" or "DEFAULT") .. string.format(": Anticipation %d (%s) · Deflection %d (%s) · Shield Spec %d (%s) · Cruelty %d (%s)",
     R.anticip or 0, how.anticip or "-", R.deflect or 0, how.deflect or "-", R.shieldSpec or 0, how.shieldSpec or "-",
-    R.tough or 0, how.tough or "-", R.cruelty or 0, how.cruelty or "-"))
+    R.cruelty or 0, how.cruelty or "-"))
 end
 
 function PR.Ranks()
@@ -1024,7 +1182,7 @@ function PR.DoRefresh(announce)
     local oldRanks = PR.liveRanks
     PR.liveRanks = PR.ReadTalents()
     PR.baseCache = nil
-    local function rk(r) return r and (r.anticip .. "," .. r.deflect .. "," .. r.shieldSpec .. "," .. r.tough) or "" end
+    local function rk(r) return r and (r.anticip .. "," .. r.deflect .. "," .. r.shieldSpec .. "," .. r.tough .. "," .. (r.cruelty or 0)) or "" end
     if rk(oldRanks) ~= rk(PR.liveRanks) then PR.InvalidateOpt() end
     if not PR.liveRanks and (PR.talentTries or 0) < 10 then
       PR.talentTries = (PR.talentTries or 0) + 1
@@ -1049,7 +1207,7 @@ ev:SetScript("OnEvent", function(_, event, arg1)
   if event == "PLAYER_LOGIN" then
     PR.Init()
     for _, e in ipairs({ "QUEST_TURNED_IN", "BAG_UPDATE_DELAYED", "PLAYER_EQUIPMENT_CHANGED", "BANKFRAME_OPENED",
-      "PLAYERBANKSLOTS_CHANGED", "UPDATE_FACTION", "SKILL_LINES_CHANGED", "CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "SPELLS_CHANGED", "PLAYER_ENTERING_WORLD", "GET_ITEM_INFO_RECEIVED", "QUEST_LOG_UPDATE" }) do
+      "PLAYERBANKSLOTS_CHANGED", "UPDATE_FACTION", "SKILL_LINES_CHANGED", "CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_UPDATED", "ACTIVE_PLAYER_SPECIALIZATION_CHANGED", "SPELLS_CHANGED", "PLAYER_ENTERING_WORLD", "GET_ITEM_INFO_RECEIVED", "QUEST_LOG_UPDATE" }) do
       pcall(ev.RegisterEvent, ev, e)
     end
     -- only the player's stats, not every unit around you

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.4
+- Talents are now read correctly on the WoW Forever client, which uses the trait system (C_ClassTalents / C_Traits). Stats, the Defense cap and Fury crit use your real ranks instead of the defaults.
+- Talents are matched by spell ID (Anticipation, Deflection, Shield Specialization, Cruelty), so it works in any client language.
+- Toughness is no longer assumed: it does not exist in the Forever Warrior tree.
+- Talent changes are picked up right away (TRAIT_CONFIG_UPDATED).
+- `/difu talents` prints a short summary; full diagnostics only when nothing can be read.
+
 ## 1.0.3
 - Gear is now the first tab, Route the second; bigger tab buttons with icons. The last tab used is remembered.
 - Character sheet: each slot label shows the slot, the item name in its quality colour, its EP and a check mark when you own it.

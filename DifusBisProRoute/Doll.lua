@@ -126,7 +126,7 @@ function UI.UpdateStats()
   if fury then
     st.talents:SetText(live and string.format(PR.T("talentsLiveF"), R.cruelty or 0) or ("|cffe5604f" .. PR.T("talentsDefF") .. "|r"))
   else
-    st.talents:SetText(live and string.format(PR.T("talentsLive"), R.anticip, R.deflect, R.shieldSpec, R.tough) or ("|cffe5604f" .. PR.T("talentsDef") .. "|r"))
+    st.talents:SetText(live and string.format(PR.T("talentsLive"), R.anticip, R.deflect, R.shieldSpec) or ("|cffe5604f" .. PR.T("talentsDef") .. "|r"))
   end
   local L = PR.Live()
   st.preview:SetText(p and (PR.T("ifPick") .. " " .. H().qualityHex(UI.preview.opt.q) .. PR.ItemName(UI.preview.opt.id) .. "|r") or "")

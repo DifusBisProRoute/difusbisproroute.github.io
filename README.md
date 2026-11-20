@@ -1,9 +1,11 @@
 # Difu'sBisProRoute
 
+[![CurseForge downloads](https://img.shields.io/curseforge/dt/1816912?label=CurseForge&color=f16436)](https://www.curseforge.com/wow/addons/difusbisproroute) [![Latest release](https://img.shields.io/github/v/release/DifusBisProRoute/difusbisproroute.github.io?label=release)](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest)
+
 Pre-raid route for **Warrior (Protection and Fury)** on **WoW Forever**: a free in-game addon plus a web guide.
 
 **Web guide:** https://difusbisproroute.github.io/
-**Download:** [CurseForge](https://www.curseforge.com/projects/1816912) · [GitHub releases](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest)
+**Download:** [CurseForge](https://www.curseforge.com/wow/addons/difusbisproroute) · [GitHub releases](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest)
 
 ## Features
 - **Dependency-ordered route**: what to do first (keys, attunements, quests, dungeons, reputations) to get your pre-raid BiS. Mark each step as Complete, Later or Skip.

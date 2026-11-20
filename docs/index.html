@@ -133,7 +133,7 @@ main.wrap{padding-block:18px 60px;display:grid;gap:18px;position:relative;z-inde
 .av b{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
 .dl{font:500 11px var(--f-mono);margin-left:4px}
 .dl.up{color:var(--good)} .dl.dn{color:var(--bad)}
-.opt .delta{grid-column:2/4;display:flex;gap:4px;flex-wrap:wrap}
+.opt .delta{grid-column:3/5;display:flex;gap:4px;flex-wrap:wrap}
 .opt .delta span{font:500 10.5px var(--f-mono);padding:0 5px;border-radius:4px;background:var(--panel)}
 .opt .delta .up{color:var(--good)} .opt .delta .dn{color:var(--bad)} .opt .delta .cur{color:var(--muted)}
 .slot{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;align-content:start}
@@ -141,16 +141,30 @@ main.wrap{padding-block:18px 60px;display:grid;gap:18px;position:relative;z-inde
 .slot header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .slot h4{margin:0;font:700 13px var(--f-display);letter-spacing:.06em;color:var(--gold)}
 .slot .ench{font:500 11px var(--f-mono);color:var(--muted);text-align:right}
-.opt{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
+.opt{display:grid;grid-template-columns:auto auto 1fr auto;gap:2px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
 .opt:has(input:checked){border-color:var(--gold)}
 .opt input{margin-top:3px;accent-color:var(--gold);cursor:pointer}
 .opt .nm{min-width:0}
+.opt .bigico{grid-column:2;grid-row:1/span 3;cursor:pointer;align-self:start}
+.opt .nm .ico.mini{display:none}
+.ico{position:relative;display:inline-grid;place-items:center;flex:none;overflow:hidden;border-radius:4px;border:1px solid currentColor;background:#0d0b0a;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)}
+.ico b{font:700 11px var(--f-display);color:currentColor;opacity:.8}
+.ico img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ico.mini{width:18px;height:18px;margin:-2px 5px 0 0;border-radius:3px}
+.ico.mini b{font-size:9px}
+.ico.big{width:42px;height:42px;border-width:2px;border-radius:6px}
+.ico.big b{font-size:17px}
+.ico.tt{width:40px;height:40px;border-width:2px;border-radius:5px}
+.ico.q4{color:var(--epic)} .ico.q3{color:var(--rare)} .ico.q2{color:var(--unc)}
+#tt .ico.q4{color:var(--tt-epic)} #tt .ico.q3{color:var(--tt-rare)} #tt .ico.q2{color:var(--tt-unc)}
+#tt .tth{display:flex;gap:9px;align-items:center;margin-bottom:2px}
+#tt .tth .n{margin:0}
 .opt .wh{font:500 11px var(--f-mono);color:var(--muted);text-decoration:none;align-self:start}
 .opt .wh:hover{color:var(--gold)}
-.opt .st{grid-column:2/4;font:400 11.5px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
-.opt .src{grid-column:2/4;font-size:12px;color:var(--muted)}
-.opt .badges{grid-column:2/4;display:flex;gap:4px;flex-wrap:wrap}
-.opt .own{grid-column:2/4;display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);cursor:pointer;width:max-content}
+.opt .st{grid-column:3/5;font:400 11.5px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.opt .src{grid-column:3/5;font-size:12px;color:var(--muted)}
+.opt .badges{grid-column:3/5;display:flex;gap:4px;flex-wrap:wrap}
+.opt .own{grid-column:3/5;display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);cursor:pointer;width:max-content}
 .opt .own input{accent-color:var(--good);margin:0}
 .opt.owned{border-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--panel2))}
 .opt.owned .own{color:var(--good);font-weight:600}
@@ -180,6 +194,56 @@ main.wrap{padding-block:18px 60px;display:grid;gap:18px;position:relative;z-inde
 .crypto code{font-size:12.5px;overflow-wrap:anywhere;user-select:all;color:var(--fg)}
 .crypto .btn{justify-self:start}
 .crypto small{color:var(--muted)}
+/* ---- gear slots, character-sheet style ---- */
+.col{display:grid;gap:6px;align-content:start;min-width:0}
+.gs{border-radius:10px;border:1px solid transparent;min-width:0}
+.gs.open{border-color:var(--line);background:var(--panel)}
+.gs.off .gs-row{opacity:.45}
+.gs-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:start;padding:8px 8px;border-radius:10px}
+.gs-row:hover{background:color-mix(in srgb,var(--gold) 8%,transparent)}
+.gs.r .gs-row{grid-template-columns:auto minmax(0,1fr) auto;direction:rtl}
+.gs.r .gs-row>*{direction:ltr}
+.gs.r .gs-b{text-align:right}
+.gs.r .gs-badges{justify-content:flex-end}
+.gs-ic{position:relative;cursor:help;line-height:0}
+.gs-ic .ico.big,.gopt-ic .ico.big{width:48px;height:48px;border-width:2px;border-radius:6px;box-shadow:0 0 10px -2px currentColor,inset 0 0 0 1px rgba(0,0,0,.6)}
+.gs-own{position:absolute;right:-5px;bottom:-5px;width:18px;height:18px;border-radius:50%;background:var(--good);color:#fff;font:700 11px/18px var(--f-body);text-align:center;box-shadow:0 0 0 2px var(--bg)}
+.gs-b{min-width:0;display:grid;gap:1px}
+.gs-slot{font:700 10.5px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.gs-off{color:var(--bad)}
+.gs-n{font:700 15px/1.25 var(--f-body);cursor:help;overflow-wrap:anywhere}
+.gs-set{justify-self:start;font:500 11px var(--f-body);color:var(--gold);border:1px solid var(--gold);border-radius:3px;padding:0 6px;margin:2px 0}
+.gs.r .gs-set{justify-self:end}
+.gs-en{font-size:12.5px;color:var(--unc);display:flex;align-items:center;gap:0}
+.gs.r .gs-en{justify-content:flex-end}
+.gs-src{font-size:12px;color:var(--muted)}
+.gs-badges{display:flex;gap:4px;flex-wrap:wrap}
+.gs-badges:empty{display:none}
+.gs-sw{align-self:center;font:500 11.5px var(--f-mono);color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 9px;cursor:pointer;white-space:nowrap}
+.gs-sw:hover,.gs.open .gs-sw{color:var(--gold);border-color:var(--gold)}
+.gs-opts{display:grid;gap:6px;padding:0 8px 10px}
+.gopt{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);cursor:pointer}
+.gopt.sel{border-color:var(--gold);box-shadow:inset 3px 0 0 var(--gold)}
+.gopt.owned{border-color:var(--good)}
+.gopt-ic{cursor:pointer;line-height:0}
+.gopt-ic .ico.big{width:40px;height:40px}
+.gopt-b{min-width:0;display:grid;gap:2px}
+.gopt-n{font:700 14px var(--f-body);cursor:pointer}
+.gopt-st{font:400 11.5px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.gopt-src{font-size:12px;color:var(--muted)}
+.gopt-meta{display:flex;flex-wrap:wrap;gap:4px}
+.gopt-meta .badges,.gopt-meta .delta{display:flex;gap:4px;flex-wrap:wrap}
+.gopt-meta .delta span{font:500 10.5px var(--f-mono);padding:0 5px;border-radius:4px;background:var(--panel)}
+.gopt-meta .delta .up{color:var(--good)} .gopt-meta .delta .dn{color:var(--bad)} .gopt-meta .delta .cur{color:var(--muted)}
+.gopt-act{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.gopt-act .own{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);cursor:pointer}
+.gopt-act .own input{accent-color:var(--good);margin:0}
+.gopt-act .wh{font:500 11px var(--f-mono);color:var(--muted);text-decoration:none}
+.gopt-act .wh:hover{color:var(--gold)}
+.gs-ignore{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);justify-self:end}
+.sr{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.gopt:has(.sr:focus-visible){outline:2px solid var(--gold);outline-offset:1px}
+@media (max-width:900px){.gs.r .gs-row{direction:ltr}.gs.r .gs-b{text-align:left}.gs.r .gs-badges,.gs.r .gs-en{justify-content:flex-start}.gs.r .gs-set{justify-self:start}}
 .site-foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin-top:22px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
 .panel h3{margin:0 0 6px;font:700 15px var(--f-display);letter-spacing:.04em;color:var(--gold)}
@@ -296,7 +360,7 @@ textarea{width:100%;min-height:90px;background:var(--panel2);color:var(--fg);bor
       <p data-i="dlText"></p>
       <div class="toolbar" style="margin:8px 0">
         <a class="btn primary" href="https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest" target="_blank" rel="noopener" data-i="dlBtn"></a>
-        <a class="btn" href="https://www.curseforge.com/projects/1816912" target="_blank" rel="noopener">CurseForge</a>
+        <a class="btn" href="https://www.curseforge.com/wow/addons/difusbisproroute" target="_blank" rel="noopener">CurseForge</a>
         <a class="btn" href="https://github.com/DifusBisProRoute/difusbisproroute.github.io" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
@@ -855,14 +919,20 @@ async function simURL(){
 // ---------- TOOLTIP ----------
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const itemRef=id=>{ const o=ITEM[id]; return `<span class="it q${o.q}" tabindex="0" data-item="${id}">${esc(o.n)}</span>`; };
+// Item icons (Wowhead Forever icon names, served from Wowhead's image CDN). If an image can't load,
+// the quality-coloured frame with the item's initial stays as a fallback.
+const ICONS={"2100":"inv_weapon_rifle_06","2244":"inv_sword_18","2246":"inv_jewelry_ring_05","11626":"inv_misc_cape_18","11669":"inv_jewelry_ring_05","11684":"spell_frost_frostbrand","11726":"inv_chest_chain_15","11815":"inv_jewelry_talisman_01","11927":"inv_pants_04","12548":"inv_jewelry_ring_05","12555":"inv_boots_plate_06","12587":"inv_helmet_46","12590":"inv_weapon_shortblade_25","12618":"inv_chest_plate10","12620":"inv_helmet_02","12640":"inv_helmet_36","12653":"inv_weapon_bow_08","12783":"inv_sword_17","12798":"inv_axe_12","12927":"inv_shoulder_10","12936":"inv_bracer_17","12940":"inv_sword_43","12952":"inv_helmet_23","13091":"inv_jewelry_talisman_08","13098":"inv_jewelry_ring_18","13162":"inv_gauntlets_29","13204":"inv_mace_15","13340":"inv_misc_cape_20","13380":"inv_weapon_rifle_07","13397":"inv_misc_cape_19","13400":"inv_bracer_17","13404":"inv_misc_bandana_01","13498":"inv_pants_04","13944":"inv_chest_chain_17","13959":"inv_belt_13","13965":"inv_misc_armorkit_09","13967":"inv_boots_plate_04","14503":"inv_shoulder_25","14525":"inv_gauntlets_29","14552":"inv_shoulder_20","14620":"inv_belt_12","14624":"inv_chest_chain_15","15062":"inv_pants_wolf","15063":"inv_gauntlets_26","15065":"inv_pants_wolf","15411":"inv_jewelry_talisman_07","15413":"inv_chest_plate09","16734":"inv_boots_plate_03","16996":"inv_weapon_bow_04","17713":"inv_jewelry_ring_17","18168":"spell_arcane_portaldarnassus","18315":"inv_jewelry_ring_28","18323":"inv_weapon_bow_03","18370":"inv_misc_stonetablet_04","18375":"inv_bracer_07","18376":"inv_mace_07","18381":"inv_misc_eye_01","18466":"inv_jewelry_talisman_10","18495":"inv_misc_cape_21","18537":"inv_stone_02","18696":"inv_shield_02","18738":"inv_weapon_crossbow_04","19044":"inv_belt_09","19049":"inv_gauntlets_26","19058":"inv_shoulder_26","19107":"inv_weapon_crossbow_07","19120":"inv_misc_rune_07","19321":"spell_frost_chillingarmor","19325":"inv_jewelry_ring_35","19491":"inv_jewelry_necklace_14","20521":"inv_helmet_01","22150":"inv_jewelry_amulet_05","22198":"inv_shield_22","22232":"inv_belt_18","22241":"inv_shoulder_07","22321":"inv_misc_gem_bloodstone_01","22328":"inv_pants_04","22331":"inv_jewelry_ring_33","22337":"inv_misc_cape_19","22340":"inv_jewelry_necklace_04","22384":"inv_hammer_08","22385":"inv_pants_04","226857":"inv_boots_plate_03","226861":"inv_gauntlets_26","226862":"inv_chest_plate03","226865":"inv_bracer_18","226866":"inv_belt_34","226867":"inv_shoulder_30","226869":"inv_helmet_02","226871":"inv_boots_plate_03","226872":"inv_chest_plate03","227814":"inv_belt_11","237825":"inv_pants_plate_20","250552":"inv_gauntlets_22","250562":"inv_boots_plate_20v1","250572":"inv_belt_37a","250577":"inv_shoulder_12","250582":"inv_bracer_23a","252483":"inv_chest_leather_08","252484":"inv_chest_fur","260219":"inv_jewelcrafting_70_lvlupring_purple","270275":"inv_misc_coin_09","271948":"inv_gauntlets_27","271956":"inv_shoulder_12","272403":"inv_belt_33","272408":"inv_jewelry_ring_01","272409":"inv_jewelry_ring_01","272414":"inv_misc_cape_10","272415":"inv_misc_cape_16","272437":"inv_engineering_90_lightningbox","272440":"ui_profession_engineering","275618":"inv_boots_chain_11","275736":"inv_misc_horn_03","276743":"inv_misc_armorkit_02","277202":"trade_archaeology_pendant-of-the-aqir","279259":"inv_sword_07","279264":"inv_gauntlets_28","279265":"inv_pants_plate_15","280010":"inv_bracer_14","280015":"inv_jewelry_ring_41","280020":"inv_weapon_rifle_04","280021":"spell_shadow_vampiricaura","280022":"inv_sword_33","280061":"inv_bracer_08","280065":"inv_misc_bone_01","281587":"inv_sword_36","284086":"inv_helmet_41","287023":"inv_bracer_16","287033":"inv_boots_chain_08"};
+const ICON_URL=(name,size)=>`https://wow.zamimg.com/images/wow/icons/${size}/${name}.jpg`;
+const ico=(id,cls)=>{ const o=ITEM[id], n=ICONS[id], big=/big|tt/.test(cls||'');
+  return `<span class="ico q${o?o.q:1} ${cls||''}" aria-hidden="true"><b>${esc((o&&o.n||'?')[0])}</b>${n?`<img src="${ICON_URL(n,big?'large':'small')}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`:''}</span>`; };
+const itemRef=id=>{ const o=ITEM[id]; return `<span class="it q${o.q}" tabindex="0" data-item="${id}">${ico(id,'mini')}${esc(o.n)}</span>`; };
 // wrap known item names inside free text with tooltip refs
 const NAME_RE=new RegExp(NAMES.map(n=>n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');
 const linkify=text=>esc(text).replace(new RegExp(NAMES.map(n=>esc(n).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g'),m=>{ const raw=m.replace(/&amp;/g,'&'); const id=BYNAME[raw]; return id?itemRef(id):m; });
 
 function ttHTML(id){
   const o=ITEM[id], T=TT[S.lang], s=o.st, L=[];
-  L.push(`<div class="n q${o.q}">${esc(o.n)}</div>`);
+  L.push(`<div class="tth">${ico(id,'tt')}<div class="n q${o.q}">${esc(o.n)}</div></div>`);
   L.push(`<div>${o.bind==='boe'?T.boe:T.bop}</div>`);
   if(o.uniq===1) L.push(`<div>${T.uniq}</div>`); if(o.uniq===2) L.push(`<div>${T.uniq2}</div>`);
   L.push(`<div class="row"><span>${T.slot[o.slot]}</span><span>${T.ty[o.ty]||''}</span></div>`);
@@ -1038,21 +1108,40 @@ function render(){
   if(lat.length){ $('laterBox').innerHTML=`<details ${S.laterOpen?'open':''} id="laterDet"><summary><span>${U('laterT')}</span><span class="cnt">${lat.length}</span></summary><p class="lh">${U('laterHint')}</p><div class="phase">${lat.map(stepHTML_).join('')}</div></details>`; }
 
   $('ench').checked=S.ench; $('showDone').checked=S.showDone; $('showSkipped').checked=S.showSkipped;
-  const cardHTML=sl=>{ const cur=selected(sl), off=!!S.offSlot[sl.k], open=!!OPEN[sl.k], all=optsFor(sl);
-    return `<section class="slot ${off?'off':''}"><header><h4>${esc(tx(sl.n))}</h4>${sl.ench?`<span class="ench">${esc(sl.ench.n)}</span>`:''}</header>
-    ${(open?all:[cur]).map(o=>{ const bs=o.bis||[], rid=`o-${sl.k}-${o.id}`;
-      return `<div class="opt ${S.have[o.id]?'owned':''} ${open?'':'solo'}" data-pv="${sl.k}:${o.id}"><input type="radio" name="s-${sl.k}" id="${rid}" value="${o.id}" data-slot="${sl.k}" ${o.id===cur.id?'checked':''}>
-        <label class="nm" for="${rid}">${itemRef(o.id)}</label><a class="wh" href="${WH(o.id)}" target="_blank" rel="noopener" aria-label="Wowhead: ${esc(o.n)}">Wowhead ↗</a>
-        <span class="st">${fmtSt(o.st)} · <b>EP ${(IS_FURY()?epFury(o,sl.k):epOf(o,sl.k)).toFixed(1)}</b></span><span class="src">${esc(tx(o.src))}</span>
-        <span class="badges">${bs.includes('wfb'+S.faction)?`<span class="b wfb">${U('wfbBis')}</span>`:''}${bs.includes('wtbc')?`<span class="b wtbc">${U('wtbcBis')}</span>`:''}${IS_FURY()&&bs.includes('su')?`<span class="b wtbc">sixtyupgrades</span>`:''}${o.verify?`<span class="b warn">${U('verifyB')}</span>`:''}</span>
-        ${open?`<span class="delta">${deltaChips(sl,o,cur)}</span>`:''}
-        <label class="own"><input type="checkbox" id="h-${sl.k}-${o.id}" data-have="${o.id}" ${S.have[o.id]?'checked':''}> ${U('have')}</label></div>`}).join('')}
-    ${(()=>{const own=optsFor(sl).filter(o=>S.have[o.id]);return own.length?`<div class="has">${U('hasLbl')}: ${own.map(o=>esc(o.n)).join(', ')}${S.have[cur.id]?'':' · '+U('target')+': '+esc(cur.n)}</div>`:''})()}
-    <footer><button class="tabk" data-open="${sl.k}" aria-expanded="${open}">${open?'▴ '+U('hide'):'▾ '+U('change')+' · '+U('optsN')(all.length)}</button><label><input type="checkbox" id="x-${sl.k}" data-off="${sl.k}" ${off?'checked':''}> ${U('ignore')}</label></footer></section>`};
+  // Gear slot, character-sheet style: big quality-framed icon, slot label, item name, set, enchant, source · EP.
+  // "⇅ n" opens the options below (each one compact, with its own icon, stats, badges, delta and "I have it").
+  const epFor=(o,k)=>(IS_FURY()?epFury(o,k):epOf(o,k));
+  const badgeHTML=o=>{ const bs=o.bis||[]; return `${bs.includes('wfb'+S.faction)?`<span class="b wfb">${U('wfbBis')}</span>`:''}${bs.includes('wtbc')?`<span class="b wtbc">${U('wtbcBis')}</span>`:''}${IS_FURY()&&bs.includes('su')?`<span class="b wtbc">sixtyupgrades</span>`:''}${o.verify?`<span class="b warn">${U('verifyB')}</span>`:''}`; };
+  const cardHTML=(sl,side)=>{ const cur=selected(sl), off=!!S.offSlot[sl.k], open=!!OPEN[sl.k], all=optsFor(sl), own=!!S.have[cur.id];
+    const ench=S.ench&&sl.ench?`<div class="gs-en"><span class="ico mini q2" aria-hidden="true"><img src="${ICON_URL('trade_engraving','small')}" alt="" loading="lazy" onerror="this.remove()"></span>${esc(sl.ench.n.replace(/^(Enchant [A-Za-z]+ - |Lesser Arcanum of |Arcanum of )/,m=>m.startsWith('Enchant')?'':m))}</div>`:'';
+    const opts=open?`<div class="gs-opts" role="radiogroup" aria-label="${esc(tx(sl.n))}">${all.map(o=>{ const rid=`o-${sl.k}-${o.id}`;
+        return `<div class="gopt ${o.id===cur.id?'sel':''} ${S.have[o.id]?'owned':''}" data-pv="${sl.k}:${o.id}">
+          <input class="sr" type="radio" name="s-${sl.k}" id="${rid}" value="${o.id}" data-slot="${sl.k}" ${o.id===cur.id?'checked':''}>
+          <label for="${rid}" class="gopt-ic">${ico(o.id,'big')}</label>
+          <div class="gopt-b"><label for="${rid}" class="gopt-n q${o.q}" data-item="${o.id}">${esc(o.n)}</label>
+            <div class="gopt-st">${fmtSt(o.st)} · <b>EP ${epFor(o,sl.k).toFixed(1)}</b></div>
+            <div class="gopt-src">${esc(tx(o.src))}</div>
+            <div class="gopt-meta"><span class="badges">${badgeHTML(o)}</span><span class="delta">${deltaChips(sl,o,cur)}</span></div>
+            <div class="gopt-act"><label class="own"><input type="checkbox" id="h-${sl.k}-${o.id}" data-have="${o.id}" ${S.have[o.id]?'checked':''}> ${U('have')}</label><a class="wh" href="${WH(o.id)}" target="_blank" rel="noopener">Wowhead ↗</a></div>
+          </div></div>`; }).join('')}
+        <label class="gs-ignore"><input type="checkbox" id="x-${sl.k}" data-off="${sl.k}" ${off?'checked':''}> ${U('ignore')}</label></div>`:'';
+    return `<section class="gs ${side} ${off?'off':''} ${open?'open':''}">
+      <div class="gs-row" data-pv="${sl.k}:${cur.id}">
+        <span class="gs-ic" data-item="${cur.id}" tabindex="0">${ico(cur.id,'big')}${own?'<span class="gs-own" title="✓">✓</span>':''}</span>
+        <div class="gs-b">
+          <div class="gs-slot">${esc(tx(sl.n))}${off?` · <span class="gs-off">${U('ignore')}</span>`:''}</div>
+          <div class="gs-n q${cur.q}" data-item="${cur.id}" tabindex="0">${esc(cur.n)}</div>
+          ${cur.set?`<span class="gs-set">${esc(cur.set)}</span>`:''}
+          ${ench}
+          <div class="gs-src">${esc(tx(cur.src))} · ${epFor(cur,sl.k).toFixed(1)} EP</div>
+          <div class="gs-badges">${badgeHTML(cur)}</div>
+        </div>
+        <button class="gs-sw" data-open="${sl.k}" aria-expanded="${open}" title="${open?U('hide'):U('change')}">${open?'✕':'⇅ '+all.length}</button>
+      </div>${opts}</section>`; };
   const L=['head','neck','shoulder','back','chest','wrist','mainhand','offhand','ranged'], R=['hands','waist','legs','feet','finger1','finger2','trinket1','trinket2'];
   const bySlot=k=>SLOTS.find(s=>s.k===k);
-  $('colL').innerHTML=L.map(k=>cardHTML(bySlot(k))).join('');
-  $('colR').innerHTML=R.map(k=>cardHTML(bySlot(k))).join('');
+  $('colL').innerHTML=L.map(k=>cardHTML(bySlot(k),'l')).join('');
+  $('colR').innerHTML=R.map(k=>cardHTML(bySlot(k),'r')).join('');
   renderStats();
   renderPresets();
 
@@ -1125,6 +1214,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-psave]')){ PFORM=true; renderPresets(); const i=$('pname'); if(i) i.focus(); return; }
   if(e.target.closest('[data-pcancel]')){ PFORM=false; renderPresets(); return; }
   if(e.target.closest('[data-pok]')){ savePresetNow(); return; }
+  const go=e.target.closest('.gopt'); if(go&&!e.target.closest('a,input,label')){ const r=go.querySelector('input[type=radio]'); if(r&&!r.checked){ r.checked=true; r.dispatchEvent(new Event('change',{bubbles:true})); } return; }
   const ob=e.target.closest('[data-open]'); if(ob){ const k=ob.dataset.open; if(OPEN[k]) delete OPEN[k]; else OPEN[k]=true; PREVIEW=null; render(); }
 });
 document.addEventListener('keydown',e=>{ if(e.target.id==='pname'){ if(e.key==='Enter') savePresetNow(); if(e.key==='Escape'){PFORM=false;renderPresets();} } });

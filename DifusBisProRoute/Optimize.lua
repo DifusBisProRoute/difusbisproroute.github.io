@@ -154,6 +154,42 @@ function PR.ScanBankLinks()
 end
 
 local function linkId(link) return tonumber(link:match("item:(%d+)")) end
+local function linkEnchant(link) return tonumber(link:match("item:%d+:(%d+)")) or 0 end
+
+-- guide enchants by enchant id (the id inside item links = WoWSims effect id)
+local ENCH
+local function enchById(id)
+  if not ENCH then
+    ENCH = {}
+    for _, list in pairs(PR.SPEC_SLOTS) do
+      for _, sl in ipairs(list) do if sl.ench and sl.ench.ws then ENCH[sl.ench.ws] = sl.ench end end
+    end
+  end
+  return ENCH[id]
+end
+
+local function addStats(a, b)
+  local t = {}
+  for k, v in pairs(a or {}) do t[k] = v end
+  for k, v in pairs(b or {}) do t[k] = (t[k] or 0) + v end
+  return t
+end
+
+-- stats of the enchant on an item link: guide enchant if we know it, otherwise tooltip(with) - tooltip(without)
+local function enchantStats(link, id)
+  local e = linkEnchant(link)
+  if e == 0 then return nil, 0 end
+  local g = enchById(e)
+  if g then return g.st, e, g.n end
+  local with, base = readTooltip(link), readTooltip("item:" .. id)
+  if not (with and base) then return {}, e end
+  local d = {}
+  for k, v in pairs(with.st) do
+    local x = v - (base.st[k] or 0)
+    if x > 0 then d[k] = x end
+  end
+  return d, e
+end
 
 -- slotKey -> list of options { id, link, q, st, dps, spd, spec, loc }
 function PR.OwnedCandidates()
@@ -177,13 +213,17 @@ function PR.OwnedCandidates()
     if known then
       o = { st = known.st, dps = known.dps, spd = known.spd, pe = known.pe }
     else
-      local r = readTooltip(link)
-      if not r then pending = pending + 1; return end
-      if r.unusable then return end
+      local r = readTooltip("item:" .. id) -- base item, without the enchant
+      local full = readTooltip(link)
+      if not (r and full) then pending = pending + 1; return end
+      if full.unusable then return end
       o = { st = r.st, dps = r.dps, spd = r.spd }
     end
+    local est, eid, en = enchantStats(link, id)
+    o.baseSt, o.ench, o.enchN = o.st, eid, en
+    if est then o.st = addStats(o.st, est) end
     o.id, o.link, o.q, o.n, o.loc, o.spec = id, link, q, name, loc, PR.spec
-    o.key = key
+    o.key = key .. ":" .. eid
     seen[id] = loc
     for _, k in ipairs(slots) do
       local list = cands[k]
@@ -219,7 +259,7 @@ end
 -- totals for a pick table (slot -> option), same formulas as PR.Calc
 function PR.CalcPick(pick)
   local fury = PR.IsFury()
-  local g = { def = 0, hit = 0, ep = 0 }
+  local g = { def = 0, hit = 0, ep = 0, missing = {}, missDef = 0 }
   for _, sl in ipairs(PR.SLOTS) do
     if not PR.char.off[sl.k] then
       local o = pick[sl.k]
@@ -227,8 +267,11 @@ function PR.CalcPick(pick)
         g.def = g.def + ((o.st and o.st.def) or 0)
         g.hit = g.hit + ((o.st and o.st.hit) or 0)
         g.ep = g.ep + PR.EP(o, sl.k)
+        if sl.ench and (o.ench or 0) == 0 then
+          g.missing[#g.missing + 1] = sl
+          g.missDef = g.missDef + ((sl.ench.st and sl.ench.st.def) or 0)
+        end
       end
-      if PR.useEnchants and sl.ench and sl.ench.st then g.def = g.def + (sl.ench.st.def or 0) end
     end
   end
   local R = PR.Ranks()
@@ -249,6 +292,14 @@ function PR.OptimizeCurrent(force)
   local res = PR.RunOptimizer(cands)
   res.cands, res.pending = cands, pending
   res.cur = PR.EquippedPick(cands)
+  -- rings and trinkets: if the chosen pair is already on, keep the order you wear them in
+  for _, pr in ipairs({ { "finger1", "finger2" }, { "trinket1", "trinket2" } }) do
+    local a, b = pr[1], pr[2]
+    local pa, pb, ca, cb = res.pickO[a], res.pickO[b], res.cur[a], res.cur[b]
+    if (pa and cb and pa.id == cb.id) or (pb and ca and pb.id == ca.id) then
+      res.pickO[a], res.pickO[b] = pb, pa
+    end
+  end
   res.curStats = PR.CalcPick(res.cur)
   res.newStats = PR.CalcPick(res.pickO)
   lastKey, lastRes = key, res
@@ -288,7 +339,14 @@ function UI.BuildOpt(parent)
     r.loc = r:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall"); r.loc:SetPoint("RIGHT", -6, 0); r.loc:SetJustifyH("RIGHT")
     local hl = r:CreateTexture(nil, "HIGHLIGHT"); hl:SetAllPoints(); hl:SetColorTexture(1, 0.82, 0, 0.08)
     r:SetScript("OnEnter", function(self)
-      if self.link then GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); GameTooltip:SetHyperlink(self.link); GameTooltip:Show() end
+      if self.link then
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); GameTooltip:SetHyperlink(self.link)
+        if self.enchHint then
+          GameTooltip:AddLine(" ")
+          GameTooltip:AddLine(PR.T("noEnchTip") .. " " .. self.enchHint, 1, 0.4, 0.3, true)
+        end
+        GameTooltip:Show()
+      end
     end)
     r:SetScript("OnLeave", function() GameTooltip:Hide() end)
     r.key = k
@@ -346,19 +404,22 @@ function UI.UpdateOpt()
     local cur = res.cur[k]
     r.slot:SetText(sl and string.upper(PR.tx(sl.n)) or k)
     if PR.char.off[k] then
-      r.icon:SetTexture(134400); r.name:SetText("|cff9d9d9d" .. PR.T("offTag") .. "|r"); r.stats:SetText(""); r.loc:SetText(""); r.link = nil
+      r.icon:SetTexture(134400); r.name:SetText("|cff9d9d9d" .. PR.T("offTag") .. "|r"); r.stats:SetText(""); r.loc:SetText(""); r.link = nil; r.enchHint = nil
       r:SetBackdropBorderColor(0.3, 0.3, 0.32, 0.6)
     elseif o then
       r.icon:SetTexture(PR.GetItemIcon(o.id) or 134400)
       r.name:SetText(UI.H.qualityHex(o.q) .. (o.n or PR.ItemName(o.id)) .. "|r")
-      r.stats:SetText(statText(o))
-      local swap = not cur or cur.id ~= o.id
+      local miss = sl and sl.ench and (o.ench or 0) == 0
+      r.stats:SetText(statText(o) .. (miss and ("  |cffe5604f" .. PR.T("noEnch") .. "|r") or ""))
+      r.enchHint = miss and sl.ench.n or nil
+      local sib = ({ finger1 = "finger2", finger2 = "finger1", trinket1 = "trinket2", trinket2 = "trinket1" })[k]
+      local swap = (not cur or cur.id ~= o.id) and not (sib and res.cur[sib] and res.cur[sib].id == o.id)
       if swap then changes = changes + 1 end
       r.loc:SetText((swap and ("|cffffd100" .. PR.T("optSwap") .. "|r  ") or "") .. locText(o.loc))
       r.link = o.link
       if swap then r:SetBackdropBorderColor(1, 0.82, 0, 0.9) else r:SetBackdropBorderColor(0.3, 0.3, 0.32, 0.6) end
     else
-      r.icon:SetTexture(134400); r.name:SetText("|cff9d9d9d" .. PR.T("optNone") .. "|r"); r.stats:SetText(""); r.loc:SetText(""); r.link = nil
+      r.icon:SetTexture(134400); r.name:SetText("|cff9d9d9d" .. PR.T("optNone") .. "|r"); r.stats:SetText(""); r.loc:SetText(""); r.link = nil; r.enchHint = nil
       r:SetBackdropBorderColor(0.3, 0.3, 0.32, 0.6)
     end
     r:Show()
@@ -366,8 +427,14 @@ function UI.UpdateOpt()
   end
   p.note:ClearAllPoints(); p.note:SetPoint("TOPLEFT", 4, -(y + 4)); p.note:SetPoint("RIGHT", p, "RIGHT", -8, 0)
   local notes = { string.format(PR.T("optChanges"), changes) }
+  if #n.missing > 0 then
+    local names = {}
+    for _, sl in ipairs(n.missing) do names[#names + 1] = PR.tx(sl.n) end
+    local line = "|cffe5604f" .. string.format(PR.T("optMissEnch"), #n.missing, table.concat(names, ", ")) .. "|r"
+    if not fury and n.missDef > 0 then line = line .. " " .. string.format(PR.T("optMissDef"), n.missDef, math.floor(n.D + n.missDef + 0.5)) end
+    notes[#notes + 1] = line
+  end
   if res.pending > 0 then notes[#notes + 1] = string.format(PR.T("optPending"), res.pending) end
-  if PR.useEnchants then notes[#notes + 1] = PR.T("optEnch") end
   notes[#notes + 1] = PR.T("optHow")
   p.note:SetText(table.concat(notes, "\n"))
   y = y + 8 + p.note:GetStringHeight() + 8

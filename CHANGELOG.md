@@ -1,7 +1,12 @@
 # Changelog
 
+## 1.0.9
+- Optimize tab: counts the enchants your items really have (before, it assumed the guide's enchants, so Defense could show 440 when you were at 405).
+- Optimize tab: alert for items without an enchant (**NO ENCHANT** on the row, the guide's suggested enchant in the tooltip and how much Defense the guide enchants would add).
+- Optimize tab: rings and trinkets you already wear are no longer marked as SWAP when the best pair is the same in a different order.
+
 ## 1.0.8
-- New **Optimize** tab ("Optimize current gear"): reads what you have equipped, in your bags and in the bank (open the bank once so it is remembered) and builds the best set from it: as close as possible to 440 Defense and 8% hit (Fury: 8% hit), then the most EP. It marks which slots to swap and where each item is, counts the enchants your items really have and warns about items without an enchant (and how much Defense the guide enchants would add).
+- New **Optimize** tab ("Optimize current gear"): reads what you have equipped, in your bags and in the bank (open the bank once so it is remembered) and builds the best set from it: as close as possible to 440 Defense and 8% hit (Fury: 8% hit), then the most EP. It marks which slots to swap and where each item is.
 - Fix: choosing an item in an ignored slot (right-click) kept the slot ignored, so the stats did not change. Picking an item now turns the slot back on, in the addon and on the web guide.
 - Ignored slots now say "IGNORED (stats not counted)" on the character sheet, and the hover preview counts them.
 

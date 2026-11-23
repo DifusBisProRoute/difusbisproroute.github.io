@@ -1,4 +1,4 @@
-Difu'sBisProRoute 1.0.8 - WoW Forever (Warrior Protection / Fury)
+Difu'sBisProRoute 1.0.9 - WoW Forever (Warrior Protection / Fury)
 =================================================================
 
 INSTALL

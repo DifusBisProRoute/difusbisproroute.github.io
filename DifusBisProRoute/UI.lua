@@ -336,9 +336,9 @@ function UI.Build()
   UI.tab = (PR.char and PR.char.tab) or "gear"
   local tabs = {}
   local function mkTab(key, x)
-    local t = tabButton(f, 168)
+    local t = tabButton(f, 118)
     t:SetHeight(32)
-    t.text:SetFontObject("GameFontNormalLarge")
+    t.text:SetFontObject("GameFontNormal")
     t:SetFrameLevel(area:GetFrameLevel() + 2)
     t:SetPoint("TOPLEFT", 16 + x, ty + 2)
     t:SetScript("OnClick", function()
@@ -348,7 +348,7 @@ function UI.Build()
     tabs[key] = t
     return t
   end
-  mkTab("gear", 0); mkTab("route", 176)
+  mkTab("gear", 0); mkTab("route", 122); mkTab("opt", 244)
   f.tabs = tabs
   local sync = tabButton(f, 120); sync:SetFrameLevel(area:GetFrameLevel() + 2); sync:SetPoint("TOPRIGHT", -16, ty)
   sync:SetScript("OnClick", function() UI.ShowIO("export") end)
@@ -387,6 +387,7 @@ function UI.Build()
 
   UI.headers, UI.rows, UI.opts, UI.toggles, UI.open = {}, {}, {}, {}, {}
   UI.BuildDoll(content)
+  if UI.BuildOpt then UI.BuildOpt(content) end
   if PR.db.hidden then f:Hide() end
   UI.Relabel()
 end
@@ -464,7 +465,7 @@ local function getOpt(i)
   o.have:SetFrameLevel(o.hover:GetFrameLevel() + 2); o.pick:SetFrameLevel(o.hover:GetFrameLevel() + 2)
   o.state = o:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   o.state:SetPoint("LEFT", o.have, "RIGHT", 2, 0); o.state:SetWidth(82); o.state:SetJustifyH("LEFT")
-  o.pick:SetScript("OnClick", function() PR.char.sel[o.slot] = o.id; PR.char.lastPre = nil; UI.open[o.slot] = nil; UI.preview = nil; PR.Refresh(false) end)
+  o.pick:SetScript("OnClick", function() PR.char.sel[o.slot] = o.id; PR.char.off[o.slot] = nil; PR.char.lastPre = nil; UI.open[o.slot] = nil; UI.preview = nil; PR.Refresh(false) end)
   o.have:SetScript("OnClick", function(self) PR.char.have[o.id] = self:GetChecked() and true or nil; PR.Refresh(false) end)
   UI.opts[i] = o
   return o
@@ -514,7 +515,8 @@ function UI.Relabel()
   f.band.pts:SetText(f.band.specPoints and f.band.specPoints > 0 and tostring(f.band.specPoints) or "")
   if f.specBtns then for k, b in pairs(f.specBtns) do b:SetSelected(k == PR.spec) end end
   f.tabs.gear:SetText("|TInterface\\Icons\\INV_Chest_Plate03:18:18:0:0|t  " .. PR.T("gear"))
-  f.tabs.route:SetText("|TInterface\\Icons\\INV_Misc_Map_01:18:18:0:0|t  " .. PR.T("route")); f.syncBtn:SetText(PR.T("sync")); f.simBtn:SetText(PR.T("sim"))
+  f.tabs.route:SetText("|TInterface\\Icons\\INV_Misc_Map_01:18:18:0:0|t  " .. PR.T("route"))
+  f.tabs.opt:SetText("|TInterface\\Icons\\INV_Misc_Bag_10:18:18:0:0|t  " .. PR.T("optTab")); f.syncBtn:SetText(PR.T("sync")); f.simBtn:SetText(PR.T("sim"))
   f.next.complete:SetText(PR.T("complete")); f.next.skip:SetText(PR.T("skip")); f.next.later:SetText(PR.T("later"))
   f.showDone.label:SetText(PR.T("showDone")); f.showSkipped.label:SetText(PR.T("showSkipped"))
 end
@@ -566,7 +568,8 @@ function UI.Update()
   f.showDone:SetChecked(PR.char.showDone); f.showSkipped:SetChecked(PR.char.showSkipped)
 
   local y, hi, ri, oi, ti = 0, 1, 1, 1, 1
-  if UI.tab == "route" then UI.doll:Hide(); if UI.fly then UI.fly:Hide() end; if UI.presetBar then UI.presetBar:Hide() end end
+  if UI.tab ~= "gear" then UI.doll:Hide(); if UI.fly then UI.fly:Hide() end; if UI.presetBar then UI.presetBar:Hide() end end
+  if UI.tab ~= "opt" and UI.opt then UI.opt:Hide() end
   local function drawRow(id)
     local n, s = PR.NODE[id], PR.Status(id)
     local row = getRow(ri); ri = ri + 1
@@ -617,6 +620,12 @@ function UI.Update()
       y = y + 28
       for _, id in ipairs(later) do drawRow(id) end
     end
+  elseif UI.tab == "opt" then
+    hideFrom(UI.headers, 1); hideFrom(UI.rows, 1)
+    UI.opt:ClearAllPoints(); UI.opt:SetPoint("TOPLEFT", f.content, "TOPLEFT", 0, 0); UI.opt:SetWidth(f.content:GetWidth())
+    local ok, h = pcall(UI.UpdateOpt)
+    if not ok then PR.Err(h); h = 0 end
+    y = h + 10
   else
     -- gear tab: hide every route widget first, so nothing from Route can show through even if
     -- something below fails
@@ -676,6 +685,14 @@ local function presetItems()
     { key = "wtbc", label = "wowtbc.gg", run = function() PR.ApplyTag("wtbc") end },
   }
   local function say(fmt, v) print(GOLD .. "Difu'sBisProRoute|r: " .. string.format(PR.T(fmt), v)) end
+  if not PR.IsFury() then
+    L[#L + 1] = { key = "bal", label = PR.T("balP"), run = function()
+      if PR.ApplyRes("bal") then
+        local c = PR.Calc()
+        print(GOLD .. "Difu'sBisProRoute|r: " .. string.format(PR.T("balDone"), c.D, c.hit))
+      end
+    end }
+  end
   if PR.IsFury() then
     L[#L + 1] = { key = "su", label = "sixtyupgrades", run = function() PR.ApplyTag("su") end }
     L[#L + 1] = { header = PR.T("pgOptF") }

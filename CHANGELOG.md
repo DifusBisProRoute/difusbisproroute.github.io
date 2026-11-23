@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.8
+- New **Optimize** tab ("Optimize current gear"): reads what you have equipped, in your bags and in the bank (open the bank once so it is remembered) and builds the best set from it: as close as possible to 440 Defense and 8% hit (Fury: 8% hit), then the most EP. It marks which slots to swap and where each item is.
+- Fix: choosing an item in an ignored slot (right-click) kept the slot ignored, so the stats did not change. Picking an item now turns the slot back on, in the addon and on the web guide.
+- Ignored slots now say "IGNORED (stats not counted)" on the character sheet, and the hover preview counts them.
+
+## 1.0.7
+- New Protection preset **Balanced (no Defense cap)**, imported from a WoWSims build: Lionheart Helm, Valiant's Waistguard, Handcrafted Mastersmith Leggings, Furbolg Berserker's Boots, Heroism pieces, Ironfoe and The Immovable Object. About 368 Defense and 8.3% hit: more threat and damage, for when you are not the main tank.
+
 ## 1.0.6
 - Resistance presets are now strictly pre-raid: no items crafted from the new raid's recipes (Hyjal artisan tier, such as Sabatons of Glory and Grovekeeper Spaulders), no raid reputations (The Watchers), no raid quests (Ocean's Breeze needs Molten Core) and no recipes missing from Forever (Sandstalker).
 - Max Nature resistance: 128 · Max Fire resistance: 128, both with 440 Defense and 6-8% hit (+15 with the cloak enchant).

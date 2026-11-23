@@ -389,6 +389,7 @@ const UI={
   requires:'requiere',verify:'verificar fuente',nothing:'Nada que mostrar con estos filtros.',have:'Ya lo tengo',ignore:'Ignorar slot',hasLbl:'Tienes',target:'objetivo',wfbBis:'WFB BiS',wtbcBis:'WTBC BiS',verifyB:'VERIFICAR',
   dupRing:n=>`${n} está en ambos anillos: es único, cambia uno.`,defShort:n=>`Te faltan ${n} de Defensa para 440, el cap que te hace inmune a los críticos del jefe.`,
   later:'Para después',laterT:'Para después',laterHint:'No están completados ni omitidos: siguen en tu ruta, pero el siguiente paso los salta (y también lo que depende de ellos).',resume:'Retomar',tLater:'Paso movido a Para después',change:'Cambiar',hide:'Ocultar',optsN:n=>`${n} opciones`,savePreset:'+ Guardar preset',presetName:'Nombre del preset',save:'Guardar',cancel:'Cancelar',tPresetSaved:n=>`Preset "${n}" guardado`,tPresetApplied:n=>`Preset "${n}" aplicado`,tPresetDel:n=>`Preset "${n}" borrado`,delPreset:'Borrar preset',blockedLater:'Lo que sigue depende de pasos que dejaste para después.',
+  balP:'Balanced (sin cap de Defensa)',balTip:'Build Balanced importado de WoWSims: más amenaza y daño, sin llegar a 440 de Defensa. Úsalo cuando no tanqueas al jefe o el jefe no hace crítico.',tBal:(d,h,e)=>`Preset Balanced: ${d} de Defensa, ${h}% de hit, EP ${e}`,
   pgRes:'Resistencias (440 Def + 6–8% hit)',resNR:'Máxima resistencia a Naturaleza',resFR:'Máxima resistencia a Fuego',resTip:'Llega a 440 de Defensa con 6–8% de hit y, con eso fijo, elige el set con más resistencia. Para sumar +15, pon Enchant Cloak - Greater Nature/Fire Resistance en la capa.',natL:'Resist. Naturaleza',fireL:'Resist. Fuego',tRes:(n,v,h,d)=>`Preset ${n}: ${v} de resistencia, ${h}% de hit y ${d} de Defensa`,
   tDone:'Paso completado',tSkip:'Paso omitido de tu ruta',tRestore:'Paso restaurado',tPresetW:'Preset WoW Forever BiS List aplicado',tPresetT:'Preset wowtbc.gg aplicado',
   ioTitle:'Exportar / importar progreso',ioText:'El progreso se guarda solo en este navegador. Para moverlo a otro equipo, copia el texto y pégalo allá.',exp:'Copiar progreso',imp:'Importar lo pegado',reset:'Reiniciar todo',resetYes:'Sí, borrar',
@@ -404,6 +405,7 @@ const UI={
   requires:'requires',verify:'verify source',nothing:'Nothing to show with these filters.',have:'I have it',ignore:'Ignore slot',hasLbl:'You have',target:'target',wfbBis:'WFB BiS',wtbcBis:'WTBC BiS',verifyB:'VERIFY',
   dupRing:n=>`${n} is in both ring slots: it is unique, change one.`,defShort:n=>`You are ${n} Defense short of 440, the cap that makes you immune to boss crits.`,
   later:'Later',laterT:'Later',laterHint:'Not completed or skipped: they stay on your route, but the next step skips them (and whatever depends on them).',resume:'Resume',tLater:'Step moved to Later',change:'Change',hide:'Hide',optsN:n=>`${n} options`,savePreset:'+ Save preset',presetName:'Preset name',save:'Save',cancel:'Cancel',tPresetSaved:n=>`Preset "${n}" saved`,tPresetApplied:n=>`Preset "${n}" applied`,tPresetDel:n=>`Preset "${n}" deleted`,delPreset:'Delete preset',blockedLater:'What comes next depends on steps you left for later.',
+  balP:'Balanced (no Defense cap)',balTip:'Balanced build imported from WoWSims: more threat and damage, without reaching 440 Defense. Use it when you are not tanking the boss or the boss cannot crit.',tBal:(d,h,e)=>`Balanced preset: ${d} Defense, ${h}% hit, EP ${e}`,
   pgRes:'Resistances (440 Def + 6–8% hit)',resNR:'Max Nature resistance',resFR:'Max Fire resistance',resTip:'Reaches 440 Defense with 6–8% hit, then picks the set with the most resistance. For +15 more, put Enchant Cloak - Greater Nature/Fire Resistance on your cloak.',natL:'Nature resistance',fireL:'Fire resistance',tRes:(n,v,h,d)=>`${n} preset: ${v} resistance, ${h}% hit and ${d} Defense`,
   tDone:'Step completed',tSkip:'Step removed from your route',tRestore:'Step restored',tPresetW:'WoW Forever BiS List preset applied',tPresetT:'wowtbc.gg preset applied',
   ioTitle:'Export / import progress',ioText:'Progress is saved only in this browser. To move it to another device, copy the text and paste it there.',exp:'Copy progress',imp:'Import pasted text',reset:'Reset everything',resetYes:'Yes, delete',
@@ -535,7 +537,8 @@ const SLOTS_PROT = [
   {id:226869,n:'Faceguard of Heroism',q:4,il:60,ty:'plate',bind:'bop',set:SET_H,st:{armor:556,sta:33,str:18,def:9},src:S_('Quest T0.5 · Saving the Best for Last','T0.5 quest · Saving the Best for Last'),req:['t12'],bis:['wfbA','wfbH','wtbc']},
   {id:13404,n:'Mask of the Unforgiven',q:3,il:57,rl:52,ty:'leather',bind:'bop',st:{armor:132,sta:13,def:6,hit:2,crit:1},src:S_('The Unforgiven · Stratholme','The Unforgiven · Stratholme'),req:['dun_strat'],bis:['hit','ep']},
   {id:12620,n:'Enchanted Thorium Helm',q:3,il:62,rl:57,ty:'plate',bind:'boe',st:{armor:526,sta:25,str:12,def:9},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft']},
-  {id:12952,n:'Gyth\'s Skull',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:509,sta:20,def:9},src:S_('Gyth · UBRS','Gyth · UBRS'),req:['dun_ubrs']}]},
+  {id:12952,n:'Gyth\'s Skull',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:509,sta:20,def:9},src:S_('Gyth · UBRS','Gyth · UBRS'),req:['dun_ubrs']},
+  {id:12640,n:'Lionheart Helm',q:4,il:61,rl:56,ty:'plate',bind:'boe',st:{armor:565,str:18,crit:2,hit:2},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],xo:1}]},
  {k:'neck',n:S_('Cuello','Neck'),ench:{n:'Enchant Necklace - Deflection',ws:925,st:{def:5}},opts:[
   {id:13091,n:'Medallion of Grand Marshal Morris',q:3,il:57,rl:52,ty:'neck',bind:'boe',st:{sta:7,def:10},src:S_('World drop BoE (subasta)','BoE world drop (AH)'),req:['ah'],bis:['wfbA','wfbH']},
   {id:275736,n:'Horn of Ve\'han',q:3,il:61,ty:'neck',bind:'bop',st:{sta:10,hit:1.3,def:5},src:S_('Quest · Work Well Done (Mount Hyjal)','Quest · Work Well Done (Mount Hyjal)'),req:['q_hyjal'],bis:['wtbc']},
@@ -578,20 +581,23 @@ const SLOTS_PROT = [
   {id:250572,n:'Sentinel\'s Waistguard',q:3,il:55,rl:50,ty:'plate',bind:'bop',st:{armor:324,sta:14,str:13,def:10},src:S_('Crafteado BoP · 90 Merchant\'s Favor','Crafted BoP · 90 Merchant\'s Favor'),req:['bs'],flag:S_('BoP: tienes que ser herrero','BoP: you must be a blacksmith')},
   {id:14620,n:'Deathbone Girdle',q:3,il:61,rl:56,ty:'plate',bind:'bop',set:'Deathbone Guardian',st:{armor:358,sta:15,int:11,def:9},src:S_('Scholomance','Scholomance'),req:['dun_scholo']},
   {id:17750,n:'Chloromesh Girdle',q:3,il:51,rl:46,ty:'back',bind:'bop',st:{armor:41,sta:6,nr:20},src:S_('Razorlash · Maraudon','Razorlash · Maraudon'),req:['dun_mara'],xo:1},
-  {id:13526,n:'Flamescarred Girdle',q:3,il:62,rl:57,ty:'leather',bind:'bop',st:{armor:98,sta:12,def:5,fr:20},src:S_('Maleki the Pallid · Stratholme','Maleki the Pallid · Stratholme'),req:['dun_strat'],xo:1}]},
+  {id:13526,n:'Flamescarred Girdle',q:3,il:62,rl:57,ty:'leather',bind:'bop',st:{armor:98,sta:12,def:5,fr:20},src:S_('Maleki the Pallid · Stratholme','Maleki the Pallid · Stratholme'),req:['dun_strat'],xo:1},
+  {id:272403,n:'Valiant\'s Waistguard',q:4,il:60,rl:60,ty:'plate',bind:'bop',st:{armor:385,sta:11,str:14,agi:24},src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals'],xo:1}]},
  {k:'legs',n:S_('Piernas','Legs'),ench:{n:'Wild Leather Armor Kit',ws:8719,st:{def:4,sta:10}},opts:[
   {id:226868,n:'Legguards of Heroism',q:3,il:66,ty:'plate',bind:'bop',set:SET_H,st:{armor:601,sta:24,str:16,def:7,bv:21},src:S_('Quest T0.5 · Anthion\'s Parting Words','T0.5 quest · Anthion\'s Parting Words'),req:['t7'],bis:['wfbA','wfbH','wtbc']},
   {id:237825,n:'Sentinel\'s Plate Legguards',q:4,il:78,rl:60,ty:'plate',bind:'bop',st:{armor:768,sta:39,str:27,hit:1,crit:2},src:S_('Silverwing Sentinels Exaltado · Warsong Gulch','Silverwing Sentinels Exalted · Warsong Gulch'),req:['rep_wsg'],fac:'A',bis:['hit']},
   {id:22328,n:'Legplates of Vigilance',q:3,il:63,rl:58,ty:'plate',bind:'bop',st:{armor:575,sta:22,def:15,hit:1},src:S_('Sothos & Jarien (summon) · Stratholme','Sothos & Jarien (summon) · Stratholme'),req:['summon']},
   {id:279265,n:'Azerothium Legplates',q:4,il:65,rl:60,ty:'plate',bind:'boe',st:{armor:646,sta:27,str:24,agi:18},src:S_('Crafteado · planos sin fuente conocida','Crafted · plans with no known source'),req:['plans'],verify:true},
-  {id:11927,n:'Legplates of the Eternal Guardian',q:3,il:57,rl:52,ty:'plate',bind:'bop',st:{armor:682,def:15,blk:2},src:S_('Blackrock Depths','Blackrock Depths'),req:['dun_brd']}]},
+  {id:11927,n:'Legplates of the Eternal Guardian',q:3,il:57,rl:52,ty:'plate',bind:'bop',st:{armor:682,def:15,blk:2},src:S_('Blackrock Depths','Blackrock Depths'),req:['dun_brd']},
+  {id:13498,n:'Handcrafted Mastersmith Leggings',q:3,il:60,rl:55,ty:'plate',bind:'bop',st:{armor:548,sta:12,str:25,exp:1},src:S_('Goraluk Anvilcrack · UBRS','Goraluk Anvilcrack · UBRS'),req:['dun_ubrs'],xo:1}]},
  {k:'feet',n:S_('Pies','Feet'),ench:{n:'Wild Leather Armor Kit',ws:8719,st:{def:4,sta:10}},opts:[
   {id:226871,n:'Sabatons of Heroism',q:4,il:60,ty:'plate',bind:'bop',set:SET_H,st:{armor:470,sta:26,str:12,def:3,hit:0.7},src:S_('Quest T0.5 · Anthion\'s Parting Words','T0.5 quest · Anthion\'s Parting Words'),req:['t7'],bis:['wfbA','wfbH']},
   {id:226857,n:'Battleboots of Heroism',q:4,il:60,ty:'plate',bind:'bop',st:{armor:470,sta:20,str:20,hit:1},src:S_('Mokvar / Deliana · T0.5 (versión DPS de Sabatons of Heroism)','Mokvar / Deliana · T0.5 (DPS version of Sabatons of Heroism)'),req:['t7'],bis:['hit','ep','wtbc']},
   {id:250562,n:'Sentinel\'s Sabatons',q:3,il:52,rl:47,ty:'plate',bind:'bop',st:{armor:376,sta:13,str:12,def:9},src:S_('Crafteado · Merchant\'s Favor','Crafted · Merchant\'s Favor'),req:['bs']},
   {id:16734,n:'Boots of Valor',q:3,il:59,rl:54,ty:'plate',bind:'bop',set:'Battlegear of Valor',st:{armor:424,sta:20,str:9,agi:5,def:2},src:S_('Kirtonos · Scholomance','Kirtonos · Scholomance'),req:['dun_scholo'],flag:S_('Se consume en Anthion\'s Parting Words','Consumed by Anthion\'s Parting Words')},
   {id:13527,n:'Lavawalker Greaves',q:3,il:62,rl:57,ty:'plate',bind:'bop',st:{armor:445,str:12,hit:0.5,fr:20},src:S_('Maleki the Pallid · Stratholme','Maleki the Pallid · Stratholme'),req:['dun_strat'],xo:1},
-  {id:13530,n:'Fangdrip Runners',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{armor:60,nr:20},src:S_('Nerub\'enkan · Stratholme','Nerub\'enkan · Stratholme'),req:['dun_strat'],xo:1}]},
+  {id:13530,n:'Fangdrip Runners',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{armor:60,nr:20},src:S_('Nerub\'enkan · Stratholme','Nerub\'enkan · Stratholme'),req:['dun_strat'],xo:1},
+  {id:287033,n:'Furbolg Berserker\'s Boots',q:3,il:58,rl:53,ty:'plate',bind:'bop',st:{armor:417,str:18,spi:9,exp:1},src:S_('Blackmaw Devotee · Blackmaw Hold','Blackmaw Devotee · Blackmaw Hold'),req:['dun_blackmaw'],xo:1}]},
  {k:'finger1',n:S_('Anillo 1','Ring 1'),opts:[
   {id:272409,n:'Ring of Awareness',q:3,il:65,rl:60,ty:'finger',bind:'bop',uniq:1,st:{sta:10,str:8,def:9},src:S_('Pix Xizzix · 75 Reals','Pix Xizzix · 75 Reals'),req:['reals'],bis:['wfbA','wfbH']},
   {id:280015,n:'Venomvessel Ring',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sta:11,spi:9,hit:1.1},src:S_('Venomridge · The Shaper\'s Terrace','Venomridge · The Shaper\'s Terrace'),req:['dun_shaper'],bis:['hit']},
@@ -1221,7 +1227,7 @@ document.addEventListener('change',e=>{
   const el=e.target;
   if(el.id==='preSel'){ applyPreset(el.value); return; }
   if(el.dataset.act==='toggle'){ if(el.checked) S.steps[el.dataset.id]='done'; else delete S.steps[el.dataset.id]; }
-  else if(el.dataset.slot){ SEL()[el.dataset.slot]=+el.value; S.lastPre=''; delete OPEN[el.dataset.slot]; PREVIEW=null; }
+  else if(el.dataset.slot){ SEL()[el.dataset.slot]=+el.value; delete S.offSlot[el.dataset.slot]; S.lastPre=''; delete OPEN[el.dataset.slot]; PREVIEW=null; }
   else if(el.dataset.have){ if(el.checked) S.have[el.dataset.have]=true; else delete S.have[el.dataset.have]; }
   else if(el.dataset.off){ if(el.checked) S.offSlot[el.dataset.off]=true; else delete S.offSlot[el.dataset.off]; }
   else if(el.dataset.tal){ S.talents=Object.assign({a:5,d:5,s:5,t:0,c:5},S.talents||{}); S.talents[el.dataset.tal]=+el.value; }
@@ -1237,6 +1243,7 @@ document.addEventListener('change',e=>{
 // (Onyxia head, Hydraxis/MC), no recipes from the new raid (Hyjal artisan tier), no raid reputations (The Watchers), no PvP.
 const RES_SETS={
   nr:{head:13404,neck:275736,shoulder:13533,back:18677,chest:14624,wrist:250582,hands:13532,waist:17750,legs:22328,feet:13530,finger1:272409,finger2:22331,trinket1:274759,trinket2:272440,mainhand:274658,offhand:14002,ranged:12651},
+  bal:{head:12640,neck:275736,shoulder:226867,back:272415,chest:226862,wrist:226865,hands:226870,waist:272403,legs:13498,feet:287033,finger1:19325,finger2:272408,trinket1:18466,trinket2:272437,mainhand:11684,offhand:19321,ranged:18323},
   fr:{head:13404,neck:16309,shoulder:12927,back:12905,chest:14624,wrist:250582,hands:12464,waist:13526,legs:22328,feet:13527,finger1:272409,finger2:22331,trinket1:18638,trinket2:272440,mainhand:22266,offhand:12602,ranged:18323}
 };
 
@@ -1244,12 +1251,12 @@ let PFORM=false;
 function renderPresets(){
   const mine=S.presets.map((p,i)=>({p,i})).filter(x=>x.p.faction===S.faction&&(x.p.spec||'prot')===S.spec);
   const mineOk=p=>p&&p.faction===S.faction&&(p.spec||'prot')===S.spec;
-  let cur=S.lastPre||''; if(cur&&!['wfb','wtbc','su','hit','tank','nocraft','nr','fr'].includes(cur)&&!mineOk(S.presets[+cur])) cur='';
+  let cur=S.lastPre||''; if(cur&&!['wfb','wtbc','su','hit','tank','nocraft','nr','fr','bal'].includes(cur)&&!mineOk(S.presets[+cur])) cur='';
   const o=(v,l,t)=>`<option value="${v}" ${cur===v?'selected':''} ${t?`title="${esc(t)}"`:''}>${esc(l)}</option>`;
   const curMine=/^\d+$/.test(cur)&&mineOk(S.presets[+cur]);
   $('presetBar').innerHTML=`<select id="preSel" class="presel" aria-label="${U('presetL')}">
       <option value="" ${cur?'':'selected'} disabled>${U('presetPick')}</option>
-      <optgroup label="${U('pgLists')}">${o('wfb','WoW Forever BiS List')}${o('wtbc','wowtbc.gg')}${IS_FURY()?o('su','sixtyupgrades'):''}</optgroup>
+      <optgroup label="${U('pgLists')}">${o('wfb','WoW Forever BiS List')}${o('wtbc','wowtbc.gg')}${IS_FURY()?o('su','sixtyupgrades'):o('bal',U('balP'),U('balTip'))}</optgroup>
       <optgroup label="${U(IS_FURY()?'pgOptF':'pgOpt')}">${IS_FURY()?o('hit',U('maxHitF'),U('maxHitTipF'))+o('nocraft',U('nocraftPF'),U('nocraftTip')):o('hit',U('maxHit'),U('maxHitTip'))+o('tank',U('tankP'),U('tankTip'))+o('nocraft',U('nocraftP'),U('nocraftTip'))}</optgroup>
       ${IS_FURY()?'':`<optgroup label="${U('pgRes')}">${o('nr',U('resNR'),U('resTip'))}${o('fr',U('resFR'),U('resTip'))}</optgroup>`}
       ${mine.length?`<optgroup label="${U('pgMine')}">${mine.map(({p,i})=>o(String(i),p.name)).join('')}</optgroup>`:''}
@@ -1262,6 +1269,7 @@ function applyPreset(k){
   if(k==='wfb'){preset('wfb'+S.faction);toast(U('tPresetW'))} else if(k==='wtbc'){preset('wtbc');toast(U('tPresetT'))} else if(k==='su'){preset('su');toast(U('tPresetSU'))}
   else if(k==='hit'||k==='tank'||k==='nocraft'){ const b=optimizeHit(false,k==='tank'?'tank':'ep',k==='nocraft'); Object.assign(SEL(),b.pick);
     const c=calc(); toast(IS_FURY()?U('tFury')(b.hit.toFixed(1),c.crit.toFixed(1),Math.round(c.ep)):U(k==='tank'?'tTank':k==='nocraft'?'tNoCraft':'tMaxHit')(b.hit.toFixed(1),Math.round(c.D))); }
+  else if(k==='bal'&&!IS_FURY()){ Object.assign(SEL(),RES_SETS.bal); const c=calc(); toast(U('tBal')(Math.round(c.D),c.hit.toFixed(1),Math.round(c.ep))); }
   else if(RES_SETS[k]&&!IS_FURY()){ Object.assign(SEL(),RES_SETS[k]); const c=calc(); toast(U('tRes')(k==='nr'?U('natL'):U('fireL'),Math.round(k==='nr'?c.nr:c.fr),c.hit.toFixed(1),Math.round(c.D))); }
   else { const p=S.presets[+k]; if(p){ Object.assign(SEL(),p.sel); toast(U('tPresetApplied')(p.name)); } }
   S.lastPre=k; render();

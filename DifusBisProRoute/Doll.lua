@@ -212,8 +212,12 @@ local function refreshSlot(b)
   b.icon:SetDesaturated(PR.char.off[b.key] and true or false)
   -- like the web: SLOT (grey) / item name (quality colour) / EP (+ ready check when you own it)
   local own = PR.Has(o.id) and "  |TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12|t" or ""
-  b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n" .. H().qualityHex(o.q) .. PR.ItemName(o.id) ..
-    "|r\n|cffc69b6d" .. string.format("%.1f EP", PR.EP(o, sl.k)) .. "|r" .. own)
+  if PR.char.off[b.key] then
+    b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n|cffe5604f" .. PR.T("offTag") .. "|r\n|cff9d9d9d" .. PR.T("offHint") .. "|r")
+  else
+    b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n" .. H().qualityHex(o.q) .. PR.ItemName(o.id) ..
+      "|r\n|cffc69b6d" .. string.format("%.1f EP", PR.EP(o, sl.k)) .. "|r" .. own)
+  end
   b.label:SetWordWrap(true)
 end
 
@@ -247,7 +251,7 @@ local function buildFlyout()
     r.tags = r:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall"); r.tags:SetPoint("TOPRIGHT", -8, -32)
     local hl = r:CreateTexture(nil, "HIGHLIGHT"); hl:SetAllPoints(); hl:SetColorTexture(1, 0.82, 0, 0.10)
     r:SetScript("OnClick", function(self)
-      PR.char.sel[fl.key] = self.opt.id; PR.char.lastPre = nil; UI.preview = nil; fl:Hide(); PR.Refresh(false)
+      PR.char.sel[fl.key] = self.opt.id; PR.char.off[fl.key] = nil; PR.char.lastPre = nil; UI.preview = nil; fl:Hide(); PR.Refresh(false)
     end)
     r:SetScript("OnEnter", function(self) UI.OptEnter(self, { id = self.opt.id, slot = fl.key }) end)
     r:SetScript("OnLeave", function() UI.OptLeave() end)

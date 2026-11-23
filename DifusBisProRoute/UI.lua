@@ -686,6 +686,13 @@ local function presetItems()
     L[#L + 1] = { key = "hit", label = PR.T("maxHit"), run = function() say("maxHitDone", PR.ApplyMaxHit()) end }
     L[#L + 1] = { key = "tank", label = PR.T("tankP"), run = function() say("tankDone", PR.ApplyMaxHit("tank")) end }
     L[#L + 1] = { key = "nocraft", label = PR.T("nocraftP"), run = function() say("nocraftDone", PR.ApplyMaxHit(nil, true)) end }
+    local function res(kind)
+      local v, h, d = PR.ApplyRes(kind)
+      if v then print(GOLD .. "Difu'sBisProRoute|r: " .. string.format(PR.T("resDone"), v, h, d)) end
+    end
+    L[#L + 1] = { header = PR.T("pgRes") }
+    L[#L + 1] = { key = "nr", label = PR.T("resNR"), run = function() res("nr") end }
+    L[#L + 1] = { key = "fr", label = PR.T("resFR"), run = function() res("fr") end }
   end
   local mine = {}
   for i, p in ipairs(PR.char.presets) do

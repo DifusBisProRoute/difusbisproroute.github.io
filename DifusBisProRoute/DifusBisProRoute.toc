@@ -4,7 +4,7 @@
 ## Notes-esES: Ruta pre-raid de Warrior para WoW Forever (Prot y Fury): pasos ordenados por dependencias, hasta 5 opciones por slot, optimizador de caps, enlace a WoWSims y detección automática de progreso.
 ## Notes-esMX: Ruta pre-raid de Warrior para WoW Forever (Prot y Fury): pasos ordenados por dependencias, hasta 5 opciones por slot, optimizador de caps, enlace a WoWSims y detección automática de progreso.
 ## Author: Difu
-## Version: 1.0.4
+## Version: 1.0.6
 ## X-Website: https://difusbisproroute.github.io/
 ## X-Curse-Project-ID: 1816912
 ## X-License: All Rights Reserved

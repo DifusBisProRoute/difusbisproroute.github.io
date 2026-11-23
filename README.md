@@ -10,7 +10,7 @@ Pre-raid route for **Warrior (Protection and Fury)** on **WoW Forever**: a free 
 ## Features
 - **Dependency-ordered route**: what to do first (keys, attunements, quests, dungeons, reputations) to get your pre-raid BiS. Mark each step as Complete, Later or Skip.
 - **Up to 5 options per slot**, based on WoW Forever BiS List, wowtbc.gg and sixtyupgrades.
-- **Caps optimizer**: Protection = 440 Defense + 8% hit; Fury = 8% hit + maximum EP. Presets: Optimal, Tank, No crafts / AH, plus your own.
+- **Caps optimizer**: Protection = 440 Defense + 8% hit; Fury = 8% hit + maximum EP. Presets: Optimal, Tank, No crafts / AH, Max Nature resistance, Max Fire resistance, plus your own.
 - **Character-sheet stats panel** comparing what you have now with your plan, using your real talents.
 - **WoWSims link** for your chosen set (`/difu sim`).
 - **Tracks your progress automatically**: quests, items, reputation and professions.

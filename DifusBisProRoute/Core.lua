@@ -49,7 +49,7 @@ PR.L = {
     defL = "Defensa", hitL = "Hit", expL = "Pericia", crushL = "Anti-crush", critImm = "Inmune a críticos del jefe", critN = "El jefe te crítica %.2f%%",
     sbN = "Con Shield Block: %.2f%%", missL = "Fallo", dodgeL = "Esquiva", parryL = "Parada", blockL = "Bloqueo", avoidL = "Evasión total",
     armorL = "Armadura", hpL = "Vida aprox.", cur = "actual", ifPick = "Si eliges este ítem:",
-    bandSub = "Ruta pre-raid · WoW Forever", bandSubF = "Ruta pre-raid DPS (dual wield) · WoW Forever", specProt = "Protection", specFury = "Fury", capsF = "Caps de Fury", modelF = "Ítems + enchants + Cruelty · Humano, sin buffs · vs jefe 63", secCapsF = "Caps", secOffF = "Daño", secMiscF = "Armas y vida", critTot = "Crítico total", apTot = "Poder de ataque", strT = "Fuerza", agiT = "Agilidad", mhL = "DPS mano derecha", ohL = "DPS mano izquierda", hitNoteF = "8%% = tope de especiales (blancos DW: 27%%) · máx. pre-raid: %.1f%%", expNoteF = "23.5 EP por 1%% hasta 6.5%%", talentsLiveF = "Talentos de tu personaje: Cruelty %d/5", talentsDefF = "No se pudieron leer tus talentos: se asume Cruelty 5/5", maxHitF = "Óptimo: 8% hit + EP", maxHitDoneF = "Preset Óptimo: %.1f%% de hit y máximo EP", nocraftPF = "Sin crafteos ni AH: 8% hit + EP", nocraftDoneF = "Preset Sin crafteos ni AH: %.1f%% de hit y máximo EP", pgOptF = "Optimizados (8% hit + máximo EP)", setOn = "Set activo: %s", secCaps = "Caps", secAvoid = "Evasión", secSurv = "Supervivencia", maxHit = "Óptimo (8% hit + 440 Def)", maxHitDone = "Preset Óptimo: %.1f%% de hit, 440+ Defensa y máximo EP", secOff = "Amenaza (EP)", tankP = "Tanque: 8% hit + 440 Def (aguante)", nocraftP = "Sin crafteos ni AH: 8% hit + 440 Def", nocraftDone = "Preset Sin crafteos ni AH: %.1f%% de hit con 440+ Defensa", presetPick = "Elegir preset...", pgLists = "Listas BiS", pgOpt = "Optimizados (8% hit + 440 Def)", pgMine = "Mis presets", tankDone = "Preset Tanque: %.1f%% de hit, 440+ Defensa y máximo aguante/armadura", strL = "Fuerza (equipo)", apL = "Poder de ataque (equipo)", critL = "Crítico (equipo)", epL = "EP (pesos WFB)",
+    bandSub = "Ruta pre-raid · WoW Forever", pgRes = "Resistencias (440 Def + 6-8% hit)", resNR = "Máx. resistencia a Naturaleza", resFR = "Máx. resistencia a Fuego", resDone = "Preset de resistencias: %d de resistencia, %.1f%% de hit y %d de Defensa. Capa: Enchant Cloak - Greater Nature/Fire Resistance (+15).", natL = "Resist. Naturaleza", fireL = "Resist. Fuego", secRes = "Resistencias", bandSubF = "Ruta pre-raid DPS (dual wield) · WoW Forever", specProt = "Protection", specFury = "Fury", capsF = "Caps de Fury", modelF = "Ítems + enchants + Cruelty · Humano, sin buffs · vs jefe 63", secCapsF = "Caps", secOffF = "Daño", secMiscF = "Armas y vida", critTot = "Crítico total", apTot = "Poder de ataque", strT = "Fuerza", agiT = "Agilidad", mhL = "DPS mano derecha", ohL = "DPS mano izquierda", hitNoteF = "8%% = tope de especiales (blancos DW: 27%%) · máx. pre-raid: %.1f%%", expNoteF = "23.5 EP por 1%% hasta 6.5%%", talentsLiveF = "Talentos de tu personaje: Cruelty %d/5", talentsDefF = "No se pudieron leer tus talentos: se asume Cruelty 5/5", maxHitF = "Óptimo: 8% hit + EP", maxHitDoneF = "Preset Óptimo: %.1f%% de hit y máximo EP", nocraftPF = "Sin crafteos ni AH: 8% hit + EP", nocraftDoneF = "Preset Sin crafteos ni AH: %.1f%% de hit y máximo EP", pgOptF = "Optimizados (8% hit + máximo EP)", setOn = "Set activo: %s", secCaps = "Caps", secAvoid = "Evasión", secSurv = "Supervivencia", maxHit = "Óptimo (8% hit + 440 Def)", maxHitDone = "Preset Óptimo: %.1f%% de hit, 440+ Defensa y máximo EP", secOff = "Amenaza (EP)", tankP = "Tanque: 8% hit + 440 Def (aguante)", nocraftP = "Sin crafteos ni AH: 8% hit + 440 Def", nocraftDone = "Preset Sin crafteos ni AH: %.1f%% de hit con 440+ Defensa", presetPick = "Elegir preset...", pgLists = "Listas BiS", pgOpt = "Optimizados (8% hit + 440 Def)", pgMine = "Mis presets", tankDone = "Preset Tanque: %.1f%% de hit, 440+ Defensa y máximo aguante/armadura", strL = "Fuerza (equipo)", apL = "Poder de ataque (equipo)", critL = "Crítico (equipo)", epL = "EP (pesos WFB)",
     hitNote = "Tope, no mínimo · máx. pre-raid: %.1f%% con 440 Def (preset Óptimo)", maxHp = "Vida máxima", now = "Ahora", plan = "Plan",
     talentsLive = "Talentos de tu personaje: Anticipation %d/5 · Deflection %d/5 · Shield Spec %d/5",
     talentsDef = "No se pudieron leer tus talentos: se asume Anticipation 5/5 · Deflection 5/5 · Shield Spec 5/5", drL = "Reducción de daño", staL = "Aguante", bvL = "Valor de bloqueo", ignore = "Ignorar slot", slotHint = "Clic: cambiar entre las %d opciones. Clic derecho: ignorar slot.", later = "Después", laterT = "Para después", resume = "Retomar", change = "Cambiar (%d)", hide = "Ocultar",
@@ -74,7 +74,7 @@ PR.L = {
     defL = "Defense", hitL = "Hit", expL = "Expertise", crushL = "Anti-crush", critImm = "Immune to boss crits", critN = "Boss crits you %.2f%%",
     sbN = "With Shield Block: %.2f%%", missL = "Miss", dodgeL = "Dodge", parryL = "Parry", blockL = "Block", avoidL = "Total avoidance",
     armorL = "Armor", hpL = "Approx. health", cur = "current", ifPick = "If you pick this item:",
-    bandSub = "Pre-raid route · WoW Forever", bandSubF = "Pre-raid DPS route (dual wield) · WoW Forever", specProt = "Protection", specFury = "Fury", capsF = "Fury caps", modelF = "Items + enchants + Cruelty · Human, unbuffed · vs boss 63", secCapsF = "Caps", secOffF = "Damage", secMiscF = "Weapons & health", critTot = "Total crit", apTot = "Attack power", strT = "Strength", agiT = "Agility", mhL = "Main-hand DPS", ohL = "Off-hand DPS", hitNoteF = "8%% = special attack cap (DW white: 27%%) · pre-raid max: %.1f%%", expNoteF = "23.5 EP per 1%% up to 6.5%%", talentsLiveF = "Your talents: Cruelty %d/5", talentsDefF = "Could not read your talents: assuming Cruelty 5/5", maxHitF = "Optimal: 8% hit + EP", maxHitDoneF = "Optimal preset: %.1f%% hit and max EP", nocraftPF = "No crafts or AH: 8% hit + EP", nocraftDoneF = "No crafts / AH preset: %.1f%% hit and max EP", pgOptF = "Optimized (8% hit + max EP)", setOn = "Set bonus: %s", secCaps = "Caps", secAvoid = "Avoidance", secSurv = "Survival", maxHit = "Optimal (8% hit + 440 Def)", maxHitDone = "Optimal preset: %.1f%% hit, 440+ Defense and max EP", secOff = "Threat (EP)", tankP = "Tank: 8% hit + 440 Def (stamina)", nocraftP = "No crafts or AH: 8% hit + 440 Def", nocraftDone = "No crafts / AH preset: %.1f%% hit with 440+ Defense", presetPick = "Choose preset...", pgLists = "BiS lists", pgOpt = "Optimized (8% hit + 440 Def)", pgMine = "My presets", tankDone = "Tank preset: %.1f%% hit, 440+ Defense and max stamina/armor", strL = "Strength (gear)", apL = "Attack power (gear)", critL = "Crit (gear)", epL = "EP (WFB weights)",
+    bandSub = "Pre-raid route · WoW Forever", pgRes = "Resistances (440 Def + 6-8% hit)", resNR = "Max Nature resistance", resFR = "Max Fire resistance", resDone = "Resistance preset: %d resistance, %.1f%% hit and %d Defense. Cloak: Enchant Cloak - Greater Nature/Fire Resistance (+15).", natL = "Nature resistance", fireL = "Fire resistance", secRes = "Resistances", bandSubF = "Pre-raid DPS route (dual wield) · WoW Forever", specProt = "Protection", specFury = "Fury", capsF = "Fury caps", modelF = "Items + enchants + Cruelty · Human, unbuffed · vs boss 63", secCapsF = "Caps", secOffF = "Damage", secMiscF = "Weapons & health", critTot = "Total crit", apTot = "Attack power", strT = "Strength", agiT = "Agility", mhL = "Main-hand DPS", ohL = "Off-hand DPS", hitNoteF = "8%% = special attack cap (DW white: 27%%) · pre-raid max: %.1f%%", expNoteF = "23.5 EP per 1%% up to 6.5%%", talentsLiveF = "Your talents: Cruelty %d/5", talentsDefF = "Could not read your talents: assuming Cruelty 5/5", maxHitF = "Optimal: 8% hit + EP", maxHitDoneF = "Optimal preset: %.1f%% hit and max EP", nocraftPF = "No crafts or AH: 8% hit + EP", nocraftDoneF = "No crafts / AH preset: %.1f%% hit and max EP", pgOptF = "Optimized (8% hit + max EP)", setOn = "Set bonus: %s", secCaps = "Caps", secAvoid = "Avoidance", secSurv = "Survival", maxHit = "Optimal (8% hit + 440 Def)", maxHitDone = "Optimal preset: %.1f%% hit, 440+ Defense and max EP", secOff = "Threat (EP)", tankP = "Tank: 8% hit + 440 Def (stamina)", nocraftP = "No crafts or AH: 8% hit + 440 Def", nocraftDone = "No crafts / AH preset: %.1f%% hit with 440+ Defense", presetPick = "Choose preset...", pgLists = "BiS lists", pgOpt = "Optimized (8% hit + 440 Def)", pgMine = "My presets", tankDone = "Tank preset: %.1f%% hit, 440+ Defense and max stamina/armor", strL = "Strength (gear)", apL = "Attack power (gear)", critL = "Crit (gear)", epL = "EP (WFB weights)",
     hitNote = "A cap, not a minimum · pre-raid max: %.1f%% at 440 Def (Optimal preset)", maxHp = "Max health", now = "Now", plan = "Plan",
     talentsLive = "Your talents: Anticipation %d/5 · Deflection %d/5 · Shield Spec %d/5",
     talentsDef = "Could not read your talents: assuming Anticipation 5/5 · Deflection 5/5 · Shield Spec 5/5", drL = "Damage reduction", staL = "Stamina", bvL = "Block value", ignore = "Ignore slot", slotHint = "Click: switch between the %d options. Right-click: ignore slot.", later = "Later", laterT = "Later", resume = "Resume", change = "Change (%d)", hide = "Hide",
@@ -252,12 +252,31 @@ end
 -- ---------------------------------------------------------------------------
 -- Selection, ownership, route
 -- ---------------------------------------------------------------------------
+-- Up to 5 regular options per slot. Resistance-only items (xo) stay hidden unless a resist preset
+-- selected them; the selected item is always listed so the slot can show it.
 function PR.OptsFor(sl)
-  local out = {}
+  local out, id, found, extra = {}, PR.char and PR.char.sel[sl.k], false, nil
   for _, o in ipairs(sl.opts) do
-    if (not o.fac or o.fac == PR.faction) and #out < 5 then out[#out + 1] = o end
+    if not o.fac or o.fac == PR.faction then
+      if not o.xo and #out < 5 then
+        out[#out + 1] = o
+        if o.id == id then found = true end
+      elseif o.id == id and not extra then
+        extra = o
+      end
+    end
   end
+  if not found and extra then out[#out + 1] = extra end
   return out
+end
+
+-- Resistance presets (Protection): 440 Defense, 6-8% hit, then max Nature / Fire resistance
+function PR.ApplyRes(kind)
+  local set = PR.RES_SETS and PR.RES_SETS[kind]
+  if not set then return end
+  for k, id in pairs(set) do PR.char.sel[k] = id end
+  local c = PR.Calc()
+  return kind == "nr" and c.nr or c.fr, c.hit, c.D
 end
 
 local function hasTag(o, tag)
@@ -311,7 +330,7 @@ function PR.OptimizeHit(useUnverified, mode, noCraft)
       for _, sl in ipairs(PR.SLOTS) do
         if not PR.char.off[sl.k] then
           for _, o in ipairs(PR.OptsFor(sl)) do
-            if o.set == name and not (noCraft and PR.IsCraftOrAH(o)) and (useUnverified or not o.verify) then forced[sl.k] = o; n = n + 1; break end
+            if not o.xo and o.set == name and not (noCraft and PR.IsCraftOrAH(o)) and (useUnverified or not o.verify) then forced[sl.k] = o; n = n + 1; break end
           end
         end
       end
@@ -344,7 +363,7 @@ runOpt = function(useUnverified, mode, noCraft, variant)
   for _, sl in ipairs(PR.SLOTS) do
     if not PR.char.off[sl.k] then
       local opts, filtered = PR.OptsFor(sl), {}
-      for _, o in ipairs(opts) do if useUnverified or not o.verify then filtered[#filtered + 1] = o end end
+      for _, o in ipairs(opts) do if (useUnverified or not o.verify) and not o.xo then filtered[#filtered + 1] = o end end
       if #filtered > 0 then opts = filtered end
       if noCraft then
         local nc = {}
@@ -776,7 +795,7 @@ function PR.Live()
 end
 
 -- WoW Forever BiS List tank weights (EP). Defense and hit are constraints (440 / 8%), not weights.
-PR.EPW = { sta = 1, str = 0.539, agi = 0.443, armor = 0.035, ap = 0.235, crit = 5.235, dodge = 1.461, parry = 1.957, bv = 0.53, blk = 0.087, exp = 19.3, def = 0.17 }
+PR.EPW = { sta = 1, str = 0.539, agi = 0.574, armor = 0.052, ap = 0.235, crit = 5.235, dodge = 3.026, parry = 3.391, bv = 0.661, blk = 0.087, exp = 19.3, def = 0.17 } -- WFB tank weights, 21 Nov 2026
 local epCache = setmetatable({}, { __mode = "k" })
 function PR.EP(o, slotK)
   if not o then return 0 end
@@ -805,7 +824,7 @@ function PR.EPRaw(o, slotK)
   if o.spec == "fury" then return PR.EPFury(o, slotK) end
   local e, st = 0, o.st or {}
   for k, w in pairs(PR.EPW) do e = e + (st[k] or 0) * w end
-  if o.dps then e = e + o.dps * (slotK == "ranged" and 1 or 1.157) end
+  if o.dps then e = e + o.dps * (slotK == "ranged" and 1 or 1.235) end
   return e
 end
 
@@ -851,7 +870,7 @@ end
 function PR.Calc(overSlot, overOpt)
   if PR.IsFury() then return PR.CalcFury(overSlot, overOpt) end
   local M = PR.MODEL
-  local g = { def = 0, hit = 0, sta = 0, agi = 0, armor = 0, exp = 0, blk = 0, dodge = 0, parry = 0, bv = 0, str = 0, ap = 0, crit = 0 }
+  local g = { def = 0, hit = 0, sta = 0, agi = 0, armor = 0, exp = 0, blk = 0, dodge = 0, parry = 0, bv = 0, str = 0, ap = 0, crit = 0, nr = 0, fr = 0 }
   local ep = 0
   for _, sl in ipairs(PR.SLOTS) do
     if not PR.char.off[sl.k] then
@@ -881,6 +900,7 @@ function PR.Calc(overSlot, overOpt)
   r.dr = math.min(75, r.armor / (r.armor + 400 + 85 * M.bossLvl) * 100)
   r.hp = M.baseHP + 20 + (sta - 20) * 10
   r.str, r.ap, r.critP, r.ep = g.str, g.ap + g.str * 2, g.crit, ep
+  r.nr, r.fr = g.nr, g.fr
   return r
 end
 

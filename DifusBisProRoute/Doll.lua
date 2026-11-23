@@ -32,7 +32,7 @@ local SECTIONS_PROT = {
     { "block", "blockL", fmtPct2 }, { "avoid", "avoidL", fmtPct2, true } } },
   { title = "secSurv", lines = {
     { "hp", "maxHp", fmtInt, true }, { "sta", "staL", fmtInt }, { "armor", "armorL", fmtInt },
-    { "dr", "drL", fmtPct1 }, { "bv", "bvL", fmtInt } } },
+    { "dr", "drL", fmtPct1 }, { "bv", "bvL", fmtInt }, { "nr", "natL", fmtInt }, { "fr", "fireL", fmtInt } } },
   { title = "secOff", lines = {
     { "str", "strL", fmtInt }, { "ap", "apL", fmtInt }, { "critP", "critL", fmtPct1 },
     { "ep", "epL", fmtPct1Plain, true } } },

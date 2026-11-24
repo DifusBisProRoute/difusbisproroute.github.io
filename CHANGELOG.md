@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.11
+- **Warlock**: new Affliction, Demonology and Destruction routes, in the addon and on the web guide. A Warlock character gets the Warlock specs; on the web, a Class / spec dropdown (Warrior: Protection, Fury · Warlock: Affliction, Demonology, Destruction).
+- Warlock model: 17% spell hit cap against level 63 bosses; Suppression (read from your talents) counts for up to 5%. Spell power, Shadow and Fire damage, spell crit (Intellect, gear and Devastation for Destruction) and EP with the WoW Forever BiS List weights of each spec.
+- Warlock presets: WoW Forever BiS List, wowtbc.gg, **Optimal: EP with hit** and **No crafts or AH: EP with hit**. The optimizer compares a staff with a one-hand + off-hand (a staff leaves the off hand empty).
+- Warlock route: Dreadmist / Deathmist (T0.5) steps and new quest and reputation steps (Royal Seal of Eldre'Thalas, Timbermaw, Infernal Lasso and others). The WoWSims link opens the Warlock sim.
+- Protection: weapon procs now count in EP (WoW Forever BiS List estimate): Ironfoe goes from 53.8 to 87.7 EP. Persuader is a confirmed Blacksmithing craft: in the Optimal preset it ties with Ironfoe (its 1% hit frees another slot). New Protection weapons: Flurry Axe and Iceblade Hacker.
+- Fury: Ironfoe's proc counts in EP too (646.8 EP, as in WoW Forever BiS List). Persuader stays the main-hand pick.
+
+## 1.0.10
+- Web guide redesign: the route is a quest-log timeline by phase, underline tabs, a compact header on phones (meters side by side) and the character-sheet view from 900 px wide.
+
 ## 1.0.9
 - Optimize tab: counts the enchants your items really have (before, it assumed the guide's enchants, so Defense could show 440 when you were at 405).
 - Optimize tab: alert for items without an enchant (**NO ENCHANT** on the row, the guide's suggested enchant in the tooltip and how much Defense the guide enchants would add).

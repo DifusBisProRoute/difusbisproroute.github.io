@@ -47,6 +47,15 @@ local SECTIONS_FURY = {
     { "mh", "mhL", fmtPct1Plain }, { "oh", "ohL", fmtPct1Plain }, { "hp", "maxHp", fmtInt, true }, { "armor", "armorL", fmtInt } } },
 }
 
+local SECTIONS_WL = {
+  { title = "secCapsWL", bars = { { "hit", "hitWL", "hitCap", fmtPct1 } } },
+  { title = "secSpellWL", lines = {
+    { "sp", "spL", fmtInt, true }, { "shadow", "shadowL", fmtInt }, { "fire", "fireSpL", fmtInt },
+    { "crit", "critWL", fmtPct2, true }, { "ep", "epL", fmtPct1Plain, true } } },
+  { title = "secMiscWL", lines = {
+    { "int", "intT", fmtInt }, { "sta", "staL", fmtInt }, { "spi", "spiT", fmtInt }, { "mp5", "mp5L", fmtInt }, { "pen", "penL", fmtInt } } },
+}
+
 local function sectionHeader(parent, y, w)
   local hdr = CreateFrame("Frame", nil, parent, "BackdropTemplate")
   hdr:SetPoint("TOPLEFT", 8, y); hdr:SetSize(w - 16, 22)
@@ -114,16 +123,19 @@ end
 function UI.UpdateStats()
   local st = UI.stats
   if not st or not PR.char then return end
-  local fury = PR.IsFury()
-  local M = fury and PR.FMODEL or PR.MODEL
+  local fury, wl = PR.IsFury(), PR.IsWL()
+  local M = wl and PR.WMODEL or fury and PR.FMODEL or PR.MODEL
   local SECTIONS = st.sections
   local a = PR.Calc()
   local p = UI.preview and PR.Calc(UI.preview.slot, UI.preview.opt) or nil
   local v = p or a
-  st.title:SetText(PR.T(fury and "capsF" or "capsT"))
-  st.model:SetText(PR.T(fury and "modelF" or "model"))
+  st.title:SetText(PR.T(wl and "capsWL" or fury and "capsF" or "capsT"))
+  st.model:SetText(PR.T(wl and "modelWL" or fury and "modelF" or "model"))
   local R, live = PR.Ranks()
-  if fury then
+  if wl then
+    local sup, dev = PR.WLRanks()
+    st.talents:SetText(live and string.format(PR.T("talentsLiveWL"), sup, dev) or ("|cffe5604f" .. string.format(PR.T("talentsDefWL"), sup) .. "|r"))
+  elseif fury then
     st.talents:SetText(live and string.format(PR.T("talentsLiveF"), R.cruelty or 0) or ("|cffe5604f" .. PR.T("talentsDefF") .. "|r"))
   else
     st.talents:SetText(live and string.format(PR.T("talentsLive"), R.anticip, R.deflect, R.shieldSpec) or ("|cffe5604f" .. PR.T("talentsDef") .. "|r"))
@@ -150,6 +162,9 @@ function UI.UpdateStats()
         else row.bar:SetStatusBarColor(0.75, 0.18, 0.12) end
         if key == "D" then row.note:SetText(v.crit <= 0 and PR.T("critImm") or string.format(PR.T("critN"), v.crit))
         elseif key == "full" then row.note:SetText(string.format(PR.T("sbN"), v.full + 75))
+        elseif key == "hit" and wl then
+          local sup, _, liveT = PR.WLRanks()
+          row.note:SetText(string.format(PR.T("hitNoteWL"), sup, PR.T(liveT and "talRead" or "talAssumed"), sup, v.ghit or 0))
         elseif key == "hit" then row.note:SetText(string.format(PR.T(fury and "hitNoteF" or "hitNote"), PR.OptimizeHit(false).hit))
         elseif key == "exp" and fury then row.note:SetText(string.format(PR.T("expNoteF")))
         else row.note:SetText("") end
@@ -188,6 +203,7 @@ local function slotButton(parent, key, side)
     if mouse == "RightButton" then
       PR.char.off[key] = not PR.char.off[key] or nil; PR.Refresh(false); return
     end
+    if key == "offhand" and PR.OHBlocked() then return end
     if UI.fly and UI.fly:IsShown() and UI.fly.key == key then UI.fly:Hide() else UI.OpenFlyout(self) end
   end)
   b:SetScript("OnEnter", function(self)
@@ -212,7 +228,10 @@ local function refreshSlot(b)
   b.icon:SetDesaturated(PR.char.off[b.key] and true or false)
   -- like the web: SLOT (grey) / item name (quality colour) / EP (+ ready check when you own it)
   local own = PR.Has(o.id) and "  |TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12|t" or ""
-  if PR.char.off[b.key] then
+  if b.key == "offhand" and PR.OHBlocked() then
+    b.icon:SetTexture(134400); b.icon:SetDesaturated(true); b.off:Show(); b.check:Hide(); b.warn:Hide()
+    b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n|cff9d9d9d" .. PR.T("ohTwo") .. "|r")
+  elseif PR.char.off[b.key] then
     b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n|cffe5604f" .. PR.T("offTag") .. "|r\n|cff9d9d9d" .. PR.T("offHint") .. "|r")
   else
     b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n" .. H().qualityHex(o.q) .. PR.ItemName(o.id) ..
@@ -349,7 +368,9 @@ function UI.BuildDoll(content)
   st:SetPoint("TOP", d, "TOP", 0, 0)
   local stF = buildStats(d, statsW, SECTIONS_FURY)
   stF:SetPoint("TOP", d, "TOP", 0, 0); stF:Hide()
-  UI.statsBySpec = { prot = st, fury = stF }
+  local stW = buildStats(d, statsW, SECTIONS_WL)
+  stW:SetPoint("TOP", d, "TOP", 0, 0); stW:Hide()
+  UI.statsBySpec = { prot = st, fury = stF, aff = stW, demo = stW, destro = stW }
   UI.stats = st
   d.statsW = statsW
   d.colH = colH
@@ -372,7 +393,8 @@ function UI.UpdateDoll()
     refreshSlot(b)
     b.label:SetShown(roomy or b.side == "bottom")
   end
-  for sp, sheet in pairs(UI.statsBySpec) do sheet:SetShown(sp == PR.spec) end
+  for _, sheet in pairs(UI.statsBySpec) do sheet:Hide() end
+  if UI.statsBySpec[PR.spec] then UI.statsBySpec[PR.spec]:Show() end
   UI.stats = UI.statsBySpec[PR.spec] or UI.stats
   UI.UpdateStats()
   local top = math.max(d.colH, UI.stats:GetHeight()) + 16

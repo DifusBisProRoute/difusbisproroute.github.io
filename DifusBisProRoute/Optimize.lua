@@ -28,6 +28,11 @@ local function slotsFor(equipLoc, classID, subClassID)
   elseif equipLoc == "INVTYPE_FEET" then return { "feet" }
   elseif equipLoc == "INVTYPE_FINGER" then return { "finger1", "finger2" }
   elseif equipLoc == "INVTYPE_TRINKET" then return { "trinket1", "trinket2" }
+  elseif PR.IsWL() then -- Warlock: staff or one-hand + held in off-hand, wand
+    if equipLoc == "INVTYPE_2HWEAPON" or equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND" then return { "mainhand" }
+    elseif equipLoc == "INVTYPE_HOLDABLE" or equipLoc == "INVTYPE_WEAPONOFFHAND" then return { "offhand" }
+    elseif equipLoc == "INVTYPE_RANGEDRIGHT" and classID == 2 and subClassID == 19 then return { "ranged" } end
+    return {}
   elseif equipLoc == "INVTYPE_WEAPONMAINHAND" then return { "mainhand" }
   elseif equipLoc == "INVTYPE_WEAPON" then return PR.IsFury() and { "mainhand", "offhand" } or { "mainhand" }
   elseif equipLoc == "INVTYPE_WEAPONOFFHAND" then return PR.IsFury() and { "offhand" } or {}
@@ -55,6 +60,11 @@ end
 local function num(s) if not s then return nil end return tonumber((s:gsub(",", "."))) end
 
 local PAT = {
+  { "sp", "spells and effects by up to (%d+)" }, { "sp", "hechizos.-hasta (%d+)" },
+  { "int", "^%+(%d+) Intellect" }, { "int", "^%+(%d+) Intelecto" },
+  { "spi", "^%+(%d+) Spirit" }, { "spi", "^%+(%d+) Esp[ií]ritu" },
+  { "mp5", "Restores (%d+) mana per 5" }, { "mp5", "Restaura (%d+) de man[aá]" },
+  { "pen", "magical resistances of your spell targets by (%d+)" },
   { "sta", "^%+(%d+) Stamina" }, { "sta", "^%+(%d+) Aguante" },
   { "str", "^%+(%d+) Strength" }, { "str", "^%+(%d+) Fuerza" },
   { "agi", "^%+(%d+) Agility" }, { "agi", "^%+(%d+) Agilidad" },
@@ -93,6 +103,18 @@ local function readTooltip(link)
         or low:find("^chance on hit") or low:find("spell") or low:find("hechizo")
       if line:find("^Classes:") or line:find("^Clases:") then
         if not line:find(myClassLoc, 1, true) and not line:upper():find(myClass, 1, true) then o.unusable = true end
+      end
+      if skip and PR.IsWL() and not low:find("^set:") and not low:find("^conjunto") and not low:find("^use:") and not low:find("^uso:") and not low:find("^chance on hit") and not line:find("^%(") then
+        skip = false
+        local function grab(pat) local v = line:match(pat); return v and num(v) end
+        local shp = grab("Shadow spells and effects by up to (%d+)") or grab("Sombra.-hasta (%d+)")
+        local fip = grab("Fire spells and effects by up to (%d+)") or grab("Fuego.-hasta (%d+)")
+        local shit = grab("chance to hit with spells by ([%d%.,]+)%%") or grab("golpear con hechizos.-([%d%.,]+)%%")
+        local scrit = grab("critical strike with spells by ([%d%.,]+)%%") or grab("cr[ií]tico con hechizos.-([%d%.,]+)%%")
+        if shp then st.shp = (st.shp or 0) + shp; skip = true end
+        if fip then st.fip = (st.fip or 0) + fip; skip = true end
+        if shit then st.hit = (st.hit or 0) + shit; skip = true end
+        if scrit then st.crit = (st.crit or 0) + scrit; skip = true end
       end
       if not skip then
         for _, p in ipairs(PAT) do
@@ -211,13 +233,13 @@ function PR.OwnedCandidates()
     local known = PR.ITEM[id]
     local o
     if known then
-      o = { st = known.st, dps = known.dps, spd = known.spd, pe = known.pe }
+      o = { st = known.st, dps = known.dps, spd = known.spd, pe = known.pe, two = known.two }
     else
       local r = readTooltip("item:" .. id) -- base item, without the enchant
       local full = readTooltip(link)
       if not (r and full) then pending = pending + 1; return end
       if full.unusable then return end
-      o = { st = r.st, dps = r.dps, spd = r.spd }
+      o = { st = r.st, dps = r.dps, spd = r.spd, two = (equipLoc == "INVTYPE_2HWEAPON") or nil }
     end
     local est, eid, en = enchantStats(link, id)
     o.baseSt, o.ench, o.enchN = o.st, eid, en
@@ -275,7 +297,8 @@ function PR.CalcPick(pick)
     end
   end
   local R = PR.Ranks()
-  g.D = fury and nil or (300 + R.anticip * PR.TALENTS.anticip.per + g.def)
+  g.D = (fury or PR.IsWL()) and nil or (300 + R.anticip * PR.TALENTS.anticip.per + g.def)
+  if PR.IsWL() then g.hit = g.hit + (PR.WLRanks()) end -- total spell hit (gear + Suppression)
   return g
 end
 
@@ -380,13 +403,14 @@ function UI.UpdateOpt()
   p.title:SetText(PR.T("optTitle"))
   p.rescan:SetText(PR.T("rescan"))
   local bankNote = PR.char.bankScanned and PR.T("optBankOk") or ("|cffe5604f" .. PR.T("optBankNo") .. "|r")
-  p.sub:SetText(PR.T(fury and "optSubF" or "optSub") .. "  " .. bankNote)
+  local wl = PR.IsWL()
+  p.sub:SetText(PR.T(wl and "optSubWL" or fury and "optSubF" or "optSub") .. "  " .. bankNote)
   local n, c = res.newStats, res.curStats
   local cap = PR.MODEL.defCap
-  local hc = fury and PR.FMODEL.hitCap or PR.MODEL.hitCap
+  local hc = wl and PR.WMODEL.hitCap or fury and PR.FMODEL.hitCap or PR.MODEL.hitCap
   local function defStr(D) return ((D >= cap) and UI.H.GOOD or "|cffe5604f") .. math.floor(D + 0.5) .. "|r / " .. cap end
   local function hitStr(h) return ((h >= hc - 0.05) and UI.H.GOOD or "|cffffd100") .. string.format("%.1f%%", h) .. "|r / " .. hc .. "%" end
-  if fury then
+  if fury or wl then
     p.sum:SetText(string.format("%s: %s %s · EP %d", PR.T("optBest"), PR.T("hitShort"), hitStr(n.hit), n.ep))
     p.cur:SetText(string.format("%s: %s %.1f%% · EP %d", PR.T("optNow"), PR.T("hitShort"), c.hit, c.ep))
   else

@@ -1,5 +1,5 @@
-Difu'sBisProRoute 1.0.9 - WoW Forever (Warrior Protection / Fury)
-=================================================================
+Difu'sBisProRoute 1.0.11 - WoW Forever (Warrior Prot / Fury, Warlock Affli / Demo / Destro)
+=========================================================================================
 
 INSTALL
 1. Close the game (or stay on the character select screen).
@@ -11,7 +11,7 @@ INSTALL
 
 USAGE
 /difu                 open / close the window
-/difu spec prot       or  /difu spec fury
+/difu spec prot|fury  (Warrior)  ·  /difu spec aff|demo|destro  (Warlock)
 /difu sim             WoWSims link for your set (copy it and paste it in your browser)
 /difu web             web guide: https://difusbisproroute.github.io/
 /difu talents         show which talents the addon reads

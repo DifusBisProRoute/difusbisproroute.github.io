@@ -32,7 +32,7 @@ end
 -- ---------------------------------------------------------------------------
 PR.L = {
   es = {
-    title = "Difu'sBisProRoute", route = "Ruta", gear = "Equipo", sync = "Sincronizar", sim = "WoWSims", webTitle = "Web y actualizaciones (guía completa, novedades y descargas). Copia el enlace con Ctrl+C:", simTitle = "Copia este enlace (Ctrl+C) y pégalo en tu navegador: abre WoWSims Protection con el set elegido (y los enchants si están activados).",
+    title = "Difu'sBisProRoute", route = "Ruta", gear = "Equipo", sync = "Sincronizar", sim = "WoWSims", webTitle = "Web y actualizaciones (guía completa, novedades y descargas). Copia el enlace con Ctrl+C:", simTitle = "Copia este enlace (Ctrl+C) y pégalo en tu navegador: abre WoWSims (spec actual) con el set elegido (y los enchants si están activados).",
     next = "Siguiente paso", unlocks = "Desbloquea", complete = "Completar", skip = "Omitir", restore = "Restaurar",
     progress = "%d / %d pasos", auto = "auto", done = "Ruta completa", empty = "No hay pasos pendientes",
     requires = "Requiere", verify = "Verificar fuente en Wowhead",
@@ -57,7 +57,7 @@ PR.L = {
     presetDel = "Preset borrado: %s", presetHint = "Clic: aplicar. Clic derecho: borrar.", blockedLater = "Lo que sigue depende de pasos que dejaste para después.",
   },
   en = {
-    title = "Difu'sBisProRoute", route = "Route", gear = "Gear", sync = "Sync", sim = "WoWSims", webTitle = "Website and updates (full guide, news and downloads). Copy the link with Ctrl+C:", simTitle = "Copy this link (Ctrl+C) and paste it in your browser: it opens WoWSims Protection with the chosen set (and enchants when enabled).",
+    title = "Difu'sBisProRoute", route = "Route", gear = "Gear", sync = "Sync", sim = "WoWSims", webTitle = "Website and updates (full guide, news and downloads). Copy the link with Ctrl+C:", simTitle = "Copy this link (Ctrl+C) and paste it in your browser: it opens WoWSims (current spec) with the chosen set (and enchants when enabled).",
     next = "Next step", unlocks = "Unlocks", complete = "Complete", skip = "Skip", restore = "Restore",
     progress = "%d / %d steps", auto = "auto", done = "Route complete", empty = "No pending steps",
     requires = "Requires", verify = "Verify source on Wowhead",
@@ -82,6 +82,40 @@ PR.L = {
     presetDel = "Preset deleted: %s", presetHint = "Click: apply. Right-click: delete.", blockedLater = "What comes next depends on steps you left for later.",
   },
 }
+-- Warlock strings
+local function addL(lang, t) for k, v in pairs(t) do PR.L[lang][k] = v end end
+addL("es", {
+  spec_prot = "Prot", spec_fury = "Fury", spec_aff = "Afli", spec_demo = "Demo", spec_destro = "Destro",
+  specN_aff = "Aflicción", specN_demo = "Demonología", specN_destro = "Destrucción",
+  bandSubWL = "Ruta pre-raid de Warlock · WoW Forever", notSupported = "Difu'sBisProRoute tiene rutas para Warrior y Warlock; esta clase usa los datos de Warrior.",
+  capsWL = "Caps de Warlock", modelWL = "Plan: ítems + enchants + tus talentos, sin buffs · vs jefe 63",
+  hitWL = "Hit de hechizos", hitNoteWL = "Tope 17%%: Suppression %d/5 (%s) da %d%%, el equipo pone %.1f%%",
+  talRead = "leído", talAssumed = "supuesto",
+  talentsLiveWL = "Talentos leídos: Suppression %d/5 · Devastation %d/5",
+  talentsDefWL = "No se pudieron leer tus talentos: se asume Suppression %d/5 · Devastation 5/5",
+  secCapsWL = "Hit", secSpellWL = "Hechizos", secMiscWL = "Atributos",
+  spL = "Poder de hechizos", shadowL = "Daño de Sombra", fireSpL = "Daño de Fuego", critWL = "Crítico de hechizos",
+  intT = "Intelecto", spiT = "Espíritu", mp5L = "MP5", penL = "Penetración",
+  pgOptWL = "Optimizados (17% hit + EP)", optWL = "Óptimo: EP con hit", nocraftWL = "Sin crafteos ni AH: EP con hit",
+  doneWL = "Preset aplicado: %.1f%% hit · %d SP · %.1f%% crit · %d EP",
+  ohTwo = "Vacía: el bastón usa las dos manos", optSubWL = "Mejor set con lo que tienes: lo más cerca del 17% de hit de hechizos, luego el máximo EP.",
+})
+addL("en", {
+  spec_prot = "Prot", spec_fury = "Fury", spec_aff = "Affli", spec_demo = "Demo", spec_destro = "Destro",
+  specN_aff = "Affliction", specN_demo = "Demonology", specN_destro = "Destruction",
+  bandSubWL = "Warlock pre-raid route · WoW Forever", notSupported = "Difu'sBisProRoute has routes for Warrior and Warlock; this class uses the Warrior data.",
+  capsWL = "Warlock caps", modelWL = "Plan: items + enchants + your talents, unbuffed · vs level 63 boss",
+  hitWL = "Spell hit", hitNoteWL = "17%% cap: Suppression %d/5 (%s) gives %d%%, gear brings %.1f%%",
+  talRead = "read", talAssumed = "assumed",
+  talentsLiveWL = "Talents read: Suppression %d/5 · Devastation %d/5",
+  talentsDefWL = "Could not read your talents: assuming Suppression %d/5 · Devastation 5/5",
+  secCapsWL = "Hit", secSpellWL = "Spells", secMiscWL = "Attributes",
+  spL = "Spell power", shadowL = "Shadow damage", fireSpL = "Fire damage", critWL = "Spell crit",
+  intT = "Intellect", spiT = "Spirit", mp5L = "MP5", penL = "Penetration",
+  pgOptWL = "Optimized (17% hit + EP)", optWL = "Optimal: EP with hit", nocraftWL = "No crafts or AH: EP with hit",
+  doneWL = "Preset applied: %.1f%% hit · %d SP · %.1f%% crit · %d EP",
+  ohTwo = "Empty: the staff uses both hands", optSubWL = "Best set from what you own: as close to 17% spell hit as possible, then the most EP.",
+})
 function PR.T(key) return (PR.L[PR.lang] or PR.L.en)[key] or key end
 
 -- pick a localized / faction-specific value from the generated data
@@ -97,7 +131,9 @@ end
 -- Auto-detection rules (IDs taken from the Forever quest/item database)
 -- ---------------------------------------------------------------------------
 PR.REALS = 226404
-PR.VALOR = { 16730, 16731, 16732, 16733, 16734, 16735, 16736, 16737 }
+PR.VALOR_WR = { 16730, 16731, 16732, 16733, 16734, 16735, 16736, 16737 }
+PR.VALOR_WL = { 16698, 16699, 16700, 16701, 16702, 16703, 16704, 16705 } -- Dreadmist Raiment
+PR.VALOR = PR.VALOR_WR
 PR.AUTO = {
   key_dm      = { items = { 18249 } },
   key_scholo  = { items = { 13704 }, quests = { A = { 5505 }, H = { 5511 } } },
@@ -141,6 +177,14 @@ for spec, list in pairs(PR.SPEC_SLOTS) do
 end
 PR.spec = "prot"
 function PR.IsFury() return PR.spec == "fury" end
+PR.WL_SPECS = { aff = true, demo = true, destro = true }
+function PR.IsWL(spec) return PR.WL_SPECS[spec or PR.spec] or false end
+-- specs offered to this character (the class decides)
+function PR.ClassSpecs()
+  local _, cls = UnitClass and UnitClass("player")
+  if cls == "WARLOCK" then return { "aff", "demo", "destro" }, cls end
+  return { "prot", "fury" }, cls
+end
 function PR.IndexItems()
   wipe(PR.ITEM)
   local order = { PR.spec }
@@ -153,7 +197,10 @@ function PR.IndexItems()
 end
 -- switch spec: slots, item index, per-spec selection table (PR.char.sel keeps pointing at the active one)
 function PR.ApplySpec(spec)
-  if not PR.SPEC_SLOTS[spec] then spec = "prot" end
+  local specs = PR.ClassSpecs()
+  local ok = false
+  for _, sp in ipairs(specs) do if sp == spec then ok = true end end
+  if not ok or not PR.SPEC_SLOTS[spec] then spec = specs[1] end
   PR.spec = spec
   PR.SLOTS = PR.SPEC_SLOTS[spec]
   PR.IndexItems()
@@ -165,8 +212,46 @@ function PR.ApplySpec(spec)
     PR.char.sel = PR.char.selBySpec[spec]
   end
   if PR.InvalidateOpt then PR.InvalidateOpt() end
+  if PR.SwapNodes then PR.SwapNodes() end
 end
 PR.IndexItems()
+
+-- T0.5 steps name Warrior pieces: show the Warlock ones (Dreadmist / Deathmist) for a Warlock spec
+local WL_SWAP = { { "Battlegear of Valor (T0)", "Dreadmist Raiment (T0)" }, { "Battlegear of Valor", "Dreadmist Raiment" },
+  { "Pauldrons + Sabatons of Heroism", "Deathmist Leggings" }, { "Faceguard + Chestguard of Heroism", "Deathmist Mask" },
+  { "Wristguards of Heroism", "Deathmist Bracers" }, { "Waistguard of Heroism", "Deathmist Belt + Deathmist Wraps" },
+  { "Boots, Legplates y Spaulders of Valor", "Dreadmist Sandals, Leggings y Mantle" }, { "Boots, Legplates and Spaulders of Valor", "Dreadmist Sandals, Leggings and Mantle" },
+  { "Belt y Gauntlets of Valor", "Dreadmist Belt y Dreadmist Wraps" }, { "Belt and Gauntlets of Valor", "Dreadmist Belt and Dreadmist Wraps" },
+  { "Helm + Breastplate of Valor", "Dreadmist Mask + Dreadmist Robe" }, { "Bracers of Valor", "Dreadmist Bracers" },
+  { " Si usas Boots of Valor como pies, las pierdes aqui.", "" }, { " Si usas Boots of Valor como pies, las pierdes aquí.", "" },
+  { " If you wear Boots of Valor, you lose them here.", "" } }
+local WL_T0 = { es = "Cada paso T0.5 consume la pieza T0 (Dreadmist Raiment) del mismo slot. Las piezas caen en LBRS, UBRS, Scholomance y Stratholme: confirma en Wowhead dónde cae cada una.",
+  en = "Each T0.5 step uses up the T0 piece (Dreadmist Raiment) of the same slot. The pieces drop in LBRS, UBRS, Scholomance and Stratholme: check each one on Wowhead." }
+local function plainReplace(t, a, b)
+  local i = 1
+  while true do
+    local x, y = t:find(a, i, true)
+    if not x then return t end
+    t = t:sub(1, x - 1) .. b .. t:sub(y + 1); i = x + #b
+  end
+end
+local function swapText(v)
+  if type(v) == "string" then for _, p in ipairs(WL_SWAP) do v = plainReplace(v, p[1], p[2]) end return v end
+  if type(v) == "table" then local o = {}; for k, x in pairs(v) do o[k] = swapText(x) end return o end
+  return v
+end
+local NODE_ORIG = {}
+function PR.SwapNodes()
+  local wl = PR.IsWL()
+  for _, n in ipairs(PR.NODES) do
+    if n.id:match("^t%d+$") then
+      NODE_ORIG[n.id] = NODE_ORIG[n.id] or { title = n.title, desc = n.desc }
+      local o = NODE_ORIG[n.id]
+      n.title = wl and swapText(o.title) or o.title
+      n.desc = wl and (n.id == "t0" and WL_T0 or swapText(o.desc)) or o.desc
+    end
+  end
+end
 
 -- ---------------------------------------------------------------------------
 -- Game queries
@@ -194,7 +279,7 @@ end
 
 function PR.ValorCount()
   local c = 0
-  for _, id in ipairs(PR.VALOR) do if PR.Owned(id) then c = c + 1 end end
+  for _, id in ipairs(PR.IsWL() and PR.VALOR_WL or PR.VALOR_WR) do if PR.Owned(id) then c = c + 1 end end
   return c
 end
 
@@ -306,7 +391,7 @@ PR.optCache = {}
 function PR.InvalidateOpt() PR.optCache = {} end
 local function optKey(u, mode, noCraft)
   local R = PR.Ranks()
-  local t = { PR.spec, PR.faction or "?", u and 1 or 0, mode or "ep", noCraft and "nc" or "all", R.anticip, PR.useEnchants and 1 or 0 }
+  local t = { PR.spec, PR.faction or "?", u and 1 or 0, mode or "ep", noCraft and "nc" or "all", R.anticip, PR.useEnchants and 1 or 0, (PR.WLRanks()) }
   for _, sl in ipairs(PR.SLOTS) do if PR.char.off[sl.k] then t[#t + 1] = sl.k end end
   return table.concat(t, "|")
 end
@@ -346,7 +431,7 @@ end
 
 -- cands (optional): slotKey -> list of options to use instead of the guide's ("Optimize current" tab)
 runOpt = function(useUnverified, mode, noCraft, variant, cands)
-  local fury = PR.IsFury()
+  local fury, wl = PR.IsFury(), PR.IsWL()
   local R = PR.Ranks()
   local enchDef = 0
   if PR.useEnchants and not cands then -- owned items already carry their real enchant
@@ -354,8 +439,8 @@ runOpt = function(useUnverified, mode, noCraft, variant, cands)
       if not PR.char.off[sl.k] and sl.ench and sl.ench.st and sl.ench.st.def then enchDef = enchDef + sl.ench.st.def end
     end
   end
-  local need = fury and 0 or math.max(0, PR.MODEL.defCap - 300 - R.anticip * PR.TALENTS.anticip.per - enchDef)
-  local HC = math.floor((fury and PR.FMODEL.hitCap or PR.MODEL.hitCap) * 10 + 0.5)
+  local need = (fury or wl) and 0 or math.max(0, PR.MODEL.defCap - 300 - R.anticip * PR.TALENTS.anticip.per - enchDef)
+  local HC = math.floor((wl and PR.WLGearCap() or fury and PR.FMODEL.hitCap or PR.MODEL.hitCap) * 10 + 0.5)
   -- state key: defense (capped at need) * 1000 + hit tenths (capped). Nodes keep a parent pointer
   -- instead of copying the whole pick table (no per-state garbage).
   local h0 = variant and variant.st.hit or 0
@@ -377,17 +462,26 @@ runOpt = function(useUnverified, mode, noCraft, variant, cands)
       local k, nx = sl.k, {}
       if #opts == 0 then nx = dp end
       for _, v in pairs(#opts > 0 and dp or {}) do
-        for _, o in ipairs(opts) do
+        if wl and k == "offhand" and v.two then -- staff: the off hand stays empty
+          local key = v.d * 1000 + v.h + 500000
+          local cur = nx[key]
+          if not cur or v.score > cur.score then nx[key] = v end
+        end
+        for _, o in ipairs((wl and k == "offhand" and v.two) and {} or opts) do
           if not ((k == "finger2" and v.f1 == o.id) or (k == "trinket2" and v.t1 == o.id)) then
             local st = o.st or {}
             local nd = math.min(need, v.d + (st.def or 0))
             local hit = v.hit + (st.hit or 0)
             local nh = math.min(HC, math.floor(hit * 10 + 0.5))
             local score = v.score + (mode == "tank" and ((st.sta or 0) + (st.armor or 0) / 20) or PR.EP(o, k))
-            local key = nd * 1000 + nh
+            if wl and k == "mainhand" and o.two and not cands and PR.useEnchants and sl.ench and sl.ench.st then
+              score = score + PR.EPWL({ st = sl.ench.st }, PR.spec) -- only a staff takes the 2H enchant
+            end
+            local two = (k == "mainhand") and (o.two and true or false) or v.two
+            local key = nd * 1000 + nh + (two and 500000 or 0)
             local cur = nx[key]
             if not cur or score > cur.score then
-              nx[key] = { d = nd, h = nh, hit = hit, score = score, prev = v, slot = k, id = o.id, o = o,
+              nx[key] = { d = nd, h = nh, hit = hit, score = score, prev = v, slot = k, id = o.id, o = o, two = two,
                 f1 = (k == "finger1") and o.id or v.f1, t1 = (k == "trinket1") and o.id or v.t1 }
             end
           end
@@ -397,11 +491,18 @@ runOpt = function(useUnverified, mode, noCraft, variant, cands)
     end
   end
   local best
-  for _, v in pairs(dp) do
+  if wl then -- EP + the value of hit up to the cap
+    local HW, bv = PR.HitW_WL(), nil
+    for _, v in pairs(dp) do
+      local val = v.score + math.min(v.hit, HC / 10) * HW
+      if not bv or val > bv then bv, best = val, v end
+    end
+  end
+  for _, v in pairs(wl and {} or dp) do
     if v.d >= need and (not best or v.h > best.h or (v.h == best.h and v.score > best.score)) then best = v end
   end
   if not best then
-    for _, v in pairs(dp) do
+    for _, v in pairs(wl and {} or dp) do
       if not best or v.d > best.d or (v.d == best.d and (v.h > best.h or (v.h == best.h and v.score > best.score))) then best = v end
     end
   end
@@ -416,7 +517,7 @@ function PR.RunOptimizer(cands) return runOpt(false, "ep", false, nil, cands) en
 
 function PR.ApplyMaxHit(mode, noCraft)
   local best = PR.OptimizeHit(false, mode, noCraft)
-  for k, id in pairs(best.pick) do PR.char.sel[k] = id end
+  for k, id in pairs(best.pick) do PR.char.sel[k] = id; PR.char.off[k] = nil end
   return best.hit
 end
 
@@ -459,8 +560,14 @@ PR.TALENTS = {
     names = { "Toughness", "Dureza", "Robustez", "Zähigkeit", "Robustesse", "Robustezza" } },
   cruelty = { per = 1, id = 12320, pos = { 2, 1, 3 }, icon = "ability_rogue_eviscerate",                  -- Fury: +1% crit per rank
     names = { "Cruelty", "Crueldad", "Crueldade", "Grausamkeit", "Cruauté", "Crudeltà" } },
+  -- Warlock
+  sup = { cls = "WARLOCK", per = 1, id = 18174, pos = { 1, 1, 2 }, icon = "spell_shadow_unsummonbuilding",      -- +1% spell hit per rank
+    names = { "Suppression", "Supresión", "Supressão", "Unterdrückung", "Soppressione" } },
+  dev = { cls = "WARLOCK", per = 1, id = 18130, pos = { 3, 3, 3 }, icon = "spell_fire_flameshock",              -- +1% crit (Destruction spells)
+    names = { "Devastation", "Devastación", "Devastação", "Verwüstung", "Dévastation", "Devastazione" } },
 }
-PR.DEFAULT_RANKS = { anticip = 5, deflect = 5, shieldSpec = 5, tough = 0, cruelty = 5 }
+for _, t in pairs(PR.TALENTS) do t.cls = t.cls or "WARRIOR" end
+PR.DEFAULT_RANKS = { anticip = 5, deflect = 5, shieldSpec = 5, tough = 0, cruelty = 5, sup = 5, dev = 5 }
 
 local iconIdCache = {}
 local function iconMatches(tex, wanted)
@@ -676,7 +783,7 @@ local function tabName(tab)
     if vals[1] then
       for k = 2, #vals do
         local v = vals[k]
-        if type(v) == "string" and #v < 32 and not v:find("\\") and not v:find("^Warrior") then return v end
+        if type(v) == "string" and #v < 32 and not v:find("\\") and not v:find("^Warrior") and not v:find("^Warlock") then return v end
         if type(v) == "table" and v.name then return v.name end
       end
     end
@@ -692,11 +799,15 @@ function PR.ReadTalents()
   forEachTalent(function(tab, name, tex, tier, col, rank, maxRank, spellID)
     any = true
     rank = tonumber(rank) or 0
+    local _, cls = UnitClass("player")
+    local myCls = (cls == "WARLOCK") and "WARLOCK" or "WARRIOR"
     for key, t in pairs(PR.TALENTS) do
-      if spellID and t.id and spellID == t.id then byId[key] = rank end
-      for _, nm in ipairs(t.names) do if name == nm then byName[key] = rank end end
-      if iconMatches(tex, t.icon) then byIcon[key] = rank end
-      if tab == t.pos[1] and tier == t.pos[2] and col == t.pos[3] and (tonumber(maxRank) or 5) == 5 then byPos[key] = rank end
+      if t.cls == myCls then -- only this class's talents
+        if spellID and t.id and spellID == t.id then byId[key] = rank end
+        for _, nm in ipairs(t.names) do if name == nm then byName[key] = rank end end
+        if iconMatches(tex, t.icon) then byIcon[key] = rank end
+        if tab == t.pos[1] and tier == t.pos[2] and col == t.pos[3] and (tonumber(maxRank) or 5) == 5 then byPos[key] = rank end
+      end
     end
   end)
   if not any then return nil end -- talent data not loaded yet (or no usable API)
@@ -758,6 +869,11 @@ function PR.DumpTalents()
   PR.liveRanks = PR.ReadTalents()
   local R, live = PR.Ranks()
   local how = PR.talentHow or {}
+  if PR.IsWL() then
+    print(P .. (live and "OK" or "DEFAULT") .. string.format(": Suppression %d (%s) · Devastation %d (%s)",
+      R.sup or 0, how.sup or "-", R.dev or 0, how.dev or "-"))
+    return
+  end
   print(P .. (live and "OK" or "DEFAULT") .. string.format(": Anticipation %d (%s) · Deflection %d (%s) · Shield Spec %d (%s) · Cruelty %d (%s)",
     R.anticip or 0, how.anticip or "-", R.deflect or 0, how.deflect or "-", R.shieldSpec or 0, how.shieldSpec or "-",
     R.cruelty or 0, how.cruelty or "-"))
@@ -799,6 +915,13 @@ function PR.Live()
   end
   L.crit = try(GetCritChance)
   if GetExpertise then local e = try(GetExpertise); if e then L.exp = e end end
+  if PR.IsWL() then
+    L.hit = try(GetSpellHitModifier); L.crit = try(GetSpellCritChance, 6)
+    L.shadow = try(GetSpellBonusDamage, 6); L.fire = try(GetSpellBonusDamage, 3)
+    if L.shadow and L.fire then L.sp = math.min(L.shadow, L.fire) end
+    local _, it = try(UnitStat, "player", 4); L.int = it
+    local _, sp = try(UnitStat, "player", 5); L.spi = sp
+  end
   return L
 end
 
@@ -830,10 +953,67 @@ function PR.EPFury(o, slotK)
 end
 function PR.EPRaw(o, slotK)
   if o.spec == "fury" then return PR.EPFury(o, slotK) end
+  if PR.WL_SPECS[o.spec] then return PR.EPWL(o, o.spec) end
   local e, st = 0, o.st or {}
   for k, w in pairs(PR.EPW) do e = e + (st[k] or 0) * w end
   if o.dps then e = e + o.dps * (slotK == "ranged" and 1 or 1.235) end
-  return e
+  return e + (o.pe or 0) -- procs: WFB's own estimated EP (Ironfoe, Flurry Axe...)
+end
+
+-- Warlock: level 60 vs level 63 boss. Spell hit cap 17% (Method / Icy Veins); Suppression gives up to 5%.
+-- Spell crit = 1.7% + Intellect / 60.6 + gear (+ Devastation for Destruction). WFB weights per spec.
+-- WFB gives hit no weight: up to the cap 1% hit counts as max(14, 1.4 x 1% crit), an estimate.
+PR.WMODEL = { hitCap = 17, baseInt = 125, baseSta = 80, baseCrit = 1.7, intPerCrit = 60.6, dk = 60 }
+PR.EPW_WL = {
+  aff = { sp = 1, shp = 1, fip = 0, int = 0.36, spi = 0.06, crit = 10.109, mp5 = 0.31, pen = 0.28, haste = 3.16 },
+  demo = { sp = 1, shp = 0.26, fip = 0.74, int = 0.33, spi = 0.17, crit = 7.79, mp5 = 0.31, pen = 1.37, haste = 5.39 },
+  destro = { sp = 1, shp = 0.35, fip = 0.65, int = 0.4, spi = 0.23, crit = 9.68, mp5 = 0.33, pen = 1, haste = 3.15 },
+}
+function PR.EPWL(o, spec)
+  local e, st, W = 0, o.st or {}, PR.EPW_WL[spec] or PR.EPW_WL.destro
+  for k, w in pairs(W) do e = e + (st[k] or 0) * w end
+  return e + (o.pe or 0)
+end
+function PR.HitW_WL() return math.max(14, (PR.EPW_WL[PR.spec] or PR.EPW_WL.destro).crit * 1.4) end
+-- Suppression / Devastation ranks: read from the client, else Demonology 1 (the WFB build) and 5
+function PR.WLRanks()
+  local R, live = PR.Ranks()
+  if live then return R.sup or 0, R.dev or 0, true end
+  return PR.spec == "demo" and 1 or 5, 5, false
+end
+function PR.WLGearCap() local sup = PR.WLRanks(); return math.max(0, PR.WMODEL.hitCap - sup) end
+-- a staff in the main hand leaves the off hand empty
+function PR.OHBlocked()
+  if not PR.IsWL() then return false end
+  for _, sl in ipairs(PR.SLOTS) do if sl.k == "mainhand" then local o = PR.Selected(sl); return o and o.two and true or false end end
+  return false
+end
+function PR.CalcWL(overSlot, overOpt)
+  local M, W = PR.WMODEL, PR.EPW_WL[PR.spec] or PR.EPW_WL.destro
+  local g = { sp = 0, shp = 0, fip = 0, int = 0, sta = 0, spi = 0, hit = 0, crit = 0, mp5 = 0, haste = 0, pen = 0, armor = 0 }
+  local ep, mh = 0, nil
+  for _, sl in ipairs(PR.SLOTS) do
+    if sl.k == "mainhand" then mh = (overSlot == "mainhand" and overOpt) or PR.Selected(sl) end
+  end
+  for _, sl in ipairs(PR.SLOTS) do
+    local skip = (PR.char.off[sl.k] and overSlot ~= sl.k) or (sl.k == "offhand" and mh and mh.two)
+    if not skip then
+      local o = (overSlot == sl.k and overOpt) or PR.Selected(sl)
+      if o then ep = ep + PR.EP(o, sl.k) end
+      local ench = PR.useEnchants and sl.ench and sl.ench.st and not (sl.k == "mainhand" and not (o and o.two))
+      for k in pairs(g) do
+        g[k] = g[k] + ((o and o.st and o.st[k]) or 0)
+        if ench then local v = sl.ench.st[k] or 0; g[k] = g[k] + v; ep = ep + v * (W[k] or 0) end
+      end
+    end
+  end
+  local sup, dev = PR.WLRanks()
+  ep = ep + math.min(g.hit, PR.WLGearCap()) * PR.HitW_WL()
+  local int = M.baseInt + g.int
+  local sp = g.sp + (PR.spec == "demo" and M.dk or 0)
+  return { wl = true, hit = g.hit + sup, ghit = g.hit, sp = sp, shadow = sp + g.shp, fire = sp + g.fip, int = int,
+    sta = M.baseSta + g.sta, spi = g.spi, crit = M.baseCrit + int / M.intPerCrit + g.crit + (PR.spec == "destro" and dev or 0),
+    mp5 = g.mp5, pen = g.pen, haste = g.haste, armor = g.armor, ep = ep }
 end
 
 function PR.CalcFury(overSlot, overOpt)
@@ -877,6 +1057,7 @@ end
 
 function PR.Calc(overSlot, overOpt)
   if PR.IsFury() then return PR.CalcFury(overSlot, overOpt) end
+  if PR.IsWL() then return PR.CalcWL(overSlot, overOpt) end
   local M = PR.MODEL
   local g = { def = 0, hit = 0, sta = 0, agi = 0, armor = 0, exp = 0, blk = 0, dodge = 0, parry = 0, bv = 0, str = 0, ap = 0, crit = 0, nr = 0, fr = 0 }
   local ep = 0
@@ -952,8 +1133,9 @@ function PR.ComputeRoute()
     items[id][itemId] = true
     for _, d in ipairs(n.deps) do walk(d, itemId) end
   end
+  local ohOff = PR.OHBlocked()
   for _, sl in ipairs(PR.SLOTS) do
-    if not PR.char.off[sl.k] then
+    if not PR.char.off[sl.k] and not (ohOff and sl.k == "offhand") then
       local o = PR.Selected(sl)
       if o and not PR.Has(o.id) then
         for _, r in ipairs(o.req) do walk(r, o.id) end
@@ -1009,6 +1191,7 @@ end
 PR.WEB_URL = "https://difusbisproroute.github.io/"
 PR.SIM_URL = "https://www.wowsims.com/forever/warrior/protection/"
 PR.SIM_URL_FURY = "https://www.wowsims.com/forever/warrior/dps/"
+PR.SIM_URL_WL = "https://www.wowsims.com/forever/warlock/dps/"
 PR.WS_ORDER = { "head", "neck", "shoulder", "back", "chest", "wrist", "hands", "waist", "legs", "feet",
   "finger1", "finger2", "trinket1", "trinket2", "mainhand", "offhand", "ranged" }
 
@@ -1061,16 +1244,16 @@ function PR.SimURL()
   local eq = {}
   for _, k in ipairs(PR.WS_ORDER) do
     local sl, it = bySlot[k], {}
-    if sl and not PR.char.off[k] then
+    if sl and not PR.char.off[k] and not (k == "offhand" and PR.OHBlocked()) then
       local o = PR.Selected(sl)
       if o then pbInt(it, 1, o.id) end
-      if PR.useEnchants and sl.ench and sl.ench.ws then pbInt(it, 3, sl.ench.ws) end
+      if PR.useEnchants and sl.ench and sl.ench.ws and not (PR.IsWL() and k == "mainhand" and not (o and o.two)) then pbInt(it, 3, sl.ench.ws) end
     end
     pbMsg(eq, 1, it)
   end
   local pl = {}; pbInt(pl, 54, 2); pbMsg(pl, 3, eq)        -- player: class Warrior, equipment
   local set = {}; pbInt(set, 15, 2); pbMsg(set, 3, pl)      -- settings: player
-  return (PR.IsFury() and PR.SIM_URL_FURY or PR.SIM_URL) .. "?i=g#" .. base64(zlibStored(set))
+  return (PR.IsWL() and PR.SIM_URL_WL or PR.IsFury() and PR.SIM_URL_FURY or PR.SIM_URL) .. "?i=g#" .. base64(zlibStored(set))
 end
 
 -- ---------------------------------------------------------------------------
@@ -1082,7 +1265,7 @@ function PR.Export()
   local sel, have, done, skip, off, later = {}, {}, {}, {}, {}, {}
   for _, sl in ipairs(PR.SLOTS) do
     local o = PR.Selected(sl)
-    sel[#sel + 1] = sl.k .. ":" .. o.id
+    if not (sl.k == "offhand" and PR.OHBlocked()) then sel[#sel + 1] = sl.k .. ":" .. o.id end
     for _, opt in ipairs(PR.OptsFor(sl)) do
       if PR.Has(opt.id) then have[#have + 1] = tostring(opt.id) end
     end
@@ -1095,7 +1278,14 @@ function PR.Export()
   end
   return table.concat({ "PR1", "p=" .. PR.spec, "f=" .. PR.faction, "s=" .. table.concat(sel, ","), "h=" .. table.concat(have, ","),
     "d=" .. table.concat(done, ","), "k=" .. table.concat(skip, ","), "l=" .. table.concat(later, ","), "x=" .. table.concat(off, ","),
+    PR.IsWL() and PR.ExportTalWL() or
     "t=" .. string.format("a%d,d%d,s%d,t%d,c%d", PR.Ranks().anticip, PR.Ranks().deflect, PR.Ranks().shieldSpec, PR.Ranks().tough, PR.Ranks().cruelty or 0) }, ";")
+end
+-- Warlock talents, only when they were read from the client (the web marks them "read from the addon")
+function PR.ExportTalWL()
+  local sup, dev, live = PR.WLRanks()
+  if not live then return "t=" end
+  return string.format(PR.spec == "demo" and "t=supD%d,dev%d" or "t=sup%d,dev%d", sup, dev)
 end
 
 function PR.Import(str)
@@ -1111,7 +1301,7 @@ function PR.Import(str)
     for x in (v or ""):gmatch("[^,]+") do out[#out + 1] = x end
     return out
   end
-  if p.p == "prot" or p.p == "fury" then PR.ApplySpec(p.p) end
+  if PR.SPEC_SLOTS[p.p] then PR.ApplySpec(p.p) end
   local c = PR.char
   for _, e in ipairs(split(p.s)) do
     local k, id = e:match("^(%w+):(%d+)$")
@@ -1147,10 +1337,10 @@ function PR.Init()
   c.bank = c.bank or {}; c.turnedIn = c.turnedIn or {}; c.presets = c.presets or {}
   c.showDone = (c.showDone == nil) and true or c.showDone
   PR.char = c
-  if not c.selBySpec then c.selBySpec = { prot = c.sel } end
-  PR.ApplySpec(c.spec or "prot")
-  local _, class = UnitClass("player")
-  if class ~= "WARRIOR" then print("|cffc69b6dDifu'sBisProRoute|r: " .. PR.T("notWarrior")) end
+  local specs, class = PR.ClassSpecs()
+  if not c.selBySpec then c.selBySpec = { [specs[1]] = c.sel } end
+  PR.ApplySpec(c.spec or specs[1])
+  if class ~= "WARRIOR" and class ~= "WARLOCK" then print("|cffc69b6dDifu'sBisProRoute|r: " .. PR.T("notSupported")) end
 end
 
 local function scanBank()
@@ -1159,7 +1349,7 @@ local function scanBank()
     local inBank = (GetItemCount(id, true) or 0) - (GetItemCount(id) or 0)
     PR.char.bank[id] = inBank > 0 or nil
   end
-  for _, id in ipairs(PR.VALOR) do
+  for _, id in ipairs(PR.IsWL() and PR.VALOR_WL or PR.VALOR_WR) do
     local inBank = (GetItemCount(id, true) or 0) - (GetItemCount(id) or 0)
     PR.char.bank[id] = inBank > 0 or nil
   end
@@ -1280,7 +1470,7 @@ SlashCmdList.DIFUSBISPROROUTE = function(msg)
     wipe(PR.char.sel); wipe(PR.char.have); wipe(PR.char.steps); wipe(PR.char.off)
     print("|cffc69b6dDifu'sBisProRoute|r: " .. PR.T("reset")); PR.Refresh(false)
   elseif cmd == "talentos" or cmd == "talents" then xpcall(PR.DumpTalents, PR.Err); PR.InvalidateOpt(); PR.Refresh(false)
-  elseif cmd == "spec" and (arg == "prot" or arg == "fury") then PR.ApplySpec(arg); if PR.UI.Relabel then PR.UI.Relabel() end; PR.Refresh(false)
+  elseif cmd == "spec" and PR.SPEC_SLOTS[arg] then PR.ApplySpec(arg); if PR.UI.Relabel then PR.UI.Relabel() end; PR.Refresh(false)
   elseif cmd == "debug" then
     PR.ComputeAuto()
     print("|cffc69b6dDifu'sBisProRoute|r debug — " .. PR.faction .. ", " .. PR.lang)

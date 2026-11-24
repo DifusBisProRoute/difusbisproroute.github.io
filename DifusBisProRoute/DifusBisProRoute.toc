@@ -1,10 +1,10 @@
 ## Interface: 16001, 16002
 ## Title: Difu'sBisProRoute
-## Notes: Warrior pre-raid route for WoW Forever (Prot and Fury): dependency-ordered steps, up to 5 gear options per slot, caps optimizer, WoWSims link, auto-tracks quests, items, reputation and professions.
-## Notes-esES: Ruta pre-raid de Warrior para WoW Forever (Prot y Fury): pasos ordenados por dependencias, hasta 5 opciones por slot, optimizador de caps, enlace a WoWSims y detección automática de progreso.
-## Notes-esMX: Ruta pre-raid de Warrior para WoW Forever (Prot y Fury): pasos ordenados por dependencias, hasta 5 opciones por slot, optimizador de caps, enlace a WoWSims y detección automática de progreso.
+## Notes: Warrior (Prot, Fury) and Warlock (Affliction, Demonology, Destruction) pre-raid route for WoW Forever: dependency-ordered steps, up to 5 gear options per slot, caps optimizer, WoWSims link, auto-tracks quests, items, reputation and professions.
+## Notes-esES: Ruta pre-raid de Warrior (Prot, Fury) y Warlock (Aflicción, Demonología, Destrucción) para WoW Forever: pasos ordenados por dependencias, hasta 5 opciones por slot, optimizador de caps, enlace a WoWSims y detección automática de progreso.
+## Notes-esMX: Ruta pre-raid de Warrior (Prot, Fury) y Warlock (Aflicción, Demonología, Destrucción) para WoW Forever: pasos ordenados por dependencias, hasta 5 opciones por slot, optimizador de caps, enlace a WoWSims y detección automática de progreso.
 ## Author: Difu
-## Version: 1.0.9
+## Version: 1.0.11
 ## X-Website: https://difusbisproroute.github.io/
 ## X-Curse-Project-ID: 1816912
 ## X-License: All Rights Reserved

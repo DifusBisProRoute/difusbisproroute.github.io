@@ -2,7 +2,7 @@
 
 [![CurseForge downloads](https://img.shields.io/curseforge/dt/1816912?label=CurseForge&color=f16436)](https://www.curseforge.com/wow/addons/difusbisproroute) [![Latest release](https://img.shields.io/github/v/release/DifusBisProRoute/difusbisproroute.github.io?label=release)](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest)
 
-Pre-raid route for **Warrior (Protection and Fury)** on **WoW Forever**: a free in-game addon plus a web guide.
+Pre-raid route for **Warrior (Protection, Fury)** and **Warlock (Affliction, Demonology, Destruction)** on **WoW Forever**: a free in-game addon plus a web guide.
 
 **Web guide:** https://difusbisproroute.github.io/
 **Download:** [CurseForge](https://www.curseforge.com/wow/addons/difusbisproroute) · [GitHub releases](https://github.com/DifusBisProRoute/difusbisproroute.github.io/releases/latest)
@@ -10,7 +10,7 @@ Pre-raid route for **Warrior (Protection and Fury)** on **WoW Forever**: a free 
 ## Features
 - **Dependency-ordered route**: what to do first (keys, attunements, quests, dungeons, reputations) to get your pre-raid BiS. Mark each step as Complete, Later or Skip.
 - **Up to 5 options per slot**, based on WoW Forever BiS List, wowtbc.gg and sixtyupgrades.
-- **Caps optimizer**: Protection = 440 Defense + 8% hit; Fury = 8% hit + maximum EP. Presets: Optimal, Tank, No crafts / AH, Max Nature resistance, Max Fire resistance, plus your own.
+- **Caps optimizer**: Protection = 440 Defense + 8% hit; Fury = 8% hit + maximum EP; Warlock = 17% spell hit (with Suppression) + maximum EP. Presets: Optimal, Tank, No crafts / AH, Max Nature resistance, Max Fire resistance, plus your own.
 - **Optimize current gear**: builds the best set from the items you own (equipped, bags and bank), as close as possible to 440 Defense and 8% hit.
 - **Character-sheet stats panel** comparing what you have now with your plan, using your real talents.
 - **WoWSims link** for your chosen set (`/difu sim`).
@@ -27,7 +27,7 @@ Pre-raid route for **Warrior (Protection and Fury)** on **WoW Forever**: a free 
 | Command | What it does |
 |---|---|
 | `/difu` | Open / close the window |
-| `/difu spec prot` · `/difu spec fury` | Switch spec |
+| `/difu spec prot` · `/difu spec fury` · `/difu spec aff` · `/difu spec demo` · `/difu spec destro` | Switch spec (the ones of your class) |
 | `/difu sim` | WoWSims link for your set |
 | `/difu web` | Link to the web guide |
 | `/difu talents` | Show which talents the addon reads |

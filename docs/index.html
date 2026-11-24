@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Difu'sBisProRoute: ruta pre-raid para Warrior (Prot y Fury) en WoW Forever, con optimizador de caps, enlace a WoWSims y addon gratuito.">
+<meta name="description" content="Difu'sBisProRoute: ruta pre-raid para Warrior (Prot y Fury) y Warlock (Aflicción, Demonología y Destrucción) en WoW Forever, con optimizador de caps, enlace a WoWSims y addon gratuito.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Difu'sBisProRoute</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -63,6 +63,13 @@ main.wrap{padding-block:18px 60px;display:grid;gap:18px;position:relative;z-inde
 .bgwar svg{width:100%;height:100%;display:block}
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .bgwar{opacity:.13}}
 :root[data-theme="light"] .bgwar{opacity:.13}
+/* Warlock: fel purple accent instead of the warrior red, and its own watermark */
+:root[data-cls="warlock"]{--blood:#8b4fd8;--blood-ink:#fbf6ff}
+@media (prefers-color-scheme: light){:root[data-cls="warlock"]:not([data-theme="dark"]){--blood:#6a2fb0}}
+:root[data-cls="warlock"][data-theme="light"]{--blood:#6a2fb0}
+.bgwl{display:none}
+:root[data-cls="warlock"] .bgwar{display:none}
+:root[data-cls="warlock"] .bgwl{display:block;color:var(--blood)}
 @media (max-width:640px){.bgwar{opacity:.06;right:-80px}}
 .next{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;border:1px solid color-mix(in srgb,var(--gold) 60%,transparent);border-left:4px solid var(--blood);border-radius:10px;padding:14px 16px;background:linear-gradient(90deg,color-mix(in srgb,var(--blood) 14%,var(--panel)),var(--panel) 75%)}
 .next .eyebrow{font:500 11px var(--f-mono);color:var(--gold);text-transform:uppercase;letter-spacing:.08em}
@@ -187,6 +194,10 @@ main.wrap{padding-block:18px 60px;display:grid;gap:18px;position:relative;z-inde
 .presetBar{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center}
 .presel{background:var(--panel2);color:var(--fg);border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;max-width:100%;min-width:0;cursor:pointer}
 .presel:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.spsel{font-weight:600;padding:6px 8px;min-width:9.5em}
+.tsrc{font-weight:600;font-size:10.5px;letter-spacing:.02em;padding:0 5px;border-radius:4px;border:1px solid var(--line)}
+.tsrc.addon{color:var(--good);border-color:color-mix(in srgb,var(--good) 50%,transparent)}
+.tsrc.assumed{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 50%,transparent)}
 .pchip{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel2)}
 .pchip button{background:none;border:0;padding:7px 10px;cursor:pointer;color:var(--fg);font-size:13px}
 .pchip button+button{border-left:1px solid var(--line);color:var(--muted);padding:7px 8px}
@@ -269,11 +280,86 @@ textarea{width:100%;min-height:90px;background:var(--panel2);color:var(--fg);bor
 @media (max-width:1000px){.doll{grid-template-columns:1fr 1fr}.statsCol{grid-column:1/-1;order:-1}.stats{position:static}}
 @media (max-width:640px){.meters{margin-left:0;width:100%}.meter{flex:1;min-width:90px}.next{grid-template-columns:1fr}.doll{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ===== v2: quest-log redesign (fewer boxes, clearer hierarchy, tablet character sheet, compact phone header) ===== */
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{border-radius:6px;background:color-mix(in srgb,var(--panel2) 70%,transparent)}
+.seg button{padding:5px 10px;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--blood);color:var(--blood-ink)}
+.seg:not(#specSeg) button[aria-pressed="true"]{background:color-mix(in srgb,var(--gold) 22%,var(--panel));color:var(--fg);box-shadow:inset 0 -2px 0 var(--gold)}
+header.bar{background:var(--panel);box-shadow:0 1px 0 var(--line),0 8px 20px -14px rgba(0,0,0,.6)}
+.meter .lbl{white-space:nowrap}
+/* tabs: engraved underline tabs instead of boxed buttons */
+.tabs{gap:0;padding-bottom:0;border-bottom:2px solid var(--line);align-items:end}
+.tabs button{background:none;border:0;border-radius:0;padding:10px 16px 9px;margin-bottom:-2px;border-bottom:3px solid transparent;font-size:16px}
+.tabs button[aria-selected="true"]{background:none;box-shadow:none;border-bottom-color:var(--blood);color:var(--fg)}
+.tabs button:hover{border-color:transparent;border-bottom-color:color-mix(in srgb,var(--gold) 50%,transparent)}
+.tabs #tab-data{border:1px solid var(--line);border-radius:6px;margin-bottom:6px;padding:6px 12px}
+/* next step = the one hero card, with the progress bar inside its frame */
+.next{border:0;border-radius:4px;padding:18px 20px 16px;position:relative;background:
+  linear-gradient(90deg,color-mix(in srgb,var(--blood) 16%,var(--panel)),var(--panel) 55%);
+  box-shadow:inset 4px 0 0 var(--blood),0 0 0 1px color-mix(in srgb,var(--gold) 35%,var(--line))}
+.next h2{font-size:22px}
+.next + .prog{margin-top:-12px;padding:0 20px 2px}
+/* route as a timeline: one rail per phase, steps hang off it */
+.phase{gap:0;position:relative;padding-left:22px;margin-top:6px}
+.phase::before{content:"";position:absolute;left:7px;top:40px;bottom:8px;width:2px;background:color-mix(in srgb,var(--gold) 35%,var(--line))}
+.phase h3{margin:14px 0 6px -22px;font-size:17px;padding-left:22px;position:relative}
+.phase h3::before{content:"";position:absolute;left:2px;top:50%;width:12px;height:12px;margin-top:-6px;transform:rotate(45deg);background:var(--gold);box-shadow:0 0 0 3px var(--bg)}
+.step{background:none;border:0;border-radius:6px;border-left:0;padding:10px 12px;position:relative}
+.step::before{content:"";position:absolute;left:-19px;top:16px;width:8px;height:8px;border-radius:50%;background:var(--bg);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 55%,var(--line))}
+.step + .step{border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-top-left-radius:0;border-top-right-radius:0}
+.step.done::before{background:var(--good);box-shadow:0 0 0 2px var(--good)}
+.step.isnext{background:color-mix(in srgb,var(--blood) 9%,transparent)}
+.step.isnext::before{background:var(--blood);box-shadow:0 0 0 2px var(--blood),0 0 0 6px color-mix(in srgb,var(--blood) 25%,transparent)}
+.step.skipped{border-style:solid}
+.step.later{border-style:solid}
+.step .t{font-size:15px}
+.chip{border-radius:4px}
+/* stats sheet stays the one framed panel on the gear tab */
+.stats{border-radius:4px;box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 45%,var(--line)),0 10px 30px -20px rgba(0,0,0,.7)}
+.panel{border-radius:4px}
+.gs-row{border-radius:4px}
+/* character sheet down to tablets: slots | stats | slots */
+@media (max-width:1000px) and (min-width:900px){
+  .doll{grid-template-columns:minmax(0,1fr) minmax(0,270px) minmax(0,1fr)}
+  .statsCol{grid-column:auto;order:0}
+  .stats{position:sticky}
+  .gs-ic .ico.big{width:40px;height:40px}
+  .gs-n{font-size:14px}
+  .gs.r .gs-row{direction:rtl}.gs.r .gs-b{text-align:right}.gs.r .gs-badges,.gs.r .gs-en{justify-content:flex-end}.gs.r .gs-set{justify-self:end}
+}
+@media (max-width:899px){.doll{grid-template-columns:1fr 1fr}.statsCol{grid-column:1/-1;order:-1}.stats{position:static}}
+@media (max-width:560px){.doll{grid-template-columns:1fr}}
+/* phones: one compact header — title, a single scrollable row of switches, three meters side by side */
+@media (max-width:640px){
+  .bar .wrap{gap:8px 10px;padding-block:8px}
+  h1{font-size:18px}
+  h1 small{display:none}
+  .controls{order:3;width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .controls::-webkit-scrollbar{display:none}
+  .seg{flex:none}
+  .meters{order:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;margin:0}
+  .meter{min-width:0}
+  .meter .lbl{flex-direction:column;gap:0;font-size:10px}
+  .meter .lbl b{font-size:12px}
+  #simlink{order:2;margin-left:auto;padding:6px 10px;font-size:12px}
+  .next{padding:14px 14px 12px}
+  .next h2{font-size:19px}
+  .next + .prog{padding:0 14px 2px}
+  .tabs button{padding:9px 12px 8px;font-size:15px}
+  .tabs #tab-data{margin-left:0}
+  .step{grid-template-columns:auto minmax(0,1fr)}
+  .step .sacts{grid-column:2;order:5}
+  .step .d,.step .meta{grid-column:2}
+}
 </style>
 </head>
 <body>
 
-
+<div class="bgwar bgwl" aria-hidden="true"><svg viewBox="0 0 400 600" preserveAspectRatio="xMidYMax meet" fill="currentColor">
+<path d="M200 40c30 70 110 120 110 230 0 70-40 120-80 140 18-40 10-80-14-104 4 48-22 78-46 88 12-32 6-62-20-84-16 40-48 52-48 96 0 20 6 36 16 50-40-20-78-64-78-130C40 210 150 170 200 40z"/>
+<circle cx="200" cy="470" r="86" fill="none" stroke="currentColor" stroke-width="10"/><circle cx="200" cy="470" r="62" fill="none" stroke="currentColor" stroke-width="4"/>
+<path d="M200 400l14 56h58l-47 34 18 56-43-35-43 35 18-56-47-34h58z" opacity=".9"/></svg></div>
 <div class="bgwar" aria-hidden="true"><svg viewBox="0 0 400 600" preserveAspectRatio="xMidYMax meet">
   <g fill="currentColor">
     <path d="M300 40 L314 34 L320 48 L238 252 L224 246 Z"/>
@@ -298,14 +384,16 @@ textarea{width:100%;min-height:90px;background:var(--panel2);color:var(--fg);bor
 <header class="bar">
   <div class="wrap">
     <h1>Difu'sBisProRoute<small data-i="sub"></small></h1>
+    <div class="controls">
     <div class="seg" role="group" id="specSeg" aria-label="Spec">
-      <button id="sp-prot" data-sp="prot" aria-pressed="true">Prot</button><button id="sp-fury" data-sp="fury" aria-pressed="false">Fury</button>
+      <select id="specSel" class="presel spsel" aria-label="Class / spec"></select>
     </div>
     <div class="seg" role="group" id="facSeg">
       <button id="fa" data-f="A" aria-pressed="true"></button><button id="fh" data-f="H" aria-pressed="false"></button>
     </div>
     <div class="seg" role="group" aria-label="Idioma / Language">
       <button id="les" data-l="es" aria-pressed="true">ES</button><button id="len" data-l="en" aria-pressed="false">EN</button>
+    </div>
     </div>
     <div class="meters" id="meters"></div>
     <a class="btn primary" id="simlink" href="https://www.wowsims.com/forever/warrior/protection/" target="_blank" rel="noopener"></a>
@@ -383,6 +471,16 @@ textarea{width:100%;min-height:90px;background:var(--panel2);color:var(--fg);bor
 const UI={
  es:{sub:'Prot Warrior pre-raid · WoW Forever · nivel 60',A:'Alianza',H:'Horda',sim:'Simular en WoWSims ↗',tabRoute:'Ruta',tabGear:'Equipo',tabData:'Fuentes y progreso',
   showDone:'Mostrar completados',showSkipped:'Mostrar omitidos',ttHint:'· Pasa el cursor (o toca) un ítem subrayado para ver su tooltip',preset:'Preset:',enchSim:'Incluir enchants en el sim',
+  cls_warrior:'Warrior',cls_warlock:'Warlock',spec_prot:'Protección',spec_fury:'Furia',spec_aff:'Aflicción',spec_demo:'Demonología',spec_destro:'Destrucción',
+  subWL:n=>`Warlock ${n} pre-raid · WoW Forever · nivel 60`,capsWL:'Caps de Warlock',modelWL:'Warlock nivel 60 vs jefe 63 · ítems + enchants + talentos de abajo · sin buffs',
+  hitWL:'Hit de hechizos',hitNoteWL:(sup,g,b,src)=>`Tope: 17% contra jefes. Suppression ${sup}/5 (${src}) da ${sup}%, así que el equipo debe aportar ${g}%. Hit por encima no sirve. ${+b>=17?'Pre-raid se puede llegar al 17% con estas opciones.':`Pre-raid, lo máximo con estas opciones es ${b}%.`}`,talAddon:'leído del addon',talManual:'elegido a mano',talAssumed:'supuesto: importa desde /difu para usar tus talentos',talRead:'Leído del addon',talSet:'A mano',talDef:'Supuesto',
+  spL:'Poder de hechizos',shadowL:'Daño de Sombra',fireSpL:'Daño de Fuego',critWL:'Crítico de hechizos',intT:'Intelecto',staT:'Aguante',spiT:'Espíritu',penL:'Penetración',
+  epNoteWL:h=>`EP = pesos de WoW Forever BiS List para esta spec (SP 1, 1% crit ≈ 8-10, Int ≈ 0.35). WFB no da peso al hit; aquí 1% de hit hasta el tope vale ${h} EP (≈1.4 × el crit, mínimo 14), estimado.`,
+  dkNote:'Demonología: Demonic Knowledge suma ~60 SP (con tu demonio).',hitShortWL:n=>`Te falta ${n}% de hit de hechizos para el 17%.`,
+  pgOptWL:'Optimizados (17% hit + EP)',optWL:'Óptimo: EP con hit',optTipWL:'Busca el máximo EP contando el hit hasta el tope (17% con Suppression).',
+  nocraftWL:'Sin crafteos ni AH: EP con hit',
+  tWL:(h,sp,c,e)=>`Preset aplicado: ${h}% hit · ${sp} SP · ${c}% crit · ${e} EP`,ohTwo:'Vacía: el bastón usa las dos manos',
+  srcWL:`<h3>Fuentes (Warlock)</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warlock/affliction/" target="_blank" rel="noopener">WoW Forever BiS List · Warlock</a>: listas por EP de Aflicción, Demonología y Destrucción (Alianza y Horda).</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/" target="_blank" rel="noopener">wowtbc.gg · Warlock</a>: listas pre-raid (Sageblade + off-hand).</li><li>Tope de hit 17%: <a href="https://www.method.gg/wow-forever/how-does-hit-chance-work-in-wow-forever" target="_blank" rel="noopener">Method</a> e <a href="https://www.icy-veins.com/wow-forever/destruction-warlock-ranged-dps-pve-stat-priority" target="_blank" rel="noopener">Icy Veins</a>.</li></ul>`,
   defGear:'Defensa',capsT:'Caps de tanque',model:'Warrior nivel 60 vs jefe 63 · ítems + enchants + talentos de abajo · Humano, sin buffs',defL:'Defensa',hitL:'Hit',expL:'Pericia',crushL:'Anti-crush (fallo+esq.+parada+bloqueo)',critImm:'Inmune a críticos del jefe',cryNet:'red',copyId:'Copiar Pay ID',payNote:'Sin comisión entre usuarios de Binance: en la app ve a Pay → Enviar y pega el Pay ID. Debe aparecer el nombre DifuWoW.',copy:'Copiar dirección',copied:'Dirección copiada',cryWarn:(n,net)=>`Envía solo ${n} por la red ${net}. Otra moneda u otra red se pierde. Donar es opcional y no desbloquea nada en el addon.`,dlTitle:'Descarga el addon',dlText:'Difu\'sBisProRoute para WoW Forever (Warrior Prot y Fury). Descomprime y copia la carpeta DifusBisProRoute en World of Warcraft\\_forever_\\Interface\\AddOns. En el juego: /difu.',dlBtn:'Descargar última versión',supTitle:'Apoya el proyecto',supText:'El addon es y será gratis. Si te sirve, puedes apoyarlo dándole una estrella en GitHub, compartiendo la guía o con una donación.',subF:'Fury Warrior (DPS, dual wield) pre-raid · WoW Forever · nivel 60',capsF:'Caps de Fury',modelF:'Warrior nivel 60 vs jefe 63 · ítems + enchants + Cruelty · Humano, sin buffs',hitNoteF:n=>`8% es el tope de los ataques especiales (Bloodthirst, Whirlwind); los golpes blancos con dos armas llegan a 27%. Máx. pre-raid con estas opciones: ${n}%.`,expNoteF:'Pericia: 23.5 EP por 1% hasta 6.5%; después no suma.',critTot:'Crítico total',apTot:'Poder de ataque',strT:'Fuerza',agiT:'Agilidad',mhL:'DPS mano derecha',ohL:'DPS mano izquierda',setOn:(n,b)=>`Bonus de set activo: ${n} (${b})`,epNoteF:'EP = pesos de WoW Forever BiS List para Fury (preset WoWSims Pre-BiS): Fuerza 2.2 · Agilidad 1.7 · AP 1 · 1% crit 31.6 · 1% hit 16.9 hasta 8% (luego 4.2) · 1% pericia 23.5 · DPS arma derecha 12.6 · izquierda 2.7. Procs (Hand of Justice, Felstriker) con su EP estimado; Ironfoe y Heart of Wyrmthalak sin valorar el proc.',hitShortF:n=>`Te falta ${n}% de hit para el 8%.`,pgOptF:'Optimizados (8% hit + máximo EP)',maxHitF:'Óptimo: 8% hit + EP',maxHitTipF:'Llega al 8% de hit y con eso fijo busca el máximo EP (crit, fuerza, AP, agilidad, pericia, DPS de armas). Prueba también con el set Devilsaur (+2% hit).',nocraftPF:'Sin crafteos ni AH: 8% hit + EP',tPresetSU:'Preset sixtyupgrades aplicado',tFury:(h,c,e)=>`Preset aplicado: ${h}% hit · ${c}% crit · ${e} EP`,
   srcF:`<h3>Fuentes (Fury)</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warrior/fury/" target="_blank" rel="noopener">WoW Forever BiS List · Fury</a>: lista por EP (preset WoWSims Pre-BiS - Fury), Alianza y Horda.</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/fury-warrior/" target="_blank" rel="noopener">wowtbc.gg · Fury Warrior</a>: lista pre-raid.</li><li><a href="https://sixtyupgrades.com/forever/set/hAu4TBWuuxxm9Btn41BSHH" target="_blank" rel="noopener">sixtyupgrades · prebis without aids</a>: set de referencia (8.5% hit).</li><li>Stats de ítems fuera de esas listas: tooltips de Wowhead Forever.</li></ul>`,strL:'Fuerza (equipo)',apL:'Poder de ataque (equipo)',critL:'Crítico (equipo)',epNote:'EP = pesos de stats de WoW Forever BiS List para tanque (Aguante 1 · Fuerza 0.54 · Agilidad 0.57 · AP 0.24 · 1% crit 5.2 · 1% esquiva 3.0 · 1% parada 3.4 · Block value 0.66 · Armadura 0.052 · DPS de arma 1.24). Defensa y hit se tratan como topes.',critN:n=>`El jefe te crítica ${n}%`,missL:'Fallo (miss)',dodgeL:'Esquiva (dodge)',parryL:'Parada (parry)',blockL:'Bloqueo (block)',avoidL:'Evasión total',armorL:'Armadura',drL:'reducción',hpL:'Vida máxima (estimada)',maxHit:'Óptimo: 8% hit + 440 Def',maxHitTip:'Llega a 440 de Defensa y al 8% de hit, y con eso fijo elige el set con más EP (aguante, fuerza, AP, crit, armadura…)',tMaxHit:n=>`Preset Óptimo aplicado: ${n}% de hit, 440+ de Defensa y máximo EP`,tTank:n=>`Preset Tanque aplicado: ${n}% de hit, 440+ de Defensa y máximo aguante/armadura`,tNoCraft:(n,d)=>`Preset Sin crafteos ni AH aplicado: ${n}% de hit y ${d} de Defensa`,nocraftP:'Sin crafteos ni AH: 8% hit + 440 Def',nocraftTip:'Igual que Óptimo, pero solo con ítems de mazmorra, quest, vendedor o reputación: nada crafteado ni comprado en la casa de subastas',presetL:'Preset',presetPick:'Elegir preset…',pgLists:'Listas BiS',pgOpt:'Optimizados (8% hit + 440 Def)',pgMine:'Mis presets',tankP:'Tanque: 8% hit + 440 Def (aguante)',tankTip:'La versión original: llega a 440 de Defensa y 8% de hit, y con eso fijo prioriza solo aguante y armadura (ignora fuerza, AP, crit)',hitNote:(n)=>`Es un tope, no un mínimo: hit por encima del 8% no sirve. Pre-raid, con las opciones de esta guía, el máximo es ${n}% sin bajar de 440 de Defensa (preset Óptimo). WFB prioriza Defensa; el hit sube tu amenaza.`,talT:'Tus talentos',talNote:'Se actualizan solos al importar desde el addon.',staL:'Aguante',bvL:'Valor de bloqueo',cur:'actual',prevL:'Vista previa:',sbN:n=>`Con Shield Block activo (+75% bloqueo): ${n}%`,hit:'Hit',sta:'Stamina',armor:'Armor',steps:'pasos',nextEy:'Siguiente paso',unlocks:'desbloquea',complete:'Completar',skip:'Omitir',restore:'Restaurar',
   routeDone:'Ruta completa',routeEmpty:'No hay pasos pendientes',routeDoneP:'Todo lo de tu lista está hecho u omitido. Simula tu set final en WoWSims.',routeEmptyP:'Marca qué ítems te faltan en Equipo.',
@@ -399,6 +497,16 @@ const UI={
   src:`<h3>Fuentes</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warrior/protection/" target="_blank" rel="noopener">WoW Forever BiS List</a>: lista por EP con caps de 440 Defense, 8% hit y 6.5% expertise (datos del 21 nov 2026). Badge <span class="b wfb">WFB</span>.</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/protection-warrior/" target="_blank" rel="noopener">wowtbc.gg</a>: lista pre-raid de la comunidad. Badge <span class="b wtbc">WTBC</span>.</li><li><a href="https://www.wowsims.com/forever/warrior/protection/" target="_blank" rel="noopener">WoWSims Forever</a>: el botón arma el mismo tipo de link que usa WoW Forever BiS List (equipo y enchants; talentos y consumibles quedan como los tengas en WoWSims).</li><li>Tooltips: armados con los stats que publican esas listas. Cada ítem enlaza a Wowhead Forever para el tooltip oficial.</li><li>Presets de resistencias (Naturaleza / Fuego): calculados sobre la base de datos de ítems de WoWSims Forever, sin drops de raid ni PvP.</li><li>Cadena T0.5 y Tarnished Undermine Real: guías de LepreStore y ConquestCapped. Los ítems con <span class="b warn">VERIFICAR</span> tienen fuente incierta.</li></ul>`},
  en:{sub:'Prot Warrior pre-raid · WoW Forever · level 60',A:'Alliance',H:'Horde',sim:'Sim on WoWSims ↗',tabRoute:'Route',tabGear:'Gear',tabData:'Sources & progress',
   showDone:'Show completed',showSkipped:'Show skipped',ttHint:'· Hover (or tap) an underlined item to see its tooltip',preset:'Preset:',enchSim:'Include enchants in the sim',
+  cls_warrior:'Warrior',cls_warlock:'Warlock',spec_prot:'Protection',spec_fury:'Fury',spec_aff:'Affliction',spec_demo:'Demonology',spec_destro:'Destruction',
+  subWL:n=>`${n} Warlock pre-raid · WoW Forever · level 60`,capsWL:'Warlock caps',modelWL:'Level 60 Warlock vs level 63 boss · items + enchants + the talents below · unbuffed',
+  hitWL:'Spell hit',hitNoteWL:(sup,g,b,src)=>`Cap: 17% against bosses. Suppression ${sup}/5 (${src}) gives ${sup}%, so gear must bring ${g}%. Hit above that is wasted. ${+b>=17?'Pre-raid you can reach 17% with these options.':`Pre-raid, the most you can get with these options is ${b}%.`}`,talAddon:'read from the addon',talManual:'set by hand',talAssumed:'assumed: import from /difu to use your talents',talRead:'Read from the addon',talSet:'Set by hand',talDef:'Assumed',
+  spL:'Spell power',shadowL:'Shadow damage',fireSpL:'Fire damage',critWL:'Spell crit',intT:'Intellect',staT:'Stamina',spiT:'Spirit',penL:'Penetration',
+  epNoteWL:h=>`EP = WoW Forever BiS List weights for this spec (SP 1, 1% crit ≈ 8-10, Int ≈ 0.35). WFB gives hit no weight; here 1% hit up to the cap is worth ${h} EP (≈1.4 × crit, at least 14), an estimate.`,
+  dkNote:'Demonology: Demonic Knowledge adds ~60 SP (with your demon out).',hitShortWL:n=>`You are ${n}% spell hit short of 17%.`,
+  pgOptWL:'Optimized (17% hit + EP)',optWL:'Optimal: EP with hit',optTipWL:'Finds the most EP, counting hit up to the cap (17% with Suppression).',
+  nocraftWL:'No crafts or AH: EP with hit',
+  tWL:(h,sp,c,e)=>`Preset applied: ${h}% hit · ${sp} SP · ${c}% crit · ${e} EP`,ohTwo:'Empty: the staff uses both hands',
+  srcWL:`<h3>Sources (Warlock)</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warlock/affliction/" target="_blank" rel="noopener">WoW Forever BiS List · Warlock</a>: EP-based Affliction, Demonology and Destruction lists (Alliance and Horde).</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/" target="_blank" rel="noopener">wowtbc.gg · Warlock</a>: pre-raid lists (Sageblade + off-hand).</li><li>17% hit cap: <a href="https://www.method.gg/wow-forever/how-does-hit-chance-work-in-wow-forever" target="_blank" rel="noopener">Method</a> and <a href="https://www.icy-veins.com/wow-forever/destruction-warlock-ranged-dps-pve-stat-priority" target="_blank" rel="noopener">Icy Veins</a>.</li></ul>`,
   defGear:'Defense',capsT:'Tank caps',model:'Level 60 Warrior vs level 63 boss · items + enchants + the talents below · Human, unbuffed',defL:'Defense',hitL:'Hit',expL:'Expertise',crushL:'Anti-crush (miss+dodge+parry+block)',critImm:'Immune to boss crits',cryNet:'network',copyId:'Copy Pay ID',payNote:'No fee between Binance users: in the app go to Pay → Send and paste the Pay ID. The name DifuWoW must appear.',copy:'Copy address',copied:'Address copied',cryWarn:(n,net)=>`Send only ${n} on the ${net} network. Any other coin or network will be lost. Donating is optional and never unlocks anything in the addon.`,dlTitle:'Download the addon',dlText:'Difu\'sBisProRoute for WoW Forever (Warrior Prot and Fury). Unzip and copy the DifusBisProRoute folder into World of Warcraft\\_forever_\\Interface\\AddOns. In game: /difu.',dlBtn:'Download latest version',supTitle:'Support the project',supText:'The addon is and will stay free. If it helps you, you can support it by starring it on GitHub, sharing the guide or donating.',subF:'Fury Warrior (DPS, dual wield) pre-raid · WoW Forever · level 60',capsF:'Fury caps',modelF:'Level 60 Warrior vs level 63 boss · items + enchants + Cruelty · Human, unbuffed',hitNoteF:n=>`8% is the cap for special attacks (Bloodthirst, Whirlwind); dual-wield white swings go up to 27%. Pre-raid max with these options: ${n}%.`,expNoteF:'Expertise: 23.5 EP per 1% up to 6.5%; nothing after that.',critTot:'Total crit',apTot:'Attack power',strT:'Strength',agiT:'Agility',mhL:'Main-hand DPS',ohL:'Off-hand DPS',setOn:(n,b)=>`Set bonus active: ${n} (${b})`,epNoteF:'EP = WoW Forever BiS List Fury weights (WoWSims Pre-BiS preset): Strength 2.2 · Agility 1.7 · AP 1 · 1% crit 31.6 · 1% hit 16.9 up to 8% (then 4.2) · 1% expertise 23.5 · main-hand DPS 12.6 · off-hand 2.7. Procs (Hand of Justice, Felstriker) use their estimated EP; Ironfoe and Heart of Wyrmthalak procs are not valued.',hitShortF:n=>`You are ${n}% hit short of 8%.`,pgOptF:'Optimized (8% hit + max EP)',maxHitF:'Optimal: 8% hit + EP',maxHitTipF:'Reaches 8% hit, then picks the set with the most EP (crit, strength, AP, agility, expertise, weapon DPS). Also tries the Devilsaur set (+2% hit).',nocraftPF:'No crafts or AH: 8% hit + EP',tPresetSU:'sixtyupgrades preset applied',tFury:(h,c,e)=>`Preset applied: ${h}% hit · ${c}% crit · ${e} EP`,
   srcF:`<h3>Sources (Fury)</h3><ul><li><a href="https://wowforeverbislist.com/preraid/warrior/fury/" target="_blank" rel="noopener">WoW Forever BiS List · Fury</a>: EP-based list (WoWSims Pre-BiS - Fury preset), Alliance and Horde.</li><li><a href="https://wowtbc.gg/warcraftforever/bis-list/fury-warrior/" target="_blank" rel="noopener">wowtbc.gg · Fury Warrior</a>: pre-raid list.</li><li><a href="https://sixtyupgrades.com/forever/set/hAu4TBWuuxxm9Btn41BSHH" target="_blank" rel="noopener">sixtyupgrades · prebis without aids</a>: reference set (8.5% hit).</li><li>Stats for items outside those lists: Wowhead Forever tooltips.</li></ul>`,strL:'Strength (gear)',apL:'Attack power (gear)',critL:'Crit (gear)',epNote:'EP = WoW Forever BiS List tank stat weights (Stamina 1 · Strength 0.54 · Agility 0.57 · AP 0.24 · 1% crit 5.2 · 1% dodge 3.0 · 1% parry 3.4 · Block value 0.66 · Armor 0.052 · Weapon DPS 1.24). Defense and hit are treated as caps.',critN:n=>`Boss crits you ${n}%`,missL:'Miss',dodgeL:'Dodge',parryL:'Parry',blockL:'Block',avoidL:'Total avoidance',armorL:'Armor',drL:'reduction',hpL:'Max health (estimated)',maxHit:'Optimal: 8% hit + 440 Def',maxHitTip:'Reaches 440 Defense and 8% hit, then picks the set with the most EP (stamina, strength, AP, crit, armor…)',tMaxHit:n=>`Optimal preset applied: ${n}% hit, 440+ Defense and max EP`,tTank:n=>`Tank preset applied: ${n}% hit, 440+ Defense and max stamina/armor`,tNoCraft:(n,d)=>`No crafts / AH preset applied: ${n}% hit and ${d} Defense`,nocraftP:'No crafts or AH: 8% hit + 440 Def',nocraftTip:'Same as Optimal, but only dungeon, quest, vendor or reputation items: nothing crafted or bought on the Auction House',presetL:'Preset',presetPick:'Choose preset…',pgLists:'BiS lists',pgOpt:'Optimized (8% hit + 440 Def)',pgMine:'My presets',tankP:'Tank: 8% hit + 440 Def (stamina)',tankTip:'The original version: reaches 440 Defense and 8% hit, then only favors stamina and armor (ignores strength, AP, crit)',hitNote:(n)=>`It is a cap, not a minimum: hit above 8% is wasted. Pre-raid, with this guide's options, the most you can get is ${n}% without dropping below 440 Defense (Optimal preset). WFB prioritizes Defense; hit raises your threat.`,talT:'Your talents',talNote:'Updated automatically when you import from the addon.',staL:'Stamina',bvL:'Block value',cur:'current',prevL:'Preview:',sbN:n=>`With Shield Block up (+75% block): ${n}%`,hit:'Hit',sta:'Stamina',armor:'Armor',steps:'steps',nextEy:'Next step',unlocks:'unlocks',complete:'Complete',skip:'Skip',restore:'Restore',
   routeDone:'Route complete',routeEmpty:'No pending steps',routeDoneP:'Everything on your list is done or skipped. Sim your final set on WoWSims.',routeEmptyP:'Mark which items you still need in Gear.',
@@ -500,6 +608,11 @@ const NODES = [
  {id:'rep_everlook',phase:'keys',title:{es:'Everlook: Honorable',en:'Everlook: Honored'},where:{es:'Winterspring · Zippie Fizzbolt',en:'Winterspring · Zippie Fizzbolt'},desc:{es:'Reputación nueva de Forever. Desbloquea Everlook Pathcarver (+20 resistencia a Naturaleza).',en:'New Forever reputation. Unlocks Everlook Pathcarver (+20 Nature Resistance).'},deps:[],verify:true},
  {id:'windreaver',phase:'quest',title:{es:'The Windreaver (Silithus)',en:'The Windreaver (Silithus)'},where:{es:'Silithus · Abyssal Council',en:'Silithus · Abyssal Council'},desc:{es:'Duque del Abyssal Council: se invoca en Silithus con el set Twilight Trappings de los Twilight Cultists. Suelta Zephyr Cloak.',en:'Abyssal Council duke: summoned in Silithus with the Twilight Trappings set from Twilight Cultists. Drops Zephyr Cloak.'},deps:[],verify:true},
  {id:'q_drakefire',phase:'quest',title:{es:'Drakefire Amulet (attunement de Onyxia)',en:'Drakefire Amulet (Onyxia attunement)'},where:{A:{es:'Burning Steppes / Stormwind',en:'Burning Steppes / Stormwind'},H:{es:'Burning Steppes / Kargath',en:'Burning Steppes / Kargath'}},desc:{es:'Cadena de attunement de Onyxia. El último paso pide matar a General Drakkisath (UBRS). Recompensa: Drakefire Amulet.',en:'Onyxia attunement chain. The last step needs General Drakkisath (UBRS). Reward: Drakefire Amulet.'},deps:['key_ubrs']},
+ {id:'q_codex_wl',phase:'quest',title:{es:'Harnessing Shadows → Royal Seal of Eldre\'Thalas',en:'Harnessing Shadows → Royal Seal of Eldre\'Thalas'},where:{es:'Dire Maul North · Libro del brujo (Libram)',en:'Dire Maul North · Warlock book'},desc:{es:'El códice de brujo cae en Dire Maul North; entrégalo con el Royal Seal de la quest de clase. Recompensa: Royal Seal of Eldre\'Thalas (+18 poder de hechizos).',en:'The Warlock codex drops in Dire Maul North; turn it in for the class quest. Reward: Royal Seal of Eldre\'Thalas (+18 spell power).'},deps:['key_dm']},
+ {id:'q_jereman',phase:'quest',title:{es:'Return to Jereman (Mount Hyjal)',en:'Return to Jereman (Mount Hyjal)'},where:{es:'Mount Hyjal',en:'Mount Hyjal'},desc:{es:'Quest de Mount Hyjal. Recompensa: Jereman\'s Bauble.',en:'Mount Hyjal quest. Reward: Jereman\'s Bauble.'},deps:[],verify:true},
+ {id:'q_winterfall',phase:'quest',title:{es:'Winterfall Activity (Timbermaw)',en:'Winterfall Activity (Timbermaw)'},where:{es:'Winterspring · Timbermaw Hold',en:'Winterspring · Timbermaw Hold'},desc:{es:'Quest de Timbermaw en Winterspring. Recompensa: Earth Warder\'s Gloves.',en:'Timbermaw quest in Winterspring. Reward: Earth Warder\'s Gloves.'},deps:[]},
+ {id:'q_lasso',phase:'quest',title:{es:'Brought to Heel → Infernal Lasso',en:'Brought to Heel → Infernal Lasso'},where:{es:'Blasted Lands',en:'Blasted Lands'},desc:{es:'Quest de Blasted Lands. Recompensa: Infernal Lasso.',en:'Blasted Lands quest. Reward: Infernal Lasso.'},deps:[]},
+ {id:'rep_timbermaw',phase:'keys',title:{es:'Timbermaw Hold + Tailoring 290',en:'Timbermaw Hold + Tailoring 290'},where:{es:'Felwood · Meilosh',en:'Felwood · Meilosh'},desc:{es:'Rugged Mantle of the Timbermaw y Knowledge of the Timbermaw se compran a Meilosh y piden Tailoring 290 y reputación con Timbermaw.',en:'Rugged Mantle of the Timbermaw and Knowledge of the Timbermaw are sold by Meilosh and need Tailoring 290 and Timbermaw reputation.'},deps:[],verify:true},
  {id:'t0',phase:'t05',title:{es:'Junta las piezas Battlegear of Valor (T0)',en:'Collect Battlegear of Valor (T0)'},where:{es:'Varias mazmorras',en:'Several dungeons'},
   desc:{es:'Cada paso T0.5 consume la pieza T0 del mismo slot. Bracers y Belt: BoE/trash. Gauntlets: Ramstein (Strat). Boots: Kirtonos (Scholo). Legplates: Baron Rivendare (Strat). Spaulders: Warchief Rend (UBRS). Helm: Darkmaster Gandling (Scholo). Breastplate: General Drakkisath (UBRS). Confirma en Wowhead.',
         en:'Each T0.5 step consumes the T0 piece of the same slot. Bracers and Belt: BoE/trash. Gauntlets: Ramstein (Strat). Boots: Kirtonos (Scholo). Legplates: Baron Rivendare (Strat). Spaulders: Warchief Rend (UBRS). Helm: Darkmaster Gandling (Scholo). Breastplate: General Drakkisath (UBRS). Confirm on Wowhead.'},deps:[]},
@@ -624,8 +737,10 @@ const SLOTS_PROT = [
   {id:272437,n:'Adaptive Combat Assistant',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:2,st:{exp:1.1},fx:['aca'],src:S_('Pix Xizzix · 125 Reals','Pix Xizzix · 125 Reals'),req:['reals'],bis:['wtbc']},
   {id:276743,n:'Fingerbreaker Stamp',q:3,il:53,rl:48,ty:'trinket',bind:'bop',st:{def:6},fx:['fin'],src:S_('The Questioner · Alcaz Prison','The Questioner · Alcaz Prison'),req:['dun_new']}]},
  {k:'mainhand',n:S_('Arma','Main hand'),ench:{n:'Enchant Weapon - Crusader',ws:1900,st:{}},opts:[
-  {id:11684,n:'Ironfoe',q:4,il:60,rl:55,ty:'mace1',bind:'bop',dmg:{min:73,max:136,dps:43.54,spd:2.4},st:{},fx:['iron'],src:S_('Emperor Dagran Thaurissan · BRD (drop raro)','Emperor Dagran Thaurissan · BRD (rare drop)'),req:['dun_brd'],bis:['wfbA','wfbH','wtbc']},
-  {id:22384,n:'Persuader',q:4,il:63,rl:58,ty:'mace1',bind:'boe',dmg:{dps:45.71,spd:2.8},st:{hit:1,crit:1},src:S_('Crafteado (Blacksmithing) · planos por confirmar','Crafted (Blacksmithing) · plans to be confirmed'),req:['craft'],verify:true,bis:['hit']},
+  {id:11684,n:'Ironfoe',q:4,il:60,rl:55,ty:'mace1',bind:'bop',dmg:{min:73,max:136,dps:43.54,spd:2.4},st:{},pe:33.9,fx:['iron'],src:S_('Emperor Dagran Thaurissan · BRD (drop raro)','Emperor Dagran Thaurissan · BRD (rare drop)'),req:['dun_brd'],bis:['wfbA','wfbH','wtbc']},
+  {id:22384,n:'Persuader',q:4,il:63,rl:58,ty:'mace1',bind:'boe',dmg:{dps:45.71,spd:2.8},st:{hit:1,crit:1},src:S_('Crafteado (Blacksmithing) · BoE, también en AH · en tanque empata con Ironfoe: su 1% hit libera otro slot','Crafted (Blacksmithing) · BoE, also on the AH · for tanks it ties with Ironfoe: its 1% hit frees another slot'),req:['craft'],bis:['hit']},
+  {id:871,n:'Flurry Axe',q:4,il:47,rl:42,ty:'axe1',bind:'bop',dmg:{min:37,max:69,dps:35.28,spd:1.5},st:{},pe:44,fx:['flurry'],src:S_('Sandfury Shadowhunter · Zul\'Farrak (drop raro)','Sandfury Shadowhunter · Zul\'Farrak (rare drop)'),req:['dun_zf']},
+  {id:13952,n:'Iceblade Hacker',q:3,il:62,rl:57,ty:'axe1',bind:'bop',dmg:{dps:20.4,spd:2},st:{},pe:54.2,fx:['icebl'],src:S_('Ras Frostwhisper · Scholomance','Ras Frostwhisper · Scholomance'),req:['dun_scholo']},
   {id:280022,n:'Scaleguard Scimitar',q:3,il:63,rl:58,ty:'sword1',bind:'bop',dmg:{dps:41.36,spd:2.2},st:{sta:8,ap:14,bv:12},src:S_('Direhorn Matriarch · The Shaper\'s Terrace','Direhorn Matriarch · The Shaper\'s Terrace'),req:['dun_shaper']},
   {id:281587,n:'Greatflank Flayer',q:3,il:60,rl:54,ty:'axe1',bind:'bop',dmg:{dps:39.35,spd:2.3},st:{sta:11,str:5,def:3},src:S_('Quest · Head Scratcher (Horda)','Quest · Head Scratcher (Horde)'),req:['q_head'],fac:'H'},
   {id:279259,n:'Ironwood Blade',q:4,il:65,rl:60,ty:'sword1',bind:'boe',dmg:{min:79,max:148,dps:47.3,spd:2.4},st:{sta:12,str:8,hit:1},src:S_('Crafteado · planos sin fuente conocida','Crafted · plans with no known source'),req:['plans'],verify:true},
@@ -740,7 +855,7 @@ const SLOTS_FURY = [
   {id:272437,n:'Adaptive Combat Assistant',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:2,st:{exp:1.1},fx:['aca'],src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals']}]},
  {k:'mainhand',n:S_('Mano derecha','Main hand'),ench:{n:'Enchant Weapon - Crusader',ws:1900,st:{}},opts:[
   {id:22384,n:'Persuader',q:4,il:63,rl:58,ty:'mace1',bind:'boe',dmg:{dps:45.71,spd:2.8},st:{crit:1,hit:1},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['hit','wfbA','wfbH','wtbc']},
-  {id:11684,n:'Ironfoe',q:4,il:60,rl:55,ty:'mace1',bind:'bop',dmg:{min:73,max:136,dps:43.54,spd:2.4},st:{},fx:['iron'],src:S_('Emperor Dagran Thaurissan · BRD (drop raro)','Emperor Dagran Thaurissan · BRD (rare drop)'),req:['dun_brd'],bis:['su']},
+  {id:11684,n:'Ironfoe',q:4,il:60,rl:55,ty:'mace1',bind:'bop',dmg:{min:73,max:136,dps:43.54,spd:2.4},st:{},pe:41.3,fx:['iron'],src:S_('Emperor Dagran Thaurissan · BRD (drop raro)','Emperor Dagran Thaurissan · BRD (rare drop)'),req:['dun_brd'],bis:['su']},
   {id:12940,n:'Dal\'Rend\'s Sacred Charge',q:3,il:63,rl:58,ty:'sword1',bind:'bop',set:'Dal\'Rend\'s Arms',dmg:{dps:41.43,spd:2.8},st:{str:4,crit:1},src:S_('Warchief Rend Blackhand · UBRS','Warchief Rend Blackhand · UBRS'),req:['dun_ubrs']},
   {id:12798,n:'Annihilator',q:3,il:63,rl:58,ty:'axe1',bind:'boe',dmg:{min:69,max:129,dps:41.25,spd:2.4},st:{ap:14},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft']},
   {id:2244,n:'Krol Blade',q:4,il:56,rl:51,ty:'sword1',bind:'bop',dmg:{dps:40.89,spd:2.8},st:{sta:5,str:7,crit:1},src:S_('Skeletal Acolyte · Western Plaguelands','Skeletal Acolyte · Western Plaguelands'),req:['wpl_rare']}]},
@@ -760,27 +875,348 @@ const SLOTS_FURY = [
   {id:12653,n:'Riphook',q:3,il:59,rl:54,ty:'bow',bind:'bop',dmg:{dps:30.23,spd:2.2},st:{ap:22},src:S_('Shadow Hunter Vosh\'gajin · LBRS','Shadow Hunter Vosh\'gajin · LBRS'),req:['dun_lbrs']}]}
 ];
 
+const SLOTS_AFF = [
+ {k:'head',n:S_('Cabeza','Head'),ench:{n:'Arcanum of Focus',ws:2544,st:{sp:8}},opts:[
+  {id:22267,n:'Spellweaver\'s Turban',q:3,il:63,rl:60,ty:'back',bind:'bop',st:{sp:33,armor:73,hit:1,spi:13},src:S_('General Drakkisath · Blackrock Spire','General Drakkisath · Blackrock Spire'),req:['dun_ubrs'],bis:['wfbA','wfbH','wtbc']},
+  {id:18727,n:'Crimson Felt Hat',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:30,armor:68,int:10,spi:10,sta:8},src:S_('Magistrate Barthilas · Stratholme','Magistrate Barthilas · Stratholme'),req:['dun_strat']},
+  {id:14111,n:'Felcloth Hood',q:2,il:58,rl:53,ty:'back',bind:'boe',st:{armor:61,int:10,shp:30},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:226909,n:'Deathmist Mask',q:4,il:60,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:18,armor:75,hit:1,int:24,sta:24},src:S_('Quest · Saving the Best for Last','Quest · Saving the Best for Last'),req:['t12']},
+  {id:276877,n:'Brewmancer Nightcap',q:3,il:55,rl:50,ty:'back',bind:'bop',st:{armor:64,int:8,shp:29,sta:12},src:S_('Plugger Spazzring · Blackrock Depths','Plugger Spazzring · Blackrock Depths'),req:['dun_brd']}]},
+ {k:'neck',n:S_('Cuello','Neck'),ench:{n:'Enchant Necklace - Spell Power',ws:8218,st:{sp:6}},opts:[
+  {id:18691,n:'Dark Advisor\'s Pendant',q:3,il:61,rl:56,ty:'neck',bind:'bop',st:{int:8,shp:20,sta:9},src:S_('Vectus · Scholomance','Vectus · Scholomance'),req:['dun_scholo'],bis:['wfbA','wfbH','wtbc']},
+  {id:19426,n:'Orb of the Darkmoon',q:4,il:65,rl:60,ty:'neck',bind:'bop',st:{sp:22,spi:8,sta:11},src:S_('Quest · 1200 Tickets - Orb of the Darkmoon / Vendedor · Gelvas Grimegate','Quest · 1200 Tickets - Orb of the Darkmoon / Vendor · Gelvas Grimegate'),req:['dmf']},
+  {id:23125,n:'Chains of the Lich',q:3,il:60,rl:55,ty:'neck',bind:'bop',st:{sp:22},src:S_('Balzaphon · Stratholme','Balzaphon · Stratholme'),req:['dun_strat']},
+  {id:22403,n:'Nacreous Shell Necklace',q:3,il:61,rl:56,ty:'neck',bind:'bop',st:{sp:9,hit:1,int:8,sta:7},src:S_('Cannon Master Willey · Stratholme','Cannon Master Willey · Stratholme'),req:['dun_strat']},
+  {id:22149,n:'Beads of Ogre Mojo',q:3,il:63,rl:58,ty:'neck',bind:'bop',st:{sp:13,int:12,sta:7},src:S_('Quest · Falrin\'s Vendetta · Dire Maul','Quest · Falrin\'s Vendetta · Dire Maul'),req:['q_falrin']}]},
+ {k:'shoulder',n:S_('Hombros','Shoulders'),opts:[
+  {id:227808,n:'Rugged Mantle of the Timbermaw',q:4,il:65,rl:60,ty:'back',bind:'bop',st:{sp:27,armor:75,crit:1,int:15},prof:'Tailoring (290)',src:S_('Vendedor · Meilosh · Felwood','Vendor · Meilosh · Felwood'),req:['rep_timbermaw'],bis:['wfbA','wfbH']},
+  {id:19050,n:'Mantle of the Timbermaw',q:3,il:61,rl:56,ty:'back',bind:'boe',st:{sp:17,armor:65,crit:1,int:13},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wtbc']},
+  {id:14112,n:'Felcloth Shoulders',q:2,il:62,rl:57,ty:'back',bind:'boe',st:{armor:60,shp:26,spi:5},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:18681,n:'Burial Shawl',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:20,armor:65,int:16,sta:4},src:S_('Scholomance','Scholomance'),req:['dun_scholo']},
+  {id:19059,n:'Argent Shoulders',q:3,il:61,rl:56,ty:'back',bind:'boe',st:{sp:25,armor:65,spi:7},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']}]},
+ {k:'back',n:S_('Capa','Back'),opts:[
+  {id:272411,n:'Arcanoweave Cloak',q:3,il:65,rl:60,ty:'back',bind:'bop',uniq:1,st:{sp:16,armor:46,hit:1,int:8},src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wfbA','wfbH','wtbc']},
+  {id:18510,n:'Hide of the Wild',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:14,armor:48,int:10,sta:8},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw']},
+  {id:11623,n:'Spritecaster Cape',q:3,il:52,rl:47,ty:'back',bind:'bop',st:{sp:14,armor:37,int:6,spi:6,sta:5},src:S_('Houndmaster Grebmar · Blackrock Depths','Houndmaster Grebmar · Blackrock Depths'),req:['dun_brd']},
+  {id:15421,n:'Shroud of the Exile',q:3,il:63,rl:52,ty:'back',bind:'bop',st:{sp:12,armor:45,int:10,spi:7,sta:7},src:S_('Quest · In Dreams · Western Plaguelands','Quest · In Dreams · Western Plaguelands'),req:['q_dreams']},
+  {id:18350,n:'Amplifying Cloak',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:15,armor:43,spi:14},src:S_('Magister Kalendris · Dire Maul','Magister Kalendris · Dire Maul'),req:['dun_dmw']}]},
+ {k:'chest',n:S_('Pecho','Chest'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:14153,n:'Robe of the Void',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:46,armor:96,int:9,sta:10},use:'Use: Heal your pet for 450 to 750. (10 Min Cooldown)',src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wfbA','wfbH','wtbc']},
+  {id:14136,n:'Robe of Winter Night',q:3,il:57,rl:52,ty:'back',bind:'boe',st:{armor:81,int:12,shp:40},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:14106,n:'Felcloth Robe',q:2,il:61,rl:56,ty:'back',bind:'boe',st:{armor:79,shp:36,sta:7},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:280057,n:'Robes of Dark Summons',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:21,armor:84,hit:1.8,sta:14},src:S_('Impaan the Imprisoner · Blackmaw Hold','Impaan the Imprisoner · Blackmaw Hold'),req:['dun_blackmaw']},
+  {id:18385,n:'Robe of Everlasting Night',q:3,il:62,rl:57,ty:'back',bind:'bop',st:{sp:27,armor:88,int:13,spi:5,sta:11},src:S_('Immol\'thar · Dire Maul','Immol\'thar · Dire Maul'),req:['dun_dmw']}]},
+ {k:'wrist',n:S_('Muñecas','Wrists'),ench:{n:'Enchant Bracer - Greater Spellpower',ws:7665,st:{sp:16}},opts:[
+  {id:18497,n:'Sublime Wristguards',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:12,armor:37,int:10,spi:6,sta:6},src:S_('Dire Maul','Dire Maul'),req:['dun_dmn'],bis:['wfbA','wfbH']},
+  {id:254067,n:'Netherpearl Cuffs',q:3,il:50,rl:45,ty:'back',bind:'boe',st:{armor:31,int:7,shp:13,spi:5,sta:7},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wtbc']},
+  {id:254123,n:'Runecloth Cuffs',q:2,il:57,rl:52,ty:'back',bind:'boe',st:{sp:11,armor:32,int:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:11962,n:'Manacle Cuffs',q:3,il:55,rl:50,ty:'back',bind:'bop',st:{sp:7,armor:34,int:15},src:S_('Quest · The Love Potion · Blackrock Depths','Quest · The Love Potion · Blackrock Depths'),req:['dun_brd']},
+  {id:226907,n:'Deathmist Bracers',q:3,il:65,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:7,armor:40,int:12,pen:1,sta:12},src:S_('Quest · An Earnest Proposition · Ironforge / Orgrimmar','Quest · An Earnest Proposition · Ironforge / Orgrimmar'),req:['t1']}]},
+ {k:'hands',n:S_('Manos','Hands'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:18407,n:'Felcloth Gloves',q:3,il:62,rl:57,ty:'back',bind:'boe',st:{armor:55,shp:33,sta:9},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wfbA','wfbH','wtbc']},
+  {id:14146,n:'Gloves of Spell Mastery',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:9,armor:60,crit:2,int:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:13253,n:'Hands of Power',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:23,armor:53,int:9,spi:8},src:S_('Quartermaster Zigris · Blackrock Spire','Quartermaster Zigris · Blackrock Spire'),req:['dun_lbrs']},
+  {id:226911,n:'Deathmist Wraps',q:4,il:55,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:13,armor:54,hit:1,int:13,sta:16},src:S_('Quest · Just Compensation · Ironforge / Orgrimmar','Quest · Just Compensation · Ironforge / Orgrimmar'),req:['t3']},
+  {id:254101,n:'Black Gloves',q:3,il:55,rl:50,ty:'back',bind:'boe',st:{armor:49,int:10,shp:19,spi:8,sta:9},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']}]},
+ {k:'waist',n:S_('Cintura','Waist'),opts:[
+  {id:228190,n:'Knowledge of the Timbermaw',q:4,il:65,rl:60,ty:'back',bind:'bop',st:{sp:25,armor:56,hit:1,int:22},prof:'Tailoring (290)',src:S_('Vendedor · Meilosh · Felwood','Vendor · Meilosh · Felwood'),req:['rep_timbermaw'],bis:['wfbA','wfbH']},
+  {id:18405,n:'Belt of the Archmage',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:20,armor:54,crit:1,int:16,sta:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wtbc']},
+  {id:11662,n:'Ban\'thok Sash',q:3,il:54,rl:49,ty:'back',bind:'bop',st:{sp:12,armor:43,hit:1,int:10,sta:10},src:S_('Ok\'thor the Breaker · Blackrock Depths','Ok\'thor the Breaker · Blackrock Depths'),req:['dun_brd']},
+  {id:254087,n:'Black Waistcord',q:3,il:52,rl:47,ty:'back',bind:'boe',st:{armor:42,int:9,shp:19,sta:12},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:226905,n:'Deathmist Belt',q:3,il:65,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:12,armor:52,int:13,spi:8,pen:2,sta:13},src:S_('Quest · Just Compensation','Quest · Just Compensation'),req:['t3']}]},
+ {k:'legs',n:S_('Piernas','Legs'),ench:{n:'Arcanum of Focus',ws:2544,st:{sp:8}},opts:[
+  {id:22342,n:'Leggings of Torment',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{armor:78,int:16,shp:34,sta:16},src:S_('Lord Valthalak · Blackrock Spire','Lord Valthalak · Blackrock Spire'),req:['t11'],bis:['wfbA','wfbH','wtbc']},
+  {id:13170,n:'Skyshroud Leggings',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:30,armor:75,int:12,sta:11},src:S_('Highlord Omokk · Blackrock Spire','Highlord Omokk · Blackrock Spire'),req:['dun_lbrs']},
+  {id:14107,n:'Felcloth Pants',q:2,il:55,rl:50,ty:'back',bind:'boe',st:{armor:62,int:12,shp:26},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:226910,n:'Deathmist Leggings',q:3,il:66,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:15,armor:81,hit:1,int:18,sta:21},src:S_('Quest · Anthion\'s Parting Words · Orgrimmar','Quest · Anthion\'s Parting Words · Orgrimmar'),req:['t7']},
+  {id:14144,n:'Ghostweave Pants',q:2,il:58,rl:53,ty:'back',bind:'boe',st:{sp:26,armor:66,spi:20},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']}]},
+ {k:'feet',n:S_('Pies','Feet'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:11822,n:'Omnicast Boots',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:20,armor:58,int:12,sta:8},src:S_('Golem Lord Argelmach · Blackrock Depths','Golem Lord Argelmach · Blackrock Depths'),req:['dun_brd'],bis:['wfbA','wfbH','wtbc']},
+  {id:18102,n:'Dragonrider Boots',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{sp:18,armor:61,int:16,sta:5},src:S_('Warchief Rend Blackhand · Blackrock Spire','Warchief Rend Blackhand · Blackrock Spire'),req:['dun_ubrs']},
+  {id:254113,n:'Black Sandals',q:3,il:55,rl:50,ty:'back',bind:'boe',st:{armor:54,int:9,shp:20,sta:13},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:275606,n:'Venomspew Footpads',q:3,il:58,rl:53,ty:'back',bind:'boe',st:{sp:22,armor:57,spi:8},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:18735,n:'Maleki\'s Footwraps',q:3,il:62,rl:57,ty:'back',bind:'bop',st:{armor:60,int:11,shp:17,sta:19},src:S_('Maleki the Pallid · Stratholme','Maleki the Pallid · Stratholme'),req:['dun_strat']}]},
+ {k:'finger1',n:S_('Anillo 1','Ring 1'),opts:[
+  {id:12543,n:'Songstone of Ironforge',q:3,il:60,rl:50,ty:'finger',bind:'bop',fac:'A',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess\'s Surprise · Blackrock Depths','Quest · The Princess\'s Surprise · Blackrock Depths'),req:['dun_brd'],bis:['wfbA','wtbc']},
+  {id:12545,n:'Eye of Orgrimmar',q:3,il:60,rl:48,ty:'finger',bind:'bop',fac:'H',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess Saved? · Blackrock Depths','Quest · The Princess Saved? · Blackrock Depths'),req:['dun_brd'],bis:['wfbH']},
+  {id:272406,n:'Channeler\'s Ring',q:3,il:65,rl:60,ty:'finger',bind:'bop',uniq:1,st:{sp:9,hit:1,int:14},src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals']},
+  {id:13001,n:'Maiden\'s Circle',q:3,il:61,rl:55,ty:'finger',bind:'bop',st:{sp:18,int:7,spi:6},src:S_('Crimson Battle Mage · Stratholme','Crimson Battle Mage · Stratholme'),req:['dun_strat']},
+  {id:22339,n:'Rune Band of Wizardry',q:3,il:63,rl:58,ty:'finger',bind:'bop',uniq:1,st:{sp:13,hit:1,sta:7},src:S_('Lord Valthalak · Blackrock Spire','Lord Valthalak · Blackrock Spire'),req:['t11']},
+  {id:275738,n:'Jereman\'s Bauble',q:3,il:61,rl:54,ty:'finger',bind:'bop',st:{sp:15,int:11,spi:7},src:S_('Quest · Return to Jereman · Mount Hyjal','Quest · Return to Jereman · Mount Hyjal'),req:['q_jereman']}]},
+ {k:'finger2',n:S_('Anillo 2','Ring 2'),opts:[
+  {id:22433,n:'Don Mauricio\'s Band of Domination',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sp:11,crit:1,sta:10},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo'],bis:['wfbA','wfbH']},
+  {id:13001,n:'Maiden\'s Circle',q:3,il:61,rl:55,ty:'finger',bind:'bop',st:{sp:18,int:7,spi:6},src:S_('Crimson Battle Mage · Stratholme','Crimson Battle Mage · Stratholme'),req:['dun_strat'],bis:['wtbc']},
+  {id:272406,n:'Channeler\'s Ring',q:3,il:65,rl:60,ty:'finger',bind:'bop',uniq:1,st:{sp:9,hit:1,int:14},src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals']},
+  {id:22339,n:'Rune Band of Wizardry',q:3,il:63,rl:58,ty:'finger',bind:'bop',uniq:1,st:{sp:13,hit:1,sta:7},src:S_('Lord Valthalak · Blackrock Spire','Lord Valthalak · Blackrock Spire'),req:['t11']},
+  {id:275738,n:'Jereman\'s Bauble',q:3,il:61,rl:54,ty:'finger',bind:'bop',st:{sp:15,int:11,spi:7},src:S_('Quest · Return to Jereman · Mount Hyjal','Quest · Return to Jereman · Mount Hyjal'),req:['q_jereman']}]},
+ {k:'trinket1',n:S_('Abalorio 1','Trinket 1'),opts:[
+  {id:18467,n:'Royal Seal of Eldre\'Thalas',q:3,il:62,rl:54,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},src:S_('Quest · Harnessing Shadows · Dire Maul','Quest · Harnessing Shadows · Dire Maul'),req:['q_codex_wl'],bis:['wfbA','wfbH']},
+  {id:272438,n:'Weakness Analyzer',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},pe:0.8,use:'Use: Increases your critical strike chance with all spells and attacks by 5% for 20 sec or until you deal a non-periodic critical effect. (6 Min Cooldown)',src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wtbc']},
+  {id:13968,n:'Eye of the Beast',q:3,il:63,rl:55,ty:'trinket',bind:'bop',uniq:1,st:{crit:1},pe:5.4,use:'Use: Increases your Spell Hit chance by 7% for 20 sec. (5 Min Cooldown)',src:S_('Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire','Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire'),req:['dun_ubrs']},
+  {id:12930,n:'Briarwood Reed',q:3,il:60,rl:55,ty:'trinket',bind:'bop',st:{sp:15},src:S_('Jed Runewatcher · Blackrock Spire','Jed Runewatcher · Blackrock Spire'),req:['dun_ubrs']},
+  {id:270276,n:'Cleansed Vilebranch Icon',q:2,il:51,rl:40,ty:'trinket',bind:'bop',fac:'A',st:{sp:8,crit:0.5},src:S_('Quest · Saving Sharpbeak · The Hinterlands','Quest · Saving Sharpbeak · The Hinterlands'),req:['q_sharpbeak']},
+  {id:219345,n:'Infernal Lasso',q:3,il:50,rl:50,ty:'trinket',bind:'bop',st:{sp:8},pe:4.1,use:'Use: Deals 504 Fire damage over 12 sec. Demons and Beasts are Rooted in place for 6 sec. (5 Min Cooldown)',src:S_('Quest · Brought to Heel · Blasted Lands','Quest · Brought to Heel · Blasted Lands'),req:['q_lasso']},
+  {id:270225,n:'Jewel of the Guard Captain',q:2,il:51,rl:46,ty:'trinket',bind:'bop',fac:'H',st:{sp:8,crit:0.5},src:S_('Quest · Job Opening: Guard Captain of Revantusk Village · The Hinterlands','Quest · Job Opening: Guard Captain of Revantusk Village · The Hinterlands'),req:['q_revantusk']}]},
+ {k:'trinket2',n:S_('Abalorio 2','Trinket 2'),opts:[
+  {id:272438,n:'Weakness Analyzer',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},pe:0.8,use:'Use: Increases your critical strike chance with all spells and attacks by 5% for 20 sec or until you deal a non-periodic critical effect. (6 Min Cooldown)',src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wfbA','wfbH']},
+  {id:18467,n:'Royal Seal of Eldre\'Thalas',q:3,il:62,rl:54,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},src:S_('Quest · Harnessing Shadows · Dire Maul','Quest · Harnessing Shadows · Dire Maul'),req:['q_codex_wl'],bis:['wtbc']},
+  {id:13968,n:'Eye of the Beast',q:3,il:63,rl:55,ty:'trinket',bind:'bop',uniq:1,st:{crit:1},pe:5.4,use:'Use: Increases your Spell Hit chance by 7% for 20 sec. (5 Min Cooldown)',src:S_('Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire','Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire'),req:['dun_ubrs']},
+  {id:12930,n:'Briarwood Reed',q:3,il:60,rl:55,ty:'trinket',bind:'bop',st:{sp:15},src:S_('Jed Runewatcher · Blackrock Spire','Jed Runewatcher · Blackrock Spire'),req:['dun_ubrs']},
+  {id:270276,n:'Cleansed Vilebranch Icon',q:2,il:51,rl:40,ty:'trinket',bind:'bop',fac:'A',st:{sp:8,crit:0.5},src:S_('Quest · Saving Sharpbeak · The Hinterlands','Quest · Saving Sharpbeak · The Hinterlands'),req:['q_sharpbeak']},
+  {id:219345,n:'Infernal Lasso',q:3,il:50,rl:50,ty:'trinket',bind:'bop',st:{sp:8},pe:4.1,use:'Use: Deals 504 Fire damage over 12 sec. Demons and Beasts are Rooted in place for 6 sec. (5 Min Cooldown)',src:S_('Quest · Brought to Heel · Blasted Lands','Quest · Brought to Heel · Blasted Lands'),req:['q_lasso']},
+  {id:270225,n:'Jewel of the Guard Captain',q:2,il:51,rl:46,ty:'trinket',bind:'bop',fac:'H',st:{sp:8,crit:0.5},src:S_('Quest · Job Opening: Guard Captain of Revantusk Village · The Hinterlands','Quest · Job Opening: Guard Captain of Revantusk Village · The Hinterlands'),req:['q_revantusk']}]},
+ {k:'mainhand',n:S_('Arma','Weapon'),ench:{n:'Enchant 2H Weapon - Spellblasting',ws:7662,st:{sp:65}},opts:[
+  {id:13937,n:'Headmaster\'s Charge',q:4,il:62,rl:57,ty:'staff',bind:'bop',two:1,st:{sp:90,spi:20,sta:30},dmg:{dps:43.28,spd:2.9},pe:7.2,use:'Use: Gives 20 additional intellect to party members within 30 yards. (10 Min Cooldown)',src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo'],bis:['wfbA','wfbH']},
+  {id:22383,n:'Sageblade',q:4,il:64,rl:59,ty:'sword1',bind:'boe',st:{sp:94,hit:1,int:6,sta:14},dmg:{dps:31.03,spd:1.8},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['wtbc']},
+  {id:18534,n:'Rod of the Ogre Magi',q:3,il:63,rl:58,ty:'staff',bind:'bop',two:1,st:{sp:72,crit:1,int:20,spi:11,sta:14},dmg:{dps:40,spd:2.7},src:S_('Dire Maul','Dire Maul'),req:['dun_dmn']},
+  {id:18353,n:'Stoneflower Staff',q:3,il:61,rl:56,ty:'staff',bind:'bop',two:1,st:{sp:70,crit:1,int:24,armor:110},dmg:{dps:38.83,spd:3},src:S_('Tendris Warpwood · Dire Maul','Tendris Warpwood · Dire Maul'),req:['dun_dmw']},
+  {id:20536,n:'Soul Harvester',q:3,il:52,rl:50,ty:'staff',bind:'bop',two:1,st:{hit:1,int:16,shp:73,sta:19},dmg:{dps:33.48,spd:3.3},src:S_('Quest · Trolls of a Feather','Quest · Trolls of a Feather'),req:['q_voodoo']},
+  {id:280082,n:'Staff of Sorrow',q:3,il:57,rl:52,ty:'staff',bind:'bop',two:1,st:{sp:66,hit:1.5,int:15,spi:21},dmg:{dps:36.25,spd:3.6},src:S_('Mopes · Blackmaw Hold','Mopes · Blackmaw Hold'),req:['dun_blackmaw']}]},
+ {k:'offhand',n:S_('Mano izquierda','Off hand'),opts:[
+  {id:19309,n:'Tome of Shadow Force',q:4,il:60,rl:55,ty:'held',bind:'bop',st:{shp:31,sta:7},src:S_('Alterac Valley · Exaltado (vendedor de reputación)','Alterac Valley · Exalted (reputation vendor)'),req:['rep_av'],bis:['wtbc']},
+  {id:19315,n:'Therazane\'s Touch',q:4,il:60,rl:55,ty:'held',bind:'bop',st:{sp:29},src:S_('Alterac Valley · Exaltado (vendedor de reputación)','Alterac Valley · Exalted (reputation vendor)'),req:['rep_av']}]},
+ {k:'ranged',n:S_('Varita','Wand'),opts:[
+  {id:13396,n:'Skul\'s Ghastly Touch',q:3,il:60,rl:55,ty:'wand',bind:'bop',st:{shp:14},dmg:{dps:59.72,spd:1.8},src:S_('Skul · Stratholme','Skul · Stratholme'),req:['dun_strat'],bis:['wfbA','wfbH','wtbc']},
+  {id:13938,n:'Bonecreeper Stylus',q:3,il:62,rl:57,ty:'wand',bind:'bop',st:{sp:11,int:5},dmg:{dps:62.63,spd:1.9},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo']},
+  {id:18761,n:'Oblivion\'s Touch',q:3,il:62,rl:57,ty:'wand',bind:'bop',st:{sp:9,int:7},dmg:{dps:62.5,spd:1.8},src:S_('Death Knight Darkreaver · Scholomance','Death Knight Darkreaver · Scholomance'),req:['dun_scholo']},
+  {id:249385,n:'Brilliant Wand',q:3,il:60,rl:55,ty:'wand',bind:'boe',st:{sp:9,int:7},dmg:{dps:59.58,spd:1.2},src:S_('Crafteado (Enchanting)','Crafted (Enchanting)'),req:['craft']},
+  {id:22408,n:'Ritssyn\'s Wand of Bad Mojo',q:3,il:63,rl:58,ty:'wand',bind:'bop',st:{sp:11,sta:5},dmg:{dps:63.85,spd:1.3},src:S_('Baron Rivendare · Stratholme','Baron Rivendare · Stratholme'),req:['dun_strat']}]}
+];
+const SLOTS_DEMO = [
+ {k:'head',n:S_('Cabeza','Head'),ench:{n:'Arcanum of Focus',ws:2544,st:{sp:8}},opts:[
+  {id:22267,n:'Spellweaver\'s Turban',q:3,il:63,rl:60,ty:'back',bind:'bop',st:{sp:33,armor:73,hit:1,spi:13},src:S_('General Drakkisath · Blackrock Spire','General Drakkisath · Blackrock Spire'),req:['dun_ubrs'],bis:['wfbA','wfbH','wtbc']},
+  {id:3075,n:'Eye of Flame',q:4,il:55,rl:49,ty:'back',bind:'bop',st:{armor:70,fip:43,int:10,spi:10},src:S_('Phase Lasher · Dire Maul','Phase Lasher · Dire Maul'),req:['dun_dmw']},
+  {id:226909,n:'Deathmist Mask',q:4,il:60,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:18,armor:75,hit:1,int:24,sta:24},src:S_('Quest · Saving the Best for Last','Quest · Saving the Best for Last'),req:['t12']},
+  {id:18727,n:'Crimson Felt Hat',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:30,armor:68,int:10,spi:10,sta:8},src:S_('Magistrate Barthilas · Stratholme','Magistrate Barthilas · Stratholme'),req:['dun_strat']},
+  {id:15999,n:'Spellpower Goggles Xtreme Plus',q:2,il:54,rl:10,ty:'back',bind:'boe',st:{sp:27,armor:57},prof:'Engineering (270)',src:S_('Crafteado (Engineering)','Crafted (Engineering)'),req:['craft_eng']}]},
+ {k:'neck',n:S_('Cuello','Neck'),ench:{n:'Enchant Necklace - Spell Power',ws:8218,st:{sp:6}},opts:[
+  {id:19426,n:'Orb of the Darkmoon',q:4,il:65,rl:60,ty:'neck',bind:'bop',st:{sp:22,spi:8,sta:11},src:S_('Quest · 1200 Tickets - Orb of the Darkmoon / Vendedor · Gelvas Grimegate','Quest · 1200 Tickets - Orb of the Darkmoon / Vendor · Gelvas Grimegate'),req:['dmf'],bis:['wfbA','wfbH']},
+  {id:22403,n:'Nacreous Shell Necklace',q:3,il:61,rl:56,ty:'neck',bind:'bop',st:{sp:9,hit:1,int:8,sta:7},src:S_('Cannon Master Willey · Stratholme','Cannon Master Willey · Stratholme'),req:['dun_strat'],bis:['wtbc']},
+  {id:23125,n:'Chains of the Lich',q:3,il:60,rl:55,ty:'neck',bind:'bop',st:{sp:22},src:S_('Balzaphon · Stratholme','Balzaphon · Stratholme'),req:['dun_strat']},
+  {id:12103,n:'Star of Mystaria',q:3,il:63,rl:58,ty:'neck',bind:'bop',st:{hit:1.3,int:7,spi:7,sta:7},src:S_('Stratholme','Stratholme'),req:['dun_strat']},
+  {id:22149,n:'Beads of Ogre Mojo',q:3,il:63,rl:58,ty:'neck',bind:'bop',st:{sp:13,int:12,sta:7},src:S_('Quest · Falrin\'s Vendetta · Dire Maul','Quest · Falrin\'s Vendetta · Dire Maul'),req:['q_falrin']}]},
+ {k:'shoulder',n:S_('Hombros','Shoulders'),opts:[
+  {id:227808,n:'Rugged Mantle of the Timbermaw',q:4,il:65,rl:60,ty:'back',bind:'bop',st:{sp:27,armor:75,crit:1,int:15},prof:'Tailoring (290)',src:S_('Vendedor · Meilosh · Felwood','Vendor · Meilosh · Felwood'),req:['rep_timbermaw'],bis:['wfbA','wfbH']},
+  {id:19050,n:'Mantle of the Timbermaw',q:3,il:61,rl:56,ty:'back',bind:'boe',st:{sp:17,armor:65,crit:1,int:13},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wtbc']},
+  {id:19059,n:'Argent Shoulders',q:3,il:61,rl:56,ty:'back',bind:'boe',st:{sp:25,armor:65,spi:7},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:18681,n:'Burial Shawl',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:20,armor:65,int:16,sta:4},src:S_('Scholomance','Scholomance'),req:['dun_scholo']},
+  {id:18720,n:'Shroud of the Nathrezim',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{sp:7,armor:67,crit:1,int:16,spi:8},src:S_('Stratholme','Stratholme'),req:['dun_strat']}]},
+ {k:'back',n:S_('Capa','Back'),opts:[
+  {id:272411,n:'Arcanoweave Cloak',q:3,il:65,rl:60,ty:'back',bind:'bop',uniq:1,st:{sp:16,armor:46,hit:1,int:8},src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wfbA','wfbH','wtbc']},
+  {id:18350,n:'Amplifying Cloak',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:15,armor:43,spi:14},src:S_('Magister Kalendris · Dire Maul','Magister Kalendris · Dire Maul'),req:['dun_dmw']},
+  {id:18510,n:'Hide of the Wild',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:14,armor:48,int:10,sta:8},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw']},
+  {id:11623,n:'Spritecaster Cape',q:3,il:52,rl:47,ty:'back',bind:'bop',st:{sp:14,armor:37,int:6,spi:6,sta:5},src:S_('Houndmaster Grebmar · Blackrock Depths','Houndmaster Grebmar · Blackrock Depths'),req:['dun_brd']},
+  {id:15421,n:'Shroud of the Exile',q:3,il:63,rl:52,ty:'back',bind:'bop',st:{sp:12,armor:45,int:10,spi:7,sta:7},src:S_('Quest · In Dreams · Western Plaguelands','Quest · In Dreams · Western Plaguelands'),req:['q_dreams']}]},
+ {k:'chest',n:S_('Pecho','Chest'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:14153,n:'Robe of the Void',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:46,armor:96,int:9,sta:10},use:'Use: Heal your pet for 450 to 750. (10 Min Cooldown)',src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wfbA','wfbH','wtbc']},
+  {id:280057,n:'Robes of Dark Summons',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:21,armor:84,hit:1.8,sta:14},src:S_('Impaan the Imprisoner · Blackmaw Hold','Impaan the Imprisoner · Blackmaw Hold'),req:['dun_blackmaw']},
+  {id:13314,n:'Alanna\'s Embrace',q:4,il:62,rl:57,ty:'back',bind:'bop',st:{sp:23,armor:96,int:20,pen:5,sta:20},src:S_('Ras Frostwhisper · Scholomance','Ras Frostwhisper · Scholomance'),req:['dun_scholo']},
+  {id:18385,n:'Robe of Everlasting Night',q:3,il:62,rl:57,ty:'back',bind:'bop',st:{sp:27,armor:88,int:13,spi:5,sta:11},src:S_('Immol\'thar · Dire Maul','Immol\'thar · Dire Maul'),req:['dun_dmw']},
+  {id:11924,n:'Robes of the Royal Crown',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:18,armor:85,int:12,spi:10,pen:2,sta:19},src:S_('Emperor Dagran Thaurissan · Blackrock Depths','Emperor Dagran Thaurissan · Blackrock Depths'),req:['dun_brd']}]},
+ {k:'wrist',n:S_('Muñecas','Wrists'),ench:{n:'Enchant Bracer - Greater Spellpower',ws:7665,st:{sp:16}},opts:[
+  {id:18497,n:'Sublime Wristguards',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:12,armor:37,int:10,spi:6,sta:6},src:S_('Dire Maul','Dire Maul'),req:['dun_dmn'],bis:['wfbA','wfbH','wtbc']},
+  {id:254123,n:'Runecloth Cuffs',q:2,il:57,rl:52,ty:'back',bind:'boe',st:{sp:11,armor:32,int:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:254065,n:'Netherflame Cuffs',q:3,il:50,rl:45,ty:'back',bind:'boe',st:{armor:31,fip:13,int:7,spi:5,sta:7},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:226907,n:'Deathmist Bracers',q:3,il:65,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:7,armor:40,int:12,pen:1,sta:12},src:S_('Quest · An Earnest Proposition · Ironforge / Orgrimmar','Quest · An Earnest Proposition · Ironforge / Orgrimmar'),req:['t1']},
+  {id:11962,n:'Manacle Cuffs',q:3,il:55,rl:50,ty:'back',bind:'bop',st:{sp:7,armor:34,int:15},src:S_('Quest · The Love Potion · Blackrock Depths','Quest · The Love Potion · Blackrock Depths'),req:['dun_brd']}]},
+ {k:'hands',n:S_('Manos','Hands'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:226911,n:'Deathmist Wraps',q:4,il:55,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:13,armor:54,hit:1,int:13,sta:16},src:S_('Quest · Just Compensation · Ironforge / Orgrimmar','Quest · Just Compensation · Ironforge / Orgrimmar'),req:['t3'],bis:['wfbA','wfbH','wtbc']},
+  {id:14146,n:'Gloves of Spell Mastery',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:9,armor:60,crit:2,int:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:18408,n:'Inferno Gloves',q:3,il:62,rl:57,ty:'back',bind:'boe',st:{armor:55,fip:33,int:9},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:13253,n:'Hands of Power',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:23,armor:53,int:9,spi:8},src:S_('Quartermaster Zigris · Blackrock Spire','Quartermaster Zigris · Blackrock Spire'),req:['dun_lbrs']},
+  {id:21318,n:'Earth Warder\'s Gloves',q:2,il:58,rl:45,ty:'back',bind:'bop',st:{sp:22,armor:47},src:S_('Quest · Winterfall Activity','Quest · Winterfall Activity'),req:['q_winterfall']}]},
+ {k:'waist',n:S_('Cintura','Waist'),opts:[
+  {id:228190,n:'Knowledge of the Timbermaw',q:4,il:65,rl:60,ty:'back',bind:'bop',st:{sp:25,armor:56,hit:1,int:22},prof:'Tailoring (290)',src:S_('Vendedor · Meilosh · Felwood','Vendor · Meilosh · Felwood'),req:['rep_timbermaw'],bis:['wfbA','wfbH']},
+  {id:18405,n:'Belt of the Archmage',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:20,armor:54,crit:1,int:16,sta:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wtbc']},
+  {id:11662,n:'Ban\'thok Sash',q:3,il:54,rl:49,ty:'back',bind:'bop',st:{sp:12,armor:43,hit:1,int:10,sta:10},src:S_('Ok\'thor the Breaker · Blackrock Depths','Ok\'thor the Breaker · Blackrock Depths'),req:['dun_brd']},
+  {id:226905,n:'Deathmist Belt',q:3,il:65,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:12,armor:52,int:13,spi:8,pen:2,sta:13},src:S_('Quest · Just Compensation','Quest · Just Compensation'),req:['t3']},
+  {id:12589,n:'Dustfeather Sash',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:9,armor:49,int:17,pen:3,sta:10},src:S_('Solakar Flamewreath · Blackrock Spire','Solakar Flamewreath · Blackrock Spire'),req:['dun_ubrs']}]},
+ {k:'legs',n:S_('Piernas','Legs'),ench:{n:'Arcanum of Focus',ws:2544,st:{sp:8}},opts:[
+  {id:13170,n:'Skyshroud Leggings',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:30,armor:75,int:12,sta:11},src:S_('Highlord Omokk · Blackrock Spire','Highlord Omokk · Blackrock Spire'),req:['dun_lbrs'],bis:['wfbA','wfbH','wtbc']},
+  {id:226910,n:'Deathmist Leggings',q:3,il:66,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:15,armor:81,hit:1,int:18,sta:21},src:S_('Quest · Anthion\'s Parting Words · Orgrimmar','Quest · Anthion\'s Parting Words · Orgrimmar'),req:['t7']},
+  {id:14144,n:'Ghostweave Pants',q:2,il:58,rl:53,ty:'back',bind:'boe',st:{sp:26,armor:66,spi:20},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:12965,n:'Spiritshroud Leggings',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{sp:19,armor:78,int:16,spi:16,sta:13},src:S_('The Beast · Blackrock Spire','The Beast · Blackrock Spire'),req:['dun_ubrs']},
+  {id:9484,n:'Spellshock Leggings',q:3,il:50,rl:45,ty:'back',bind:'bop',st:{sp:23,armor:63,int:10,sta:9},src:S_('Antu\'sul · Zul\'Farrak','Antu\'sul · Zul\'Farrak'),req:['dun_zf']}]},
+ {k:'feet',n:S_('Pies','Feet'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:11822,n:'Omnicast Boots',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:20,armor:58,int:12,sta:8},src:S_('Golem Lord Argelmach · Blackrock Depths','Golem Lord Argelmach · Blackrock Depths'),req:['dun_brd'],bis:['wfbA','wfbH','wtbc']},
+  {id:275606,n:'Venomspew Footpads',q:3,il:58,rl:53,ty:'back',bind:'boe',st:{sp:22,armor:57,spi:8},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:18102,n:'Dragonrider Boots',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{sp:18,armor:61,int:16,sta:5},src:S_('Warchief Rend Blackhand · Blackrock Spire','Warchief Rend Blackhand · Blackrock Spire'),req:['dun_ubrs']},
+  {id:13369,n:'Fire Striders',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{armor:61,fip:29,spi:5},src:S_('Stratholme','Stratholme'),req:['dun_strat']},
+  {id:22231,n:'Kayser\'s Boots of Precision',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:4,armor:60,hit:1,int:18,sta:11},src:S_('War Master Voone · Blackrock Spire','War Master Voone · Blackrock Spire'),req:['dun_lbrs']}]},
+ {k:'finger1',n:S_('Anillo 1','Ring 1'),opts:[
+  {id:22339,n:'Rune Band of Wizardry',q:3,il:63,rl:58,ty:'finger',bind:'bop',uniq:1,st:{sp:13,hit:1,sta:7},src:S_('Lord Valthalak · Blackrock Spire','Lord Valthalak · Blackrock Spire'),req:['t11'],bis:['wfbA','wfbH','wtbc']},
+  {id:12543,n:'Songstone of Ironforge',q:3,il:60,rl:50,ty:'finger',bind:'bop',fac:'A',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess\'s Surprise · Blackrock Depths','Quest · The Princess\'s Surprise · Blackrock Depths'),req:['dun_brd']},
+  {id:13001,n:'Maiden\'s Circle',q:3,il:61,rl:55,ty:'finger',bind:'bop',st:{sp:18,int:7,spi:6},src:S_('Crimson Battle Mage · Stratholme','Crimson Battle Mage · Stratholme'),req:['dun_strat']},
+  {id:275738,n:'Jereman\'s Bauble',q:3,il:61,rl:54,ty:'finger',bind:'bop',st:{sp:15,int:11,spi:7},src:S_('Quest · Return to Jereman · Mount Hyjal','Quest · Return to Jereman · Mount Hyjal'),req:['q_jereman']},
+  {id:22433,n:'Don Mauricio\'s Band of Domination',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sp:11,crit:1,sta:10},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo']},
+  {id:12545,n:'Eye of Orgrimmar',q:3,il:60,rl:48,ty:'finger',bind:'bop',fac:'H',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess Saved? · Blackrock Depths','Quest · The Princess Saved? · Blackrock Depths'),req:['dun_brd']}]},
+ {k:'finger2',n:S_('Anillo 2','Ring 2'),opts:[
+  {id:272406,n:'Channeler\'s Ring',q:3,il:65,rl:60,ty:'finger',bind:'bop',uniq:1,st:{sp:9,hit:1,int:14},src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wfbA','wfbH','wtbc']},
+  {id:12543,n:'Songstone of Ironforge',q:3,il:60,rl:50,ty:'finger',bind:'bop',fac:'A',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess\'s Surprise · Blackrock Depths','Quest · The Princess\'s Surprise · Blackrock Depths'),req:['dun_brd']},
+  {id:13001,n:'Maiden\'s Circle',q:3,il:61,rl:55,ty:'finger',bind:'bop',st:{sp:18,int:7,spi:6},src:S_('Crimson Battle Mage · Stratholme','Crimson Battle Mage · Stratholme'),req:['dun_strat']},
+  {id:275738,n:'Jereman\'s Bauble',q:3,il:61,rl:54,ty:'finger',bind:'bop',st:{sp:15,int:11,spi:7},src:S_('Quest · Return to Jereman · Mount Hyjal','Quest · Return to Jereman · Mount Hyjal'),req:['q_jereman']},
+  {id:22433,n:'Don Mauricio\'s Band of Domination',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sp:11,crit:1,sta:10},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo']},
+  {id:12545,n:'Eye of Orgrimmar',q:3,il:60,rl:48,ty:'finger',bind:'bop',fac:'H',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess Saved? · Blackrock Depths','Quest · The Princess Saved? · Blackrock Depths'),req:['dun_brd']}]},
+ {k:'trinket1',n:S_('Abalorio 1','Trinket 1'),opts:[
+  {id:18467,n:'Royal Seal of Eldre\'Thalas',q:3,il:62,rl:54,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},src:S_('Quest · Harnessing Shadows · Dire Maul','Quest · Harnessing Shadows · Dire Maul'),req:['q_codex_wl'],bis:['wfbA','wfbH','wtbc']},
+  {id:13968,n:'Eye of the Beast',q:3,il:63,rl:55,ty:'trinket',bind:'bop',uniq:1,st:{crit:1},pe:5.4,use:'Use: Increases your Spell Hit chance by 7% for 20 sec. (5 Min Cooldown)',src:S_('Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire','Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire'),req:['dun_ubrs']},
+  {id:12930,n:'Briarwood Reed',q:3,il:60,rl:55,ty:'trinket',bind:'bop',st:{sp:15},src:S_('Jed Runewatcher · Blackrock Spire','Jed Runewatcher · Blackrock Spire'),req:['dun_ubrs']},
+  {id:219345,n:'Infernal Lasso',q:3,il:50,rl:50,ty:'trinket',bind:'bop',st:{sp:8},pe:4.1,use:'Use: Deals 504 Fire damage over 12 sec. Demons and Beasts are Rooted in place for 6 sec. (5 Min Cooldown)',src:S_('Quest · Brought to Heel · Blasted Lands','Quest · Brought to Heel · Blasted Lands'),req:['q_lasso']},
+  {id:20534,n:'Abyss Shard',q:3,il:52,rl:50,ty:'trinket',bind:'bop',st:{sp:12},src:S_('Quest · Trolls of a Feather','Quest · Trolls of a Feather'),req:['q_voodoo']}]},
+ {k:'trinket2',n:S_('Abalorio 2','Trinket 2'),opts:[
+  {id:272438,n:'Weakness Analyzer',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},pe:0.8,use:'Use: Increases your critical strike chance with all spells and attacks by 5% for 20 sec or until you deal a non-periodic critical effect. (6 Min Cooldown)',src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wfbA','wfbH']},
+  {id:13968,n:'Eye of the Beast',q:3,il:63,rl:55,ty:'trinket',bind:'bop',uniq:1,st:{crit:1},pe:5.4,use:'Use: Increases your Spell Hit chance by 7% for 20 sec. (5 Min Cooldown)',src:S_('Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire','Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire'),req:['dun_ubrs'],bis:['wtbc']},
+  {id:12930,n:'Briarwood Reed',q:3,il:60,rl:55,ty:'trinket',bind:'bop',st:{sp:15},src:S_('Jed Runewatcher · Blackrock Spire','Jed Runewatcher · Blackrock Spire'),req:['dun_ubrs']},
+  {id:219345,n:'Infernal Lasso',q:3,il:50,rl:50,ty:'trinket',bind:'bop',st:{sp:8},pe:4.1,use:'Use: Deals 504 Fire damage over 12 sec. Demons and Beasts are Rooted in place for 6 sec. (5 Min Cooldown)',src:S_('Quest · Brought to Heel · Blasted Lands','Quest · Brought to Heel · Blasted Lands'),req:['q_lasso']},
+  {id:20534,n:'Abyss Shard',q:3,il:52,rl:50,ty:'trinket',bind:'bop',st:{sp:12},src:S_('Quest · Trolls of a Feather','Quest · Trolls of a Feather'),req:['q_voodoo']}]},
+ {k:'mainhand',n:S_('Arma','Weapon'),ench:{n:'Enchant 2H Weapon - Spellblasting',ws:7662,st:{sp:65}},opts:[
+  {id:13937,n:'Headmaster\'s Charge',q:4,il:62,rl:57,ty:'staff',bind:'bop',two:1,st:{sp:90,spi:20,sta:30},dmg:{dps:43.28,spd:2.9},pe:7.2,use:'Use: Gives 20 additional intellect to party members within 30 yards. (10 Min Cooldown)',src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo'],bis:['wfbA','wfbH']},
+  {id:22383,n:'Sageblade',q:4,il:64,rl:59,ty:'sword1',bind:'boe',st:{sp:94,hit:1,int:6,sta:14},dmg:{dps:31.03,spd:1.8},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['wtbc']},
+  {id:944,n:'Elemental Mage Staff',q:4,il:61,rl:56,ty:'staff',bind:'boe',two:1,st:{fip:100,int:26,pen:8},dmg:{dps:42.66,spd:3.2},src:S_('Drop mundial (subasta)','World drop (Auction House)'),req:['ah']},
+  {id:280082,n:'Staff of Sorrow',q:3,il:57,rl:52,ty:'staff',bind:'bop',two:1,st:{sp:66,hit:1.5,int:15,spi:21},dmg:{dps:36.25,spd:3.6},src:S_('Mopes · Blackmaw Hold','Mopes · Blackmaw Hold'),req:['dun_blackmaw']},
+  {id:280023,n:'Nanaya\'s Control Spire',q:3,il:63,rl:58,ty:'staff',bind:'bop',two:1,st:{sp:72,int:19,mp5:7,pen:6},dmg:{dps:40,spd:3.2},src:S_('Nanaya','Nanaya'),req:[],verify:true},
+  {id:18534,n:'Rod of the Ogre Magi',q:3,il:63,rl:58,ty:'staff',bind:'bop',two:1,st:{sp:72,crit:1,int:20,spi:11,sta:14},dmg:{dps:40,spd:2.7},src:S_('Dire Maul','Dire Maul'),req:['dun_dmn']}]},
+ {k:'offhand',n:S_('Mano izquierda','Off hand'),opts:[
+  {id:19315,n:'Therazane\'s Touch',q:4,il:60,rl:55,ty:'held',bind:'bop',st:{sp:29},src:S_('Alterac Valley · Exaltado (vendedor de reputación)','Alterac Valley · Exalted (reputation vendor)'),req:['rep_av'],bis:['wtbc']},
+  {id:19309,n:'Tome of Shadow Force',q:4,il:60,rl:55,ty:'held',bind:'bop',st:{shp:31,sta:7},src:S_('Alterac Valley · Exaltado (vendedor de reputación)','Alterac Valley · Exalted (reputation vendor)'),req:['rep_av']}]},
+ {k:'ranged',n:S_('Varita','Wand'),opts:[
+  {id:13938,n:'Bonecreeper Stylus',q:3,il:62,rl:57,ty:'wand',bind:'bop',st:{sp:11,int:5},dmg:{dps:62.63,spd:1.9},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo'],bis:['wfbA','wfbH','wtbc']},
+  {id:18761,n:'Oblivion\'s Touch',q:3,il:62,rl:57,ty:'wand',bind:'bop',st:{sp:9,int:7},dmg:{dps:62.5,spd:1.8},src:S_('Death Knight Darkreaver · Scholomance','Death Knight Darkreaver · Scholomance'),req:['dun_scholo']},
+  {id:249385,n:'Brilliant Wand',q:3,il:60,rl:55,ty:'wand',bind:'boe',st:{sp:9,int:7},dmg:{dps:59.58,spd:1.2},src:S_('Crafteado (Enchanting)','Crafted (Enchanting)'),req:['craft']},
+  {id:22408,n:'Ritssyn\'s Wand of Bad Mojo',q:3,il:63,rl:58,ty:'wand',bind:'bop',st:{sp:11,sta:5},dmg:{dps:63.85,spd:1.3},src:S_('Baron Rivendare · Stratholme','Baron Rivendare · Stratholme'),req:['dun_strat']},
+  {id:11748,n:'Pyric Caduceus',q:3,il:53,rl:48,ty:'wand',bind:'bop',st:{fip:13,spi:3},dmg:{dps:52.5,spd:1.8},src:S_('Pyromancer Loregrain · Blackrock Depths','Pyromancer Loregrain · Blackrock Depths'),req:['dun_brd']}]}
+];
+const SLOTS_DESTRO = [
+ {k:'head',n:S_('Cabeza','Head'),ench:{n:'Arcanum of Focus',ws:2544,st:{sp:8}},opts:[
+  {id:22267,n:'Spellweaver\'s Turban',q:3,il:63,rl:60,ty:'back',bind:'bop',st:{sp:33,armor:73,hit:1,spi:13},src:S_('General Drakkisath · Blackrock Spire','General Drakkisath · Blackrock Spire'),req:['dun_ubrs'],bis:['wfbA','wfbH','wtbc']},
+  {id:226909,n:'Deathmist Mask',q:4,il:60,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:18,armor:75,hit:1,int:24,sta:24},src:S_('Quest · Saving the Best for Last','Quest · Saving the Best for Last'),req:['t12']},
+  {id:18727,n:'Crimson Felt Hat',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:30,armor:68,int:10,spi:10,sta:8},src:S_('Magistrate Barthilas · Stratholme','Magistrate Barthilas · Stratholme'),req:['dun_strat']},
+  {id:3075,n:'Eye of Flame',q:4,il:55,rl:49,ty:'back',bind:'bop',st:{armor:70,fip:43,int:10,spi:10},src:S_('Phase Lasher · Dire Maul','Phase Lasher · Dire Maul'),req:['dun_dmw']},
+  {id:10041,n:'Dreamweave Circlet',q:3,il:50,rl:45,ty:'back',bind:'boe',st:{sp:21,armor:58,int:10,spi:12},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']}]},
+ {k:'neck',n:S_('Cuello','Neck'),ench:{n:'Enchant Necklace - Spell Power',ws:8218,st:{sp:6}},opts:[
+  {id:19426,n:'Orb of the Darkmoon',q:4,il:65,rl:60,ty:'neck',bind:'bop',st:{sp:22,spi:8,sta:11},src:S_('Quest · 1200 Tickets - Orb of the Darkmoon / Vendedor · Gelvas Grimegate','Quest · 1200 Tickets - Orb of the Darkmoon / Vendor · Gelvas Grimegate'),req:['dmf'],bis:['wfbA','wfbH']},
+  {id:22403,n:'Nacreous Shell Necklace',q:3,il:61,rl:56,ty:'neck',bind:'bop',st:{sp:9,hit:1,int:8,sta:7},src:S_('Cannon Master Willey · Stratholme','Cannon Master Willey · Stratholme'),req:['dun_strat'],bis:['wtbc']},
+  {id:23125,n:'Chains of the Lich',q:3,il:60,rl:55,ty:'neck',bind:'bop',st:{sp:22},src:S_('Balzaphon · Stratholme','Balzaphon · Stratholme'),req:['dun_strat']},
+  {id:12103,n:'Star of Mystaria',q:3,il:63,rl:58,ty:'neck',bind:'bop',st:{hit:1.3,int:7,spi:7,sta:7},src:S_('Stratholme','Stratholme'),req:['dun_strat']},
+  {id:22149,n:'Beads of Ogre Mojo',q:3,il:63,rl:58,ty:'neck',bind:'bop',st:{sp:13,int:12,sta:7},src:S_('Quest · Falrin\'s Vendetta · Dire Maul','Quest · Falrin\'s Vendetta · Dire Maul'),req:['q_falrin']}]},
+ {k:'shoulder',n:S_('Hombros','Shoulders'),opts:[
+  {id:227808,n:'Rugged Mantle of the Timbermaw',q:4,il:65,rl:60,ty:'back',bind:'bop',st:{sp:27,armor:75,crit:1,int:15},prof:'Tailoring (290)',src:S_('Vendedor · Meilosh · Felwood','Vendor · Meilosh · Felwood'),req:['rep_timbermaw'],bis:['wfbA','wfbH']},
+  {id:19050,n:'Mantle of the Timbermaw',q:3,il:61,rl:56,ty:'back',bind:'boe',st:{sp:17,armor:65,crit:1,int:13},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wtbc']},
+  {id:19059,n:'Argent Shoulders',q:3,il:61,rl:56,ty:'back',bind:'boe',st:{sp:25,armor:65,spi:7},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:18681,n:'Burial Shawl',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:20,armor:65,int:16,sta:4},src:S_('Scholomance','Scholomance'),req:['dun_scholo']},
+  {id:18720,n:'Shroud of the Nathrezim',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{sp:7,armor:67,crit:1,int:16,spi:8},src:S_('Stratholme','Stratholme'),req:['dun_strat']}]},
+ {k:'back',n:S_('Capa','Back'),opts:[
+  {id:272411,n:'Arcanoweave Cloak',q:3,il:65,rl:60,ty:'back',bind:'bop',uniq:1,st:{sp:16,armor:46,hit:1,int:8},src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wfbA','wfbH','wtbc']},
+  {id:18350,n:'Amplifying Cloak',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:15,armor:43,spi:14},src:S_('Magister Kalendris · Dire Maul','Magister Kalendris · Dire Maul'),req:['dun_dmw']},
+  {id:18510,n:'Hide of the Wild',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:14,armor:48,int:10,sta:8},src:S_('Crafteado (Leatherworking)','Crafted (Leatherworking)'),req:['lw']},
+  {id:11623,n:'Spritecaster Cape',q:3,il:52,rl:47,ty:'back',bind:'bop',st:{sp:14,armor:37,int:6,spi:6,sta:5},src:S_('Houndmaster Grebmar · Blackrock Depths','Houndmaster Grebmar · Blackrock Depths'),req:['dun_brd']},
+  {id:15421,n:'Shroud of the Exile',q:3,il:63,rl:52,ty:'back',bind:'bop',st:{sp:12,armor:45,int:10,spi:7,sta:7},src:S_('Quest · In Dreams · Western Plaguelands','Quest · In Dreams · Western Plaguelands'),req:['q_dreams']}]},
+ {k:'chest',n:S_('Pecho','Chest'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:14153,n:'Robe of the Void',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:46,armor:96,int:9,sta:10},use:'Use: Heal your pet for 450 to 750. (10 Min Cooldown)',src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wfbA','wfbH','wtbc']},
+  {id:280057,n:'Robes of Dark Summons',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:21,armor:84,hit:1.8,sta:14},src:S_('Impaan the Imprisoner · Blackmaw Hold','Impaan the Imprisoner · Blackmaw Hold'),req:['dun_blackmaw']},
+  {id:13314,n:'Alanna\'s Embrace',q:4,il:62,rl:57,ty:'back',bind:'bop',st:{sp:23,armor:96,int:20,pen:5,sta:20},src:S_('Ras Frostwhisper · Scholomance','Ras Frostwhisper · Scholomance'),req:['dun_scholo']},
+  {id:18385,n:'Robe of Everlasting Night',q:3,il:62,rl:57,ty:'back',bind:'bop',st:{sp:27,armor:88,int:13,spi:5,sta:11},src:S_('Immol\'thar · Dire Maul','Immol\'thar · Dire Maul'),req:['dun_dmw']},
+  {id:13388,n:'The Postmaster\'s Tunic',q:3,il:61,rl:56,ty:'leather',bind:'bop',st:{sp:18,armor:87,int:20,spi:10,sta:13},src:S_('Postmaster Malown · Stratholme','Postmaster Malown · Stratholme'),req:['dun_strat']}]},
+ {k:'wrist',n:S_('Muñecas','Wrists'),ench:{n:'Enchant Bracer - Greater Spellpower',ws:7665,st:{sp:16}},opts:[
+  {id:18497,n:'Sublime Wristguards',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:12,armor:37,int:10,spi:6,sta:6},src:S_('Dire Maul','Dire Maul'),req:['dun_dmn'],bis:['wfbA','wfbH','wtbc']},
+  {id:254123,n:'Runecloth Cuffs',q:2,il:57,rl:52,ty:'back',bind:'boe',st:{sp:11,armor:32,int:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:11962,n:'Manacle Cuffs',q:3,il:55,rl:50,ty:'back',bind:'bop',st:{sp:7,armor:34,int:15},src:S_('Quest · The Love Potion · Blackrock Depths','Quest · The Love Potion · Blackrock Depths'),req:['dun_brd']},
+  {id:226907,n:'Deathmist Bracers',q:3,il:65,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:7,armor:40,int:12,pen:1,sta:12},src:S_('Quest · An Earnest Proposition · Ironforge / Orgrimmar','Quest · An Earnest Proposition · Ironforge / Orgrimmar'),req:['t1']},
+  {id:254065,n:'Netherflame Cuffs',q:3,il:50,rl:45,ty:'back',bind:'boe',st:{armor:31,fip:13,int:7,spi:5,sta:7},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']}]},
+ {k:'hands',n:S_('Manos','Hands'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:14146,n:'Gloves of Spell Mastery',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:9,armor:60,crit:2,int:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wfbA','wfbH']},
+  {id:226911,n:'Deathmist Wraps',q:4,il:55,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:13,armor:54,hit:1,int:13,sta:16},src:S_('Quest · Just Compensation · Ironforge / Orgrimmar','Quest · Just Compensation · Ironforge / Orgrimmar'),req:['t3'],bis:['wtbc']},
+  {id:13253,n:'Hands of Power',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:23,armor:53,int:9,spi:8},src:S_('Quartermaster Zigris · Blackrock Spire','Quartermaster Zigris · Blackrock Spire'),req:['dun_lbrs']},
+  {id:18408,n:'Inferno Gloves',q:3,il:62,rl:57,ty:'back',bind:'boe',st:{armor:55,fip:33,int:9},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:22256,n:'Mana Shaping Handwraps',q:3,il:57,rl:52,ty:'back',bind:'bop',st:{sp:16,armor:51,int:11,spi:7,sta:9},src:S_('Secret Safe · Blackrock Depths','Secret Safe · Blackrock Depths'),req:['dun_brd']}]},
+ {k:'waist',n:S_('Cintura','Waist'),opts:[
+  {id:228190,n:'Knowledge of the Timbermaw',q:4,il:65,rl:60,ty:'back',bind:'bop',st:{sp:25,armor:56,hit:1,int:22},prof:'Tailoring (290)',src:S_('Vendedor · Meilosh · Felwood','Vendor · Meilosh · Felwood'),req:['rep_timbermaw'],bis:['wfbA','wfbH']},
+  {id:18405,n:'Belt of the Archmage',q:4,il:62,rl:57,ty:'back',bind:'boe',st:{sp:20,armor:54,crit:1,int:16,sta:10},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft'],bis:['wtbc']},
+  {id:11662,n:'Ban\'thok Sash',q:3,il:54,rl:49,ty:'back',bind:'bop',st:{sp:12,armor:43,hit:1,int:10,sta:10},src:S_('Ok\'thor the Breaker · Blackrock Depths','Ok\'thor the Breaker · Blackrock Depths'),req:['dun_brd']},
+  {id:226905,n:'Deathmist Belt',q:3,il:65,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:12,armor:52,int:13,spi:8,pen:2,sta:13},src:S_('Quest · Just Compensation','Quest · Just Compensation'),req:['t3']},
+  {id:18740,n:'Thuzadin Sash',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:12,armor:49,int:12,spi:11,sta:11},src:S_('Nerub\'enkan · Stratholme','Nerub\'enkan · Stratholme'),req:['dun_strat']}]},
+ {k:'legs',n:S_('Piernas','Legs'),ench:{n:'Arcanum of Focus',ws:2544,st:{sp:8}},opts:[
+  {id:13170,n:'Skyshroud Leggings',q:3,il:60,rl:55,ty:'back',bind:'bop',st:{sp:30,armor:75,int:12,sta:11},src:S_('Highlord Omokk · Blackrock Spire','Highlord Omokk · Blackrock Spire'),req:['dun_lbrs'],bis:['wfbA','wfbH','wtbc']},
+  {id:226910,n:'Deathmist Leggings',q:3,il:66,rl:58,ty:'back',bind:'bop',set:'Deathmist Raiment',st:{sp:15,armor:81,hit:1,int:18,sta:21},src:S_('Quest · Anthion\'s Parting Words · Orgrimmar','Quest · Anthion\'s Parting Words · Orgrimmar'),req:['t7']},
+  {id:14144,n:'Ghostweave Pants',q:2,il:58,rl:53,ty:'back',bind:'boe',st:{sp:26,armor:66,spi:20},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:12965,n:'Spiritshroud Leggings',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{sp:19,armor:78,int:16,spi:16,sta:13},src:S_('The Beast · Blackrock Spire','The Beast · Blackrock Spire'),req:['dun_ubrs']},
+  {id:16687,n:'Magister\'s Leggings',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:7,armor:76,hit:0.9,int:15,spi:21,sta:12},src:S_('Baron Rivendare · Stratholme','Baron Rivendare · Stratholme'),req:['dun_strat']}]},
+ {k:'feet',n:S_('Pies','Feet'),ench:{n:'Mystic Rugged Armor Kit',ws:8492,st:{sp:6,armor:40}},opts:[
+  {id:11822,n:'Omnicast Boots',q:3,il:59,rl:54,ty:'back',bind:'bop',st:{sp:20,armor:58,int:12,sta:8},src:S_('Golem Lord Argelmach · Blackrock Depths','Golem Lord Argelmach · Blackrock Depths'),req:['dun_brd'],bis:['wfbA','wfbH','wtbc']},
+  {id:18102,n:'Dragonrider Boots',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{sp:18,armor:61,int:16,sta:5},src:S_('Warchief Rend Blackhand · Blackrock Spire','Warchief Rend Blackhand · Blackrock Spire'),req:['dun_ubrs']},
+  {id:275606,n:'Venomspew Footpads',q:3,il:58,rl:53,ty:'back',bind:'boe',st:{sp:22,armor:57,spi:8},src:S_('Crafteado (Tailoring)','Crafted (Tailoring)'),req:['craft']},
+  {id:22231,n:'Kayser\'s Boots of Precision',q:3,il:61,rl:56,ty:'back',bind:'bop',st:{sp:4,armor:60,hit:1,int:18,sta:11},src:S_('War Master Voone · Blackrock Spire','War Master Voone · Blackrock Spire'),req:['dun_lbrs']},
+  {id:13369,n:'Fire Striders',q:3,il:63,rl:58,ty:'back',bind:'bop',st:{armor:61,fip:29,spi:5},src:S_('Stratholme','Stratholme'),req:['dun_strat']}]},
+ {k:'finger1',n:S_('Anillo 1','Ring 1'),opts:[
+  {id:22339,n:'Rune Band of Wizardry',q:3,il:63,rl:58,ty:'finger',bind:'bop',uniq:1,st:{sp:13,hit:1,sta:7},src:S_('Lord Valthalak · Blackrock Spire','Lord Valthalak · Blackrock Spire'),req:['t11'],bis:['wfbA','wfbH','wtbc']},
+  {id:12543,n:'Songstone of Ironforge',q:3,il:60,rl:50,ty:'finger',bind:'bop',fac:'A',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess\'s Surprise · Blackrock Depths','Quest · The Princess\'s Surprise · Blackrock Depths'),req:['dun_brd']},
+  {id:13001,n:'Maiden\'s Circle',q:3,il:61,rl:55,ty:'finger',bind:'bop',st:{sp:18,int:7,spi:6},src:S_('Crimson Battle Mage · Stratholme','Crimson Battle Mage · Stratholme'),req:['dun_strat']},
+  {id:275738,n:'Jereman\'s Bauble',q:3,il:61,rl:54,ty:'finger',bind:'bop',st:{sp:15,int:11,spi:7},src:S_('Quest · Return to Jereman · Mount Hyjal','Quest · Return to Jereman · Mount Hyjal'),req:['q_jereman']},
+  {id:22433,n:'Don Mauricio\'s Band of Domination',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sp:11,crit:1,sta:10},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo']},
+  {id:12545,n:'Eye of Orgrimmar',q:3,il:60,rl:48,ty:'finger',bind:'bop',fac:'H',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess Saved? · Blackrock Depths','Quest · The Princess Saved? · Blackrock Depths'),req:['dun_brd']}]},
+ {k:'finger2',n:S_('Anillo 2','Ring 2'),opts:[
+  {id:272406,n:'Channeler\'s Ring',q:3,il:65,rl:60,ty:'finger',bind:'bop',uniq:1,st:{sp:9,hit:1,int:14},src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wfbA','wfbH','wtbc']},
+  {id:12543,n:'Songstone of Ironforge',q:3,il:60,rl:50,ty:'finger',bind:'bop',fac:'A',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess\'s Surprise · Blackrock Depths','Quest · The Princess\'s Surprise · Blackrock Depths'),req:['dun_brd']},
+  {id:13001,n:'Maiden\'s Circle',q:3,il:61,rl:55,ty:'finger',bind:'bop',st:{sp:18,int:7,spi:6},src:S_('Crimson Battle Mage · Stratholme','Crimson Battle Mage · Stratholme'),req:['dun_strat']},
+  {id:275738,n:'Jereman\'s Bauble',q:3,il:61,rl:54,ty:'finger',bind:'bop',st:{sp:15,int:11,spi:7},src:S_('Quest · Return to Jereman · Mount Hyjal','Quest · Return to Jereman · Mount Hyjal'),req:['q_jereman']},
+  {id:22433,n:'Don Mauricio\'s Band of Domination',q:3,il:63,rl:58,ty:'finger',bind:'bop',st:{sp:11,crit:1,sta:10},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo']},
+  {id:12545,n:'Eye of Orgrimmar',q:3,il:60,rl:48,ty:'finger',bind:'bop',fac:'H',st:{sp:18,int:7,pen:2},src:S_('Quest · The Princess Saved? · Blackrock Depths','Quest · The Princess Saved? · Blackrock Depths'),req:['dun_brd']}]},
+ {k:'trinket1',n:S_('Abalorio 1','Trinket 1'),opts:[
+  {id:13968,n:'Eye of the Beast',q:3,il:63,rl:55,ty:'trinket',bind:'bop',uniq:1,st:{crit:1},pe:5.4,use:'Use: Increases your Spell Hit chance by 7% for 20 sec. (5 Min Cooldown)',src:S_('Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire','Quest · For The Horde! · Blackrock Spire / Quest · General Drakkisath\'s Demise · Blackrock Spire'),req:['dun_ubrs'],bis:['wfbA','wfbH']},
+  {id:272438,n:'Weakness Analyzer',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},pe:0.8,use:'Use: Increases your critical strike chance with all spells and attacks by 5% for 20 sec or until you deal a non-periodic critical effect. (6 Min Cooldown)',src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wtbc']},
+  {id:18467,n:'Royal Seal of Eldre\'Thalas',q:3,il:62,rl:54,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},src:S_('Quest · Harnessing Shadows · Dire Maul','Quest · Harnessing Shadows · Dire Maul'),req:['q_codex_wl']},
+  {id:12930,n:'Briarwood Reed',q:3,il:60,rl:55,ty:'trinket',bind:'bop',st:{sp:15},src:S_('Jed Runewatcher · Blackrock Spire','Jed Runewatcher · Blackrock Spire'),req:['dun_ubrs']},
+  {id:270276,n:'Cleansed Vilebranch Icon',q:2,il:51,rl:40,ty:'trinket',bind:'bop',fac:'A',st:{sp:8,crit:0.5},src:S_('Quest · Saving Sharpbeak · The Hinterlands','Quest · Saving Sharpbeak · The Hinterlands'),req:['q_sharpbeak']},
+  {id:219345,n:'Infernal Lasso',q:3,il:50,rl:50,ty:'trinket',bind:'bop',st:{sp:8},pe:4.1,use:'Use: Deals 504 Fire damage over 12 sec. Demons and Beasts are Rooted in place for 6 sec. (5 Min Cooldown)',src:S_('Quest · Brought to Heel · Blasted Lands','Quest · Brought to Heel · Blasted Lands'),req:['q_lasso']},
+  {id:270225,n:'Jewel of the Guard Captain',q:2,il:51,rl:46,ty:'trinket',bind:'bop',fac:'H',st:{sp:8,crit:0.5},src:S_('Quest · Job Opening: Guard Captain of Revantusk Village · The Hinterlands','Quest · Job Opening: Guard Captain of Revantusk Village · The Hinterlands'),req:['q_revantusk']}]},
+ {k:'trinket2',n:S_('Abalorio 2','Trinket 2'),opts:[
+  {id:272438,n:'Weakness Analyzer',q:3,il:65,rl:60,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},pe:0.8,use:'Use: Increases your critical strike chance with all spells and attacks by 5% for 20 sec or until you deal a non-periodic critical effect. (6 Min Cooldown)',src:S_('Vendedor · Pix Xizzix · Stranglethorn Vale','Vendor · Pix Xizzix · Stranglethorn Vale'),req:['reals'],bis:['wfbA','wfbH']},
+  {id:18467,n:'Royal Seal of Eldre\'Thalas',q:3,il:62,rl:54,ty:'trinket',bind:'bop',uniq:1,st:{sp:18},src:S_('Quest · Harnessing Shadows · Dire Maul','Quest · Harnessing Shadows · Dire Maul'),req:['q_codex_wl'],bis:['wtbc']},
+  {id:12930,n:'Briarwood Reed',q:3,il:60,rl:55,ty:'trinket',bind:'bop',st:{sp:15},src:S_('Jed Runewatcher · Blackrock Spire','Jed Runewatcher · Blackrock Spire'),req:['dun_ubrs']},
+  {id:270276,n:'Cleansed Vilebranch Icon',q:2,il:51,rl:40,ty:'trinket',bind:'bop',fac:'A',st:{sp:8,crit:0.5},src:S_('Quest · Saving Sharpbeak · The Hinterlands','Quest · Saving Sharpbeak · The Hinterlands'),req:['q_sharpbeak']},
+  {id:219345,n:'Infernal Lasso',q:3,il:50,rl:50,ty:'trinket',bind:'bop',st:{sp:8},pe:4.1,use:'Use: Deals 504 Fire damage over 12 sec. Demons and Beasts are Rooted in place for 6 sec. (5 Min Cooldown)',src:S_('Quest · Brought to Heel · Blasted Lands','Quest · Brought to Heel · Blasted Lands'),req:['q_lasso']},
+  {id:270225,n:'Jewel of the Guard Captain',q:2,il:51,rl:46,ty:'trinket',bind:'bop',fac:'H',st:{sp:8,crit:0.5},src:S_('Quest · Job Opening: Guard Captain of Revantusk Village · The Hinterlands','Quest · Job Opening: Guard Captain of Revantusk Village · The Hinterlands'),req:['q_revantusk']}]},
+ {k:'mainhand',n:S_('Arma','Weapon'),ench:{n:'Enchant 2H Weapon - Spellblasting',ws:7662,st:{sp:65}},opts:[
+  {id:13937,n:'Headmaster\'s Charge',q:4,il:62,rl:57,ty:'staff',bind:'bop',two:1,st:{sp:90,spi:20,sta:30},dmg:{dps:43.28,spd:2.9},pe:7.2,use:'Use: Gives 20 additional intellect to party members within 30 yards. (10 Min Cooldown)',src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo'],bis:['wfbA','wfbH']},
+  {id:22383,n:'Sageblade',q:4,il:64,rl:59,ty:'sword1',bind:'boe',st:{sp:94,hit:1,int:6,sta:14},dmg:{dps:31.03,spd:1.8},src:S_('Crafteado (Blacksmithing)','Crafted (Blacksmithing)'),req:['craft'],bis:['wtbc']},
+  {id:280082,n:'Staff of Sorrow',q:3,il:57,rl:52,ty:'staff',bind:'bop',two:1,st:{sp:66,hit:1.5,int:15,spi:21},dmg:{dps:36.25,spd:3.6},src:S_('Mopes · Blackmaw Hold','Mopes · Blackmaw Hold'),req:['dun_blackmaw']},
+  {id:18534,n:'Rod of the Ogre Magi',q:3,il:63,rl:58,ty:'staff',bind:'bop',two:1,st:{sp:72,crit:1,int:20,spi:11,sta:14},dmg:{dps:40,spd:2.7},src:S_('Dire Maul','Dire Maul'),req:['dun_dmn']},
+  {id:18353,n:'Stoneflower Staff',q:3,il:61,rl:56,ty:'staff',bind:'bop',two:1,st:{sp:70,crit:1,int:24,armor:110},dmg:{dps:38.83,spd:3},src:S_('Tendris Warpwood · Dire Maul','Tendris Warpwood · Dire Maul'),req:['dun_dmw']},
+  {id:280023,n:'Nanaya\'s Control Spire',q:3,il:63,rl:58,ty:'staff',bind:'bop',two:1,st:{sp:72,int:19,mp5:7,pen:6},dmg:{dps:40,spd:3.2},src:S_('Nanaya','Nanaya'),req:[],verify:true}]},
+ {k:'offhand',n:S_('Mano izquierda','Off hand'),opts:[
+  {id:19315,n:'Therazane\'s Touch',q:4,il:60,rl:55,ty:'held',bind:'bop',st:{sp:29},src:S_('Alterac Valley · Exaltado (vendedor de reputación)','Alterac Valley · Exalted (reputation vendor)'),req:['rep_av'],bis:['wtbc']},
+  {id:19309,n:'Tome of Shadow Force',q:4,il:60,rl:55,ty:'held',bind:'bop',st:{shp:31,sta:7},src:S_('Alterac Valley · Exaltado (vendedor de reputación)','Alterac Valley · Exalted (reputation vendor)'),req:['rep_av']}]},
+ {k:'ranged',n:S_('Varita','Wand'),opts:[
+  {id:13938,n:'Bonecreeper Stylus',q:3,il:62,rl:57,ty:'wand',bind:'bop',st:{sp:11,int:5},dmg:{dps:62.63,spd:1.9},src:S_('Darkmaster Gandling · Scholomance','Darkmaster Gandling · Scholomance'),req:['dun_scholo'],bis:['wfbA','wfbH','wtbc']},
+  {id:18761,n:'Oblivion\'s Touch',q:3,il:62,rl:57,ty:'wand',bind:'bop',st:{sp:9,int:7},dmg:{dps:62.5,spd:1.8},src:S_('Death Knight Darkreaver · Scholomance','Death Knight Darkreaver · Scholomance'),req:['dun_scholo']},
+  {id:249385,n:'Brilliant Wand',q:3,il:60,rl:55,ty:'wand',bind:'boe',st:{sp:9,int:7},dmg:{dps:59.58,spd:1.2},src:S_('Crafteado (Enchanting)','Crafted (Enchanting)'),req:['craft']},
+  {id:22408,n:'Ritssyn\'s Wand of Bad Mojo',q:3,il:63,rl:58,ty:'wand',bind:'bop',st:{sp:11,sta:5},dmg:{dps:63.85,spd:1.3},src:S_('Baron Rivendare · Stratholme','Baron Rivendare · Stratholme'),req:['dun_strat']},
+  {id:11748,n:'Pyric Caduceus',q:3,il:53,rl:48,ty:'wand',bind:'bop',st:{fip:13,spi:3},dmg:{dps:52.5,spd:1.8},src:S_('Pyromancer Loregrain · Blackrock Depths','Pyromancer Loregrain · Blackrock Depths'),req:['dun_brd']}]}
+];
+
 // set bonuses that matter for the model / optimizer
 const SET_BONUS={'Devilsaur Armor':{need:2,st:{hit:2}}};
 
-const SPEC_SLOTS={prot:SLOTS_PROT,fury:SLOTS_FURY};
+const SPEC_SLOTS={prot:SLOTS_PROT,fury:SLOTS_FURY,aff:SLOTS_AFF,demo:SLOTS_DEMO,destro:SLOTS_DESTRO};
+// class of each spec (dropdown groups) 
+const SPECS=[{cls:'warrior',specs:['prot','fury']},{cls:'warlock',specs:['aff','demo','destro']}];
 let SLOTS=SLOTS_PROT;
 
 // tooltip vocabulary (game items keep their English names; tooltip lines translate)
 const TT={
  es:{bop:'Se liga al recogerlo',boe:'Se liga al equiparlo',uniq:'Único',uniq2:'Único: Undermine Trinket (1)',ilvl:'Nivel de objeto',req:'Requiere nivel',reqp:'Requiere',
   slot:{head:'Cabeza',neck:'Cuello',shoulder:'Hombros',back:'Espalda',chest:'Pecho',wrist:'Muñeca',hands:'Manos',waist:'Cintura',legs:'Piernas',feet:'Pies',finger1:'Dedo',finger2:'Dedo',trinket1:'Abalorio',trinket2:'Abalorio',mainhand:'Una mano',offhand:'Mano izquierda',ranged:'A distancia'},
-  ty:{plate:'Placas',leather:'Cuero',mail:'Malla',dagger:'Daga',neck:'',back:'Tela',finger:'',trinket:'',sword1:'Espada',axe1:'Hacha',mace1:'Maza',shield:'Escudo',bow:'Arco',gun:'Arma de fuego',xbow:'Ballesta'},
+  ty:{plate:'Placas',leather:'Cuero',mail:'Malla',dagger:'Daga',neck:'',back:'Tela',finger:'',trinket:'',sword1:'Espada',axe1:'Hacha',mace1:'Maza',shield:'Escudo',bow:'Arco',gun:'Arma de fuego',xbow:'Ballesta',staff:'Bastón',wand:'Varita',held:'',cloth:'Tela'},
   armor:'armadura',block:'bloqueo',fireR:'resistencia a Fuego',natR:'resistencia a Naturaleza',dodge:n=>`Aumenta tu probabilidad de esquivar un ataque un ${n}%.`,parry:n=>`Aumenta tu probabilidad de parar un ataque un ${n}%.`,stamina:'Aguante',strength:'Fuerza',agility:'Agilidad',intellect:'Intelecto',spirit:'Espíritu',dmg:'Daño',speed:'Velocidad',dps:'daño por segundo',
-  eq:'Equipar:',use:'Uso:',def:n=>`Aumenta la defensa en +${n}.`,hit:n=>`Mejora tu probabilidad de golpear un ${n}%.`,crit:n=>`Mejora tu probabilidad de conseguir un golpe crítico un ${n}%.`,bv:n=>`Aumenta el valor de bloqueo de tu escudo en ${n}.`,ap:n=>`+${n} poder de ataque.`,exp:n=>`Aumenta tu pericia un ${n}%.`,blk:n=>`Aumenta tu probabilidad de bloquear ataques con un escudo un ${n}%.`,hp5:n=>`Restaura ${n} de salud cada 5 s.`,sp:n=>`Aumenta el daño y la sanación de hechizos hasta en ${n}.`,
-  fx:{cup:'Uso: +40 aguante y −20 daño físico recibido durante 2 min, pero −10 fuerza/agilidad y +80 daño mágico recibido (10 min de reutilización).',flurry:'Probabilidad al golpear: 1 ataque extra en tu siguiente golpe.',dcall:'Probabilidad al golpear: invoca un Emerald Dragon Whelp que lucha contigo 10 s.',fel:'Probabilidad al golpear: todos tus ataques aciertan y son críticos durante 3 s.',iron:'Equipar: tus ataques pueden darte 2 ataques extra en el siguiente golpe.',wyrm:'Equipar: tus ataques pueden infligir 112-168 de daño de Fuego.',bash:'Probabilidad al golpear: reduce la armadura del objetivo en 100 (hasta 3 veces).',bhb:'Uso: marca al objetivo, +5% de crítico contra él durante 20 s (5 min).',cal:'Uso: desarma al siguiente atacante cuerpo a cuerpo (activable).',beh:'Uso: te cura a ti y al aliado más cercano 480-530 (5 min).',nag:'Equipar: Inflige 3 de daño Arcano al atacante cuando te golpean.',vig:'Uso: Aumenta tu probabilidad de esquivar un 20% durante 20 s o hasta esquivar 3 ataques.',hoj:'Equipar: 1% de probabilidad al golpear cuerpo a cuerpo de obtener un ataque extra.',dgs:'Uso: Aumenta tu probabilidad de bloqueo un 8% durante 15 s. Efecto doble en Fortalezas y Ciudades. (6 min de reutilización)',aca:'Uso: Absorbe 450 de daño durante 15 s. Si expira antes, inflige 90–110 de daño de Naturaleza a los enemigos en cuerpo a cuerpo. (5 min)',fin:'Equipar: Aumenta la Fuerza en 38 mientras sufres un Sangrado.',frd:'Equipar: Al bloquear, libera una descarga eléctrica que daña a los enemigos cercanos. Puede dañar el escudo.',jag:'Equipar: Al recibir un hechizo dañino, 5% de silenciar al lanzador durante 3 s.'},
+  eq:'Equipar:',use:'Uso:',def:n=>`Aumenta la defensa en +${n}.`,hit:n=>`Mejora tu probabilidad de golpear un ${n}%.`,crit:n=>`Mejora tu probabilidad de conseguir un golpe crítico un ${n}%.`,bv:n=>`Aumenta el valor de bloqueo de tu escudo en ${n}.`,ap:n=>`+${n} poder de ataque.`,exp:n=>`Aumenta tu pericia un ${n}%.`,blk:n=>`Aumenta tu probabilidad de bloquear ataques con un escudo un ${n}%.`,hp5:n=>`Restaura ${n} de salud cada 5 s.`,sp:n=>`Aumenta el daño y la sanación de hechizos hasta en ${n}.`,shp:n=>`Aumenta el daño de hechizos de Sombra hasta en ${n}.`,fip:n=>`Aumenta el daño de hechizos de Fuego hasta en ${n}.`,shit:n=>`Mejora tu probabilidad de golpear con hechizos un ${n}%.`,scrit:n=>`Mejora tu probabilidad de crítico con hechizos un ${n}%.`,mp5:n=>`Restaura ${n} de maná cada 5 s.`,pen:n=>`Reduce las resistencias mágicas del objetivo en ${n}.`,haste:n=>`Aumenta tu velocidad de lanzamiento un ${n}%.`,
+  fx:{cup:'Uso: +40 aguante y −20 daño físico recibido durante 2 min, pero −10 fuerza/agilidad y +80 daño mágico recibido (10 min de reutilización).',flurry:'Probabilidad al golpear: 1 ataque extra en tu siguiente golpe.',icebl:'Equipar: los ataques con esta arma hacen 41 de daño de Escarcha. Probabilidad al golpear: 74 a 137 de daño de Escarcha y ralentiza un 50% durante 5 s.',dcall:'Probabilidad al golpear: invoca un Emerald Dragon Whelp que lucha contigo 10 s.',fel:'Probabilidad al golpear: todos tus ataques aciertan y son críticos durante 3 s.',iron:'Equipar: tus ataques pueden darte 2 ataques extra en el siguiente golpe.',wyrm:'Equipar: tus ataques pueden infligir 112-168 de daño de Fuego.',bash:'Probabilidad al golpear: reduce la armadura del objetivo en 100 (hasta 3 veces).',bhb:'Uso: marca al objetivo, +5% de crítico contra él durante 20 s (5 min).',cal:'Uso: desarma al siguiente atacante cuerpo a cuerpo (activable).',beh:'Uso: te cura a ti y al aliado más cercano 480-530 (5 min).',nag:'Equipar: Inflige 3 de daño Arcano al atacante cuando te golpean.',vig:'Uso: Aumenta tu probabilidad de esquivar un 20% durante 20 s o hasta esquivar 3 ataques.',hoj:'Equipar: 1% de probabilidad al golpear cuerpo a cuerpo de obtener un ataque extra.',dgs:'Uso: Aumenta tu probabilidad de bloqueo un 8% durante 15 s. Efecto doble en Fortalezas y Ciudades. (6 min de reutilización)',aca:'Uso: Absorbe 450 de daño durante 15 s. Si expira antes, inflige 90–110 de daño de Naturaleza a los enemigos en cuerpo a cuerpo. (5 min)',fin:'Equipar: Aumenta la Fuerza en 38 mientras sufres un Sangrado.',frd:'Equipar: Al bloquear, libera una descarga eléctrica que daña a los enemigos cercanos. Puede dañar el escudo.',jag:'Equipar: Al recibir un hechizo dañino, 5% de silenciar al lanzador durante 3 s.'},
   set:'Conjunto',src:'Fuente',open:'Tooltip oficial: botón Wowhead ↗ en la pestaña Equipo'},
  en:{bop:'Binds when picked up',boe:'Binds when equipped',uniq:'Unique',uniq2:'Unique-Equipped: Undermine Trinket (1)',ilvl:'Item Level',req:'Requires Level',reqp:'Requires',
   slot:{head:'Head',neck:'Neck',shoulder:'Shoulder',back:'Back',chest:'Chest',wrist:'Wrist',hands:'Hands',waist:'Waist',legs:'Legs',feet:'Feet',finger1:'Finger',finger2:'Finger',trinket1:'Trinket',trinket2:'Trinket',mainhand:'One-Hand',offhand:'Off Hand',ranged:'Ranged'},
-  ty:{plate:'Plate',leather:'Leather',mail:'Mail',dagger:'Dagger',neck:'',back:'Cloth',finger:'',trinket:'',sword1:'Sword',axe1:'Axe',mace1:'Mace',shield:'Shield',bow:'Bow',gun:'Gun',xbow:'Crossbow'},
+  ty:{plate:'Plate',leather:'Leather',mail:'Mail',dagger:'Dagger',neck:'',back:'Cloth',finger:'',trinket:'',sword1:'Sword',axe1:'Axe',mace1:'Mace',shield:'Shield',bow:'Bow',gun:'Gun',xbow:'Crossbow',staff:'Staff',wand:'Wand',held:'Held In Off-hand',cloth:'Cloth'},
   armor:'Armor',block:'Block',fireR:'Fire Resistance',natR:'Nature Resistance',dodge:n=>`Increases your chance to dodge an attack by ${n}%.`,parry:n=>`Increases your chance to parry an attack by ${n}%.`,stamina:'Stamina',strength:'Strength',agility:'Agility',intellect:'Intellect',spirit:'Spirit',dmg:'Damage',speed:'Speed',dps:'damage per second',
-  eq:'Equip:',use:'Use:',def:n=>`Increased Defense +${n}.`,hit:n=>`Improves your chance to hit by ${n}%.`,crit:n=>`Improves your chance to get a critical strike by ${n}%.`,bv:n=>`Increases the block value of your shield by ${n}.`,ap:n=>`+${n} Attack Power.`,exp:n=>`Increases your expertise by ${n}%.`,blk:n=>`Increases your chance to block attacks with a shield by ${n}%.`,hp5:n=>`Restores ${n} health per 5 sec.`,sp:n=>`Increases damage and healing done by magical spells and effects by up to ${n}.`,
-  fx:{cup:'Use: +40 Stamina and 20 less physical damage taken for 2.1 min, but −10 Strength/Agility and up to 80 more magical damage taken (10 min cooldown).',flurry:'Chance on hit: grants 1 extra attack on your next swing.',dcall:'Chance on hit: calls forth an Emerald Dragon Whelp to protect you in battle for 10 sec.',fel:'Chance on hit: all attacks are guaranteed to land and will be critical strikes for the next 3 sec.',iron:'Equip: attacks have a chance to grant 2 extra attacks on your next swing.',wyrm:'Equip: melee and ranged attacks have a chance to deal 112 to 168 Fire damage.',bash:'Chance on hit: punctures the target\'s armor, lowering it by 100 (stacks 3).',bhb:'Use: marks your target, +5% crit chance against it for 20 sec (5 min).',cal:'Use: disarms the next melee attacker that strikes you.',beh:'Use: heals you and your nearest ally for 480 to 530 (5 min).',nag:'Equip: When struck in combat inflicts 3 Arcane damage to the attacker.',vig:'Use: Increases your chance to Dodge by 20% for 20 sec or until you Dodge 3 attacks.',hoj:'Equip: 1% chance on melee hit to gain 1 extra attack.',dgs:'Use: Increases your Block chance by 8% for 15 sec. Doubled in Strongholds and Cities. (6 Min Cooldown)',aca:'Use: Absorbs 450 damage for 15 sec. If it expires early, deals 90 to 110 Nature damage to enemies in melee range. (5 Min Cooldown)',fin:'Equip: Increases Strength by 38 while affected by a Bleed.',frd:'Equip: When the shield blocks, it releases an electrical charge that damages all nearby enemies. This also has a chance of damaging the shield.',jag:'Equip: When struck by a harmful spell, the caster has a 5% chance to be silenced for 3 sec.'},
+  eq:'Equip:',use:'Use:',def:n=>`Increased Defense +${n}.`,hit:n=>`Improves your chance to hit by ${n}%.`,crit:n=>`Improves your chance to get a critical strike by ${n}%.`,bv:n=>`Increases the block value of your shield by ${n}.`,ap:n=>`+${n} Attack Power.`,exp:n=>`Increases your expertise by ${n}%.`,blk:n=>`Increases your chance to block attacks with a shield by ${n}%.`,hp5:n=>`Restores ${n} health per 5 sec.`,sp:n=>`Increases damage and healing done by magical spells and effects by up to ${n}.`,shp:n=>`Increases damage done by Shadow spells and effects by up to ${n}.`,fip:n=>`Increases damage done by Fire spells and effects by up to ${n}.`,shit:n=>`Improves your chance to hit with spells by ${n}%.`,scrit:n=>`Improves your chance to get a critical strike with spells by ${n}%.`,mp5:n=>`Restores ${n} mana per 5 sec.`,pen:n=>`Decreases the magical resistances of your spell targets by ${n}.`,haste:n=>`Increases your casting speed by ${n}%.`,
+  fx:{cup:'Use: +40 Stamina and 20 less physical damage taken for 2.1 min, but −10 Strength/Agility and up to 80 more magical damage taken (10 min cooldown).',flurry:'Chance on hit: grants 1 extra attack on your next swing.',icebl:'Equip: Melee attacks with this weapon deal 41 Frost damage. Chance on hit: deals 74 to 137 Frost damage and slows movement by 50% for 5 sec.',dcall:'Chance on hit: calls forth an Emerald Dragon Whelp to protect you in battle for 10 sec.',fel:'Chance on hit: all attacks are guaranteed to land and will be critical strikes for the next 3 sec.',iron:'Equip: attacks have a chance to grant 2 extra attacks on your next swing.',wyrm:'Equip: melee and ranged attacks have a chance to deal 112 to 168 Fire damage.',bash:'Chance on hit: punctures the target\'s armor, lowering it by 100 (stacks 3).',bhb:'Use: marks your target, +5% crit chance against it for 20 sec (5 min).',cal:'Use: disarms the next melee attacker that strikes you.',beh:'Use: heals you and your nearest ally for 480 to 530 (5 min).',nag:'Equip: When struck in combat inflicts 3 Arcane damage to the attacker.',vig:'Use: Increases your chance to Dodge by 20% for 20 sec or until you Dodge 3 attacks.',hoj:'Equip: 1% chance on melee hit to gain 1 extra attack.',dgs:'Use: Increases your Block chance by 8% for 15 sec. Doubled in Strongholds and Cities. (6 Min Cooldown)',aca:'Use: Absorbs 450 damage for 15 sec. If it expires early, deals 90 to 110 Nature damage to enemies in melee range. (5 Min Cooldown)',fin:'Equip: Increases Strength by 38 while affected by a Bleed.',frd:'Equip: When the shield blocks, it releases an electrical charge that damages all nearby enemies. This also has a chance of damaging the shield.',jag:'Equip: When struck by a harmful spell, the caster has a 5% chance to be silenced for 3 sec.'},
   set:'Set',src:'Source',open:'Official tooltip: Wowhead ↗ button in the Gear tab'}
 };
 
@@ -796,13 +1232,30 @@ const BYNAME=Object.fromEntries(Object.values(ITEM).map(o=>[o.n,o.id]));
 
 // ---------- STATE ----------
 const KEY='prot-route:v1';
-const DEF = ()=>({spec:'prot', faction:'A', lang:'es', sel:{A:{},H:{}}, offSlot:{}, have:{}, steps:{}, ench:true, showDone:true, showSkipped:false, tab:'gear', presets:[], laterOpen:true, talents:{a:5,d:5,s:5,t:0,c:5}});
+const DEF = ()=>({spec:'prot', faction:'A', lang:'es', sel:{A:{},H:{}}, offSlot:{}, have:{}, steps:{}, ench:true, showDone:true, showSkipped:false, tab:'gear', presets:[], laterOpen:true, talents:{a:5,d:5,s:5,t:0,c:5,sup:5,dev:5}});
 let S = DEF();
 try{ const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(DEF(),JSON.parse(raw)); }catch(e){}
 const SK=()=>S.spec==='prot'?S.faction:S.spec+S.faction;
 const SEL=()=>S.sel[SK()]||(S.sel[SK()]={});
 const IS_FURY=()=>S.spec==='fury';
-function applySpec(){ SLOTS=SPEC_SLOTS[S.spec]||SLOTS_PROT; indexItems(); }
+const IS_WL=()=>['aff','demo','destro'].includes(S.spec);
+const CLS=()=>IS_WL()?'warlock':'warrior';
+const NODE_ORIG={};
+const WL_SWAP=[['Battlegear of Valor (T0)','Dreadmist Raiment (T0)'],['Battlegear of Valor','Dreadmist Raiment'],
+ ['Pauldrons + Sabatons of Heroism','Deathmist Leggings'],['Faceguard + Chestguard of Heroism','Deathmist Mask'],
+ ['Wristguards of Heroism','Deathmist Bracers'],['Waistguard of Heroism','Deathmist Belt + Deathmist Wraps'],
+ ['Boots, Legplates y Spaulders of Valor','Dreadmist Sandals, Leggings y Mantle'],['Boots, Legplates and Spaulders of Valor','Dreadmist Sandals, Leggings and Mantle'],
+ ['Belt y Gauntlets of Valor','Dreadmist Belt y Dreadmist Wraps'],['Belt and Gauntlets of Valor','Dreadmist Belt and Dreadmist Wraps'],
+ ['Helm + Breastplate of Valor','Dreadmist Mask + Dreadmist Robe'],['Bracers of Valor','Dreadmist Bracers'],
+ [' Si usas Boots of Valor como pies, las pierdes aquí.',''],[' If you wear Boots of Valor, you lose them here.','']];
+const WL_T0={es:'Cada paso T0.5 consume la pieza T0 (Dreadmist Raiment) del mismo slot. Las piezas caen en LBRS, UBRS, Scholomance y Stratholme: confirma en Wowhead dónde cae cada una.',
+ en:'Each T0.5 step uses up the T0 piece (Dreadmist Raiment) of the same slot. The pieces drop in LBRS, UBRS, Scholomance and Stratholme: check each one on Wowhead.'};
+function swapText(v){ if(v==null) return v; if(typeof v==='string'){ let t=v; WL_SWAP.forEach(([a,b])=>{ t=t.split(a).join(b); }); return t; }
+  const o={}; for(const k in v) o[k]=swapText(v[k]); return o; }
+function applySpec(){ SLOTS=SPEC_SLOTS[S.spec]||SLOTS_PROT; indexItems();
+  NODES.forEach(n=>{ if(!/^t\d+$/.test(n.id)) return; if(!NODE_ORIG[n.id]) NODE_ORIG[n.id]={title:n.title,desc:n.desc};
+    const o=NODE_ORIG[n.id], wl=IS_WL(); NODE[n.id].title=wl?swapText(o.title):o.title;
+    NODE[n.id].desc=wl?(n.id==='t0'?WL_T0:swapText(o.desc)):o.desc; }); }
 applySpec();
 // Support links shown only on the website (never inside the addon: Blizzard UI add-on policy).
 // Fill in the URLs to show them; empty entries are hidden.
@@ -827,6 +1280,8 @@ const U=k=>UI[S.lang][k];
 const tx = v => { if(v==null) return ''; if(typeof v==='string') return v; if(v.A) v=v[S.faction]||v.A; return v[S.lang]??v.es; };
 const optsFor = sl => { const a=sl.opts.filter(o=>!o.fac||o.fac===S.faction), reg=a.filter(o=>!o.xo).slice(0,5), id=SEL()[sl.k];
   const x=reg.some(o=>o.id===id)?null:a.find(o=>o.id===id); return x?reg.concat([x]):reg; };
+const ohBlocked=()=>{ const m=SLOTS.find(s=>s.k==='mainhand'); return !!(m&&selected(m).two); };
+const slotOff=k=>!!S.offSlot[k]||(k==='offhand'&&IS_WL()&&ohBlocked());
 function selected(sl){
   const os=optsFor(sl), id=SEL()[sl.k];
   return os.find(o=>o.id===id) || os.find(o=>(o.bis||[]).includes('wfb'+S.faction)) || os[0];
@@ -837,7 +1292,7 @@ function preset(tag){ SLOTS.forEach(sl=>{ const o=optsFor(sl).find(o=>(o.bis||[]
 function computeRoute(){
   const need=new Map(); // node -> Set(item ids)
   SLOTS.forEach(sl=>{
-    if(S.offSlot[sl.k]) return;
+    if(slotOff(sl.k)) return;
     const o=selected(sl); if(S.have[o.id]) return;
     const walk=id=>{ const n=NODE[id]; if(!n) return; if(!need.has(id)) need.set(id,new Set()); need.get(id).add(o.id); n.deps.forEach(walk); };
     o.req.forEach(walk);
@@ -867,9 +1322,9 @@ const OPEN={}; // expanded slot cards (per session)
 // Tank model: level 60 Warrior vs level 63 boss (skill 315). Talents from the WFB preset 5/15/31:
 // Deflection +5% parry, Anticipation +10 defense, Shield Specialization +5% block. Human base stats.
 const MODEL={baseAgi:80,baseSta:110,baseHP:1689,anticip:10,deflect:5,shieldSpec:5,bossSkill:315,bossLvl:63,defCap:440,hitCap:8,expCap:6.5,crushCap:102.4};
-// WoW Forever BiS List tank stat weights (EP). Defense and hit are handled as constraints (440 / 8%), not weights.
+// WoW Forever BiS List tank stat weights (EP). Procs (o.pe) use WFB's own estimated EP. Defense and hit are handled as constraints (440 / 8%), not weights.
 const EPW={sta:1,str:0.539,agi:0.574,armor:0.052,ap:0.235,crit:5.235,dodge:3.026,parry:3.391,bv:0.661,blk:0.087,exp:19.3,def:0.17};
-function epOf(o,k){ let e=0; const s=o.st||{}; for(const w in EPW) e+=(s[w]||0)*EPW[w]; if(o.dmg&&o.dmg.dps) e+=o.dmg.dps*(k==='ranged'?1:1.235); return e; }
+function epOf(o,k){ let e=0; const s=o.st||{}; for(const w in EPW) e+=(s[w]||0)*EPW[w]; if(o.dmg&&o.dmg.dps) e+=o.dmg.dps*(k==='ranged'?1:1.235); return e+(o.pe||0); }
 // Fury (dual wield) model: level 60 vs boss 63. Hit 8% (special attacks; white DW swings need 27%),
 // expertise 6.5%. Crit = agility/20 + gear + Cruelty. AP = 160 + 2×strength + gear AP. Human base stats.
 const FMODEL={baseStr:120,baseAgi:80,baseSta:110,baseHP:1689,hitCap:8,whiteCap:27,expCap:6.5};
@@ -892,8 +1347,60 @@ function calcFury(over){
   const str=FMODEL.baseStr+g.str, agi=FMODEL.baseAgi+g.agi, sta=FMODEL.baseSta+g.sta;
   return {fury:true,hit:g.hit,exp:g.exp,str,agi,sta,ap:160+str*2+g.ap,crit:agi/20+g.crit+T.c,gcrit:g.crit,hp:FMODEL.baseHP+20+(sta-20)*10,armor:g.armor+agi*2,mh,oh,ep,set:sb};
 }
+
+// Warlock model: level 60 vs level 63 boss. Spell hit cap 17% (Method / Icy Veins, WoW Forever), Suppression gives
+// up to 5%. Spell crit = 1.7% base + Intellect/60.6 + gear (+ Devastation for Destruction spells). WFB weights (EP).
+const WLMODEL={hitCap:17,baseInt:125,baseSta:80,baseCrit:1.7,intPerCrit:60.6,demonicKnowledge:60};
+const EPW_WL={
+ aff:{sp:1,shp:1,fip:0,int:0.36,spi:0.06,crit:10.109,mp5:0.31,pen:0.28,haste:3.16},
+ demo:{sp:1,shp:0.26,fip:0.74,int:0.33,spi:0.17,crit:7.79,mp5:0.31,pen:1.37,haste:5.39},
+ destro:{sp:1,shp:0.35,fip:0.65,int:0.4,spi:0.23,crit:9.68,mp5:0.33,pen:1,haste:3.15}};
+// WFB does not weight hit (it is a cap). Up to the cap 1% hit counts as max(14 SP, 1.4 x 1% crit): an estimate.
+const HITW_WL=()=>Math.max(14,EPW_WL[S.spec].crit*1.4);
+const talSrc=k=>((S.talSrc||{})[k==='sup'&&S.spec==='demo'?'supD':k])||'assumed';
+const talTag=k=>{ const v=talSrc(k); return `<b class="tsrc ${v}">${U(v==='addon'?'talRead':v==='manual'?'talSet':'talDef')}</b>`; };
+const WL_TAL=()=>{ const T=Object.assign({sup:5,dev:5},S.talents||{}); if(S.spec==='demo') T.sup=Math.min(T.sup,S.talents&&S.talents.supD!=null?S.talents.supD:1); return T; };
+function epWL(o,k){ let e=0; const s=o.st||{}, W=EPW_WL[S.spec]||EPW_WL.destro; for(const w in W) e+=(s[w]||0)*W[w]; return e+(o.pe||0); }
+function wlGearHitCap(){ return Math.max(0,WLMODEL.hitCap-WL_TAL().sup); }
+function calcWL(over){
+  const g={sp:0,shp:0,fip:0,int:0,sta:0,spi:0,hit:0,crit:0,mp5:0,haste:0,pen:0,armor:0}; let ep=0;
+  const mh=(over&&over.mainhand)||selected(SLOTS.find(s=>s.k==='mainhand'));
+  SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]) return; if(sl.k==='offhand'&&mh.two) return;
+    const o=(over&&over[sl.k])||selected(sl);
+    for(const k in g){ g[k]+=(o.st[k]||0); if(S.ench&&sl.ench&&!(sl.k==='mainhand'&&!o.two)) g[k]+=(sl.ench.st[k]||0); } ep+=epWL(o,sl.k); });
+  if(S.ench) SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]||!sl.ench) return; if(sl.k==='mainhand'&&!mh.two) return; for(const k in sl.ench.st) ep+=sl.ench.st[k]*((EPW_WL[S.spec]||{})[k]||0); });
+  const T=WL_TAL(), cap=wlGearHitCap();
+  ep+=Math.min(g.hit,cap)*HITW_WL();
+  const int=WLMODEL.baseInt+g.int, sp=g.sp+(S.spec==='demo'?WLMODEL.demonicKnowledge:0);
+  const crit=WLMODEL.baseCrit+int/WLMODEL.intPerCrit+g.crit+(S.spec==='destro'?T.dev:0);
+  return {wl:true,hit:g.hit+T.sup,ghit:g.hit,sp,shadow:sp+g.shp,fire:sp+g.fip,int,sta:WLMODEL.baseSta+g.sta,spi:g.spi,crit,gcrit:g.crit,mp5:g.mp5,haste:g.haste,pen:g.pen,armor:g.armor,ep};
+}
+// DP over hit (tenths, capped at what gear still needs). Weapons are one choice: a staff, or a one-hand + an off-hand.
+// mode 'ep' = EP with hit valued up to the cap · 'hit' = closest to the cap first, then EP.
+function runOptWL(mode,noCraft){
+  const HC=Math.round(wlGearHitCap()*10), HW=HITW_WL();
+  const pool=k=>{ const sl=SLOTS.find(s=>s.k===k); if(!sl) return []; let o=optsFor(sl).filter(x=>!x.xo&&!x.verify); if(noCraft){ const f=o.filter(x=>!isCraftOrAH(x)); if(f.length) o=f; } return o; };
+  const groups=[];
+  SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]||sl.k==='offhand') return;
+    if(sl.k==='mainhand'){ const ohs=S.offSlot.offhand?[]:pool('offhand'), list=[];
+      pool('mainhand').forEach(m=>{ if(m.two||!ohs.length) list.push({mh:m}); else ohs.forEach(oh=>list.push({mh:m,oh})); });
+      groups.push({k:'weapons',list:list.map(w=>({w,id:w.mh.id,hit:(w.mh.st.hit||0)+(w.oh?w.oh.st.hit||0:0),ep:epWL(w.mh,'mainhand')+(w.oh?epWL(w.oh,'offhand'):0)+(w.mh.two&&S.ench&&sl.ench?sl.ench.st.sp||0:0)}))});
+    } else groups.push({k:sl.k,list:pool(sl.k).map(o=>({o,id:o.id,hit:o.st.hit||0,ep:epWL(o,sl.k)}))}); });
+  let dp=new Map([['0',{h:0,hit:0,score:0,pick:{}}]]);
+  groups.forEach(gr=>{ if(!gr.list.length) return; const nx=new Map();
+    for(const v of dp.values()) for(const c of gr.list){
+      if((gr.k==='finger2'&&v.pick.finger1===c.id)||(gr.k==='trinket2'&&v.pick.trinket1===c.id)) continue;
+      const hit=v.hit+c.hit, nh=Math.min(HC,Math.round(hit*10)), score=v.score+c.ep, key=String(nh), cur=nx.get(key);
+      if(!cur||score>cur.score){ const pick=Object.assign({},v.pick); if(c.w){ pick.mainhand=c.w.mh.id; if(c.w.oh) pick.offhand=c.w.oh.id; } else pick[gr.k]=c.id;
+        nx.set(key,{h:nh,hit,score,pick}); } }
+    dp=nx; });
+  let best=null;
+  for(const v of dp.values()){ const val=mode==='hit'?v.h*1e6+v.score:v.score+Math.min(v.hit,HC/10)*HW; if(!best||val>best.val) best=Object.assign({val},v); }
+  return best;
+}
 function calc(over){
   if(IS_FURY()) return calcFury(over);
+  if(IS_WL()) return calcWL(over);
   const g={def:0,hit:0,sta:0,agi:0,armor:0,exp:0,blk:0,dodge:0,parry:0,bv:0,str:0,ap:0,crit:0,nr:0,fr:0};
   let ep=0;
   SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]) return; const o=(over&&over[sl.k])||selected(sl);
@@ -954,11 +1461,11 @@ function pbVar(o,n){while(n>127){o.push((n&127)|128);n=Math.floor(n/128)}o.push(
 function pbInt(o,f,n){if(n){pbVar(o,f*8);pbVar(o,n)}}
 function pbMsg(o,f,b){pbVar(o,f*8+2);pbVar(o,b.length);for(const x of b)o.push(x)}
 async function simURL(){
-  const base=IS_FURY()?'https://www.wowsims.com/forever/warrior/dps/':'https://www.wowsims.com/forever/warrior/protection/';
+  const base=IS_WL()?'https://www.wowsims.com/forever/warlock/dps/':IS_FURY()?'https://www.wowsims.com/forever/warrior/dps/':'https://www.wowsims.com/forever/warrior/protection/';
   if(typeof CompressionStream==='undefined') return base;
   const eq=[];
   WS_ORDER.forEach(k=>{ const sl=SLOTS.find(s=>s.k===k), it=[];
-    if(sl && !S.offSlot[k]){ const o=selected(sl); pbInt(it,1,o.id); if(S.ench&&sl.ench) pbInt(it,3,sl.ench.ws); }
+    if(sl && !slotOff(k)){ const o=selected(sl); pbInt(it,1,o.id); if(S.ench&&sl.ench&&!(IS_WL()&&k==='mainhand'&&!o.two)) pbInt(it,3,sl.ench.ws); }
     pbMsg(eq,1,it); });
   const pl=[]; pbInt(pl,54,2); pbMsg(pl,3,eq);
   const set=[]; pbInt(set,15,2); pbMsg(set,3,pl);
@@ -974,7 +1481,8 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // Item icons (Wowhead Forever icon names, served from Wowhead's image CDN). If an image can't load,
 // the quality-coloured frame with the item's initial stays as a fallback.
-const ICONS={"2100":"inv_weapon_rifle_06","2244":"inv_sword_18","2246":"inv_jewelry_ring_05","11626":"inv_misc_cape_18","11669":"inv_jewelry_ring_05","11684":"spell_frost_frostbrand","11726":"inv_chest_chain_15","11815":"inv_jewelry_talisman_01","11927":"inv_pants_04","12548":"inv_jewelry_ring_05","12555":"inv_boots_plate_06","12587":"inv_helmet_46","12590":"inv_weapon_shortblade_25","12618":"inv_chest_plate10","12620":"inv_helmet_02","12640":"inv_helmet_36","12653":"inv_weapon_bow_08","12783":"inv_sword_17","12798":"inv_axe_12","12927":"inv_shoulder_10","12936":"inv_bracer_17","12940":"inv_sword_43","12952":"inv_helmet_23","13091":"inv_jewelry_talisman_08","13098":"inv_jewelry_ring_18","13162":"inv_gauntlets_29","13204":"inv_mace_15","13340":"inv_misc_cape_20","13380":"inv_weapon_rifle_07","13397":"inv_misc_cape_19","13400":"inv_bracer_17","13404":"inv_misc_bandana_01","13498":"inv_pants_04","13944":"inv_chest_chain_17","13959":"inv_belt_13","13965":"inv_misc_armorkit_09","13967":"inv_boots_plate_04","14503":"inv_shoulder_25","14525":"inv_gauntlets_29","14552":"inv_shoulder_20","14620":"inv_belt_12","14624":"inv_chest_chain_15","15062":"inv_pants_wolf","15063":"inv_gauntlets_26","15065":"inv_pants_wolf","15411":"inv_jewelry_talisman_07","15413":"inv_chest_plate09","16734":"inv_boots_plate_03","16996":"inv_weapon_bow_04","17713":"inv_jewelry_ring_17","18168":"spell_arcane_portaldarnassus","18315":"inv_jewelry_ring_28","18323":"inv_weapon_bow_03","18370":"inv_misc_stonetablet_04","18375":"inv_bracer_07","18376":"inv_mace_07","18381":"inv_misc_eye_01","18466":"inv_jewelry_talisman_10","18495":"inv_misc_cape_21","18537":"inv_stone_02","18696":"inv_shield_02","18738":"inv_weapon_crossbow_04","19044":"inv_belt_09","19049":"inv_gauntlets_26","19058":"inv_shoulder_26","19107":"inv_weapon_crossbow_07","19120":"inv_misc_rune_07","19321":"spell_frost_chillingarmor","19325":"inv_jewelry_ring_35","19491":"inv_jewelry_necklace_14","20521":"inv_helmet_01","22150":"inv_jewelry_amulet_05","22198":"inv_shield_22","22232":"inv_belt_18","22241":"inv_shoulder_07","22321":"inv_misc_gem_bloodstone_01","22328":"inv_pants_04","22331":"inv_jewelry_ring_33","22337":"inv_misc_cape_19","22340":"inv_jewelry_necklace_04","22384":"inv_hammer_08","22385":"inv_pants_04","226857":"inv_boots_plate_03","226861":"inv_gauntlets_26","226862":"inv_chest_plate03","226865":"inv_bracer_18","226866":"inv_belt_34","226867":"inv_shoulder_30","226869":"inv_helmet_02","226871":"inv_boots_plate_03","226872":"inv_chest_plate03","227814":"inv_belt_11","237825":"inv_pants_plate_20","250552":"inv_gauntlets_22","250562":"inv_boots_plate_20v1","250572":"inv_belt_37a","250577":"inv_shoulder_12","250582":"inv_bracer_23a","252483":"inv_chest_leather_08","252484":"inv_chest_fur","260219":"inv_jewelcrafting_70_lvlupring_purple","270275":"inv_misc_coin_09","271948":"inv_gauntlets_27","271956":"inv_shoulder_12","272403":"inv_belt_33","272408":"inv_jewelry_ring_01","272409":"inv_jewelry_ring_01","272414":"inv_misc_cape_10","272415":"inv_misc_cape_16","272437":"inv_engineering_90_lightningbox","272440":"ui_profession_engineering","275618":"inv_boots_chain_11","275736":"inv_misc_horn_03","276743":"inv_misc_armorkit_02","277202":"trade_archaeology_pendant-of-the-aqir","279259":"inv_sword_07","279264":"inv_gauntlets_28","279265":"inv_pants_plate_15","280010":"inv_bracer_14","280015":"inv_jewelry_ring_41","280020":"inv_weapon_rifle_04","280021":"spell_shadow_vampiricaura","280022":"inv_sword_33","280061":"inv_bracer_08","280065":"inv_misc_bone_01","281587":"inv_sword_36","284086":"inv_helmet_41","287023":"inv_bracer_16","287033":"inv_boots_chain_08","226868":"inv_pants_04","12602":"inv_shield_20","15873":"inv_drink_03","13142":"inv_belt_33","226870":"inv_gauntlets_26","871":"inv_axe_17","10847":"inv_sword_38","16309":"inv_jewelry_talisman_11","13533":"inv_shoulder_18","18677":"inv_misc_cape_13","12905":"inv_chest_cloth_16","20476":"inv_bracer_12","13532":"inv_gauntlets_31","13963":"inv_gauntlets_15","17750":"inv_belt_25","13526":"inv_belt_09","13527":"inv_boots_plate_09","275984":"inv_jewelry_ring_10","18399":"inv_jewelry_ring_28","274759":"inv_misc_enggizmos_16","18638":"inv_misc_enggizmos_04","274658":"inv_axe_13","22266":"inv_spear_01","14002":"inv_shield_05","12651":"inv_weapon_crossbow_04","16992":"inv_weapon_rifle_08","13530":"inv_boots_05","12464":"inv_gauntlets_19"};
+const ICONS={"2100":"inv_weapon_rifle_06","2244":"inv_sword_18","2246":"inv_jewelry_ring_05","11626":"inv_misc_cape_18","11669":"inv_jewelry_ring_05","11684":"spell_frost_frostbrand","11726":"inv_chest_chain_15","11815":"inv_jewelry_talisman_01","11927":"inv_pants_04","12548":"inv_jewelry_ring_05","12555":"inv_boots_plate_06","12587":"inv_helmet_46","12590":"inv_weapon_shortblade_25","12618":"inv_chest_plate10","12620":"inv_helmet_02","12640":"inv_helmet_36","12653":"inv_weapon_bow_08","12783":"inv_sword_17","12798":"inv_axe_12","12927":"inv_shoulder_10","12936":"inv_bracer_17","12940":"inv_sword_43","12952":"inv_helmet_23","13091":"inv_jewelry_talisman_08","13098":"inv_jewelry_ring_18","13162":"inv_gauntlets_29","13204":"inv_mace_15","13340":"inv_misc_cape_20","13380":"inv_weapon_rifle_07","13397":"inv_misc_cape_19","13400":"inv_bracer_17","13404":"inv_misc_bandana_01","13498":"inv_pants_04","13944":"inv_chest_chain_17","13959":"inv_belt_13","13965":"inv_misc_armorkit_09","13967":"inv_boots_plate_04","14503":"inv_shoulder_25","14525":"inv_gauntlets_29","14552":"inv_shoulder_20","14620":"inv_belt_12","14624":"inv_chest_chain_15","15062":"inv_pants_wolf","15063":"inv_gauntlets_26","15065":"inv_pants_wolf","15411":"inv_jewelry_talisman_07","15413":"inv_chest_plate09","16734":"inv_boots_plate_03","16996":"inv_weapon_bow_04","17713":"inv_jewelry_ring_17","18168":"spell_arcane_portaldarnassus","18315":"inv_jewelry_ring_28","18323":"inv_weapon_bow_03","18370":"inv_misc_stonetablet_04","18375":"inv_bracer_07","18376":"inv_mace_07","18381":"inv_misc_eye_01","18466":"inv_jewelry_talisman_10","18495":"inv_misc_cape_21","18537":"inv_stone_02","18696":"inv_shield_02","18738":"inv_weapon_crossbow_04","19044":"inv_belt_09","19049":"inv_gauntlets_26","19058":"inv_shoulder_26","19107":"inv_weapon_crossbow_07","19120":"inv_misc_rune_07","19321":"spell_frost_chillingarmor","19325":"inv_jewelry_ring_35","19491":"inv_jewelry_necklace_14","20521":"inv_helmet_01","22150":"inv_jewelry_amulet_05","22198":"inv_shield_22","22232":"inv_belt_18","22241":"inv_shoulder_07","22321":"inv_misc_gem_bloodstone_01","22328":"inv_pants_04","22331":"inv_jewelry_ring_33","22337":"inv_misc_cape_19","22340":"inv_jewelry_necklace_04","22384":"inv_hammer_08","22385":"inv_pants_04","226857":"inv_boots_plate_03","226861":"inv_gauntlets_26","226862":"inv_chest_plate03","226865":"inv_bracer_18","226866":"inv_belt_34","226867":"inv_shoulder_30","226869":"inv_helmet_02","226871":"inv_boots_plate_03","226872":"inv_chest_plate03","227814":"inv_belt_11","237825":"inv_pants_plate_20","250552":"inv_gauntlets_22","250562":"inv_boots_plate_20v1","250572":"inv_belt_37a","250577":"inv_shoulder_12","250582":"inv_bracer_23a","252483":"inv_chest_leather_08","252484":"inv_chest_fur","260219":"inv_jewelcrafting_70_lvlupring_purple","270275":"inv_misc_coin_09","271948":"inv_gauntlets_27","271956":"inv_shoulder_12","272403":"inv_belt_33","272408":"inv_jewelry_ring_01","272409":"inv_jewelry_ring_01","272414":"inv_misc_cape_10","272415":"inv_misc_cape_16","272437":"inv_engineering_90_lightningbox","272440":"ui_profession_engineering","275618":"inv_boots_chain_11","275736":"inv_misc_horn_03","276743":"inv_misc_armorkit_02","277202":"trade_archaeology_pendant-of-the-aqir","279259":"inv_sword_07","279264":"inv_gauntlets_28","279265":"inv_pants_plate_15","280010":"inv_bracer_14","280015":"inv_jewelry_ring_41","280020":"inv_weapon_rifle_04","280021":"spell_shadow_vampiricaura","280022":"inv_sword_33","280061":"inv_bracer_08","280065":"inv_misc_bone_01","281587":"inv_sword_36","284086":"inv_helmet_41","287023":"inv_bracer_16","287033":"inv_boots_chain_08","226868":"inv_pants_04","12602":"inv_shield_20","15873":"inv_drink_03","13142":"inv_belt_33","226870":"inv_gauntlets_26","871":"inv_axe_17","13952":"inv_axe_03","10847":"inv_sword_38","16309":"inv_jewelry_talisman_11","13533":"inv_shoulder_18","18677":"inv_misc_cape_13","12905":"inv_chest_cloth_16","20476":"inv_bracer_12","13532":"inv_gauntlets_31","13963":"inv_gauntlets_15","17750":"inv_belt_25","13526":"inv_belt_09","13527":"inv_boots_plate_09","275984":"inv_jewelry_ring_10","18399":"inv_jewelry_ring_28","274759":"inv_misc_enggizmos_16","18638":"inv_misc_enggizmos_04","274658":"inv_axe_13","22266":"inv_spear_01","14002":"inv_shield_05","12651":"inv_weapon_crossbow_04","16992":"inv_weapon_rifle_08","13530":"inv_boots_05","12464":"inv_gauntlets_19"};
+Object.assign(ICONS,{"944":"inv_staff_07","3075":"inv_helmet_44","9484":"inv_pants_08","10041":"inv_crown_01","11623":"inv_misc_cape_20","11662":"inv_belt_29","11748":"inv_staff_13","11822":"inv_boots_05","11924":"inv_chest_cloth_16","11962":"inv_bracer_13","12103":"inv_jewelry_talisman_08","12543":"inv_jewelry_ring_05","12545":"inv_jewelry_ring_05","12589":"inv_belt_11","12930":"inv_misc_root_02","12965":"inv_pants_06","13001":"inv_jewelry_ring_12","13170":"inv_pants_13","13253":"inv_gauntlets_14","13314":"inv_chest_cloth_12","13369":"inv_boots_05","13388":"inv_chest_leather_10","13396":"inv_misc_bone_elfskull_01","13937":"inv_jewelry_talisman_12","13938":"inv_misc_bone_taurenskull_01","13968":"inv_jewelry_talisman_08","14106":"inv_chest_cloth_09","14107":"inv_pants_06","14111":"inv_helmet_34","14112":"inv_shoulder_23","14136":"inv_chest_cloth_49","14144":"inv_pants_01","14146":"inv_gauntlets_06","14153":"inv_chest_cloth_51","15421":"inv_misc_cape_07","15999":"inv_helmet_47","16687":"inv_pants_06","18102":"inv_boots_05","18350":"inv_misc_cape_18","18353":"inv_staff_08","18385":"inv_chest_cloth_51","18405":"inv_belt_31","18407":"inv_gauntlets_19","18408":"inv_gauntlets_19","18467":"inv_jewelry_talisman_10","18497":"inv_bracer_13","18510":"inv_misc_cape_01","18534":"inv_staff_32","18681":"inv_shoulder_05","18691":"inv_jewelry_necklace_06","18720":"inv_shoulder_23","18727":"inv_helmet_51","18735":"inv_boots_03","18740":"inv_belt_13","18761":"inv_wand_12","19050":"inv_shoulder_19","19059":"inv_shoulder_13","19426":"inv_jewelry_necklace_16","20534":"inv_misc_gem_02","20536":"inv_sword_48","21318":"inv_gauntlets_24","22149":"inv_jewelry_amulet_05","22231":"inv_boots_cloth_02","22256":"inv_gauntlets_17","22267":"inv_helmet_62","22339":"inv_jewelry_ring_35","22342":"inv_pants_09","22403":"inv_jewelry_necklace_10","22408":"inv_wand_07","22433":"inv_jewelry_ring_16","23125":"inv_belt_18","219345":"spell_nature_slow","226905":"inv_belt_12","226907":"inv_bracer_13","226909":"inv_helmet_29","226910":"inv_pants_08","226911":"inv_gauntlets_32","227808":"inv_shoulder_19","228190":"inv_belt_09","249385":"inv_wand_07","254065":"inv_bracer_23a","254067":"inv_bracer_13","254087":"inv_belt_04","254101":"inv_gauntlets_32","254113":"inv_boots_05","254123":"inv_bracer_13","270225":"inv_qiraj_jewelglyphed","270276":"inv_misc_coin_08","272406":"inv_jewelry_ring_24","272411":"inv_misc_cape_05","272438":"inv_misc_blizzcon09_graphicscard","275606":"inv_boots_cloth_04","275738":"inv_jewelry_ring_16","276877":"inv_helmet_50","280023":"inv_jewelry_talisman_17","280057":"inv_chest_cloth_25","280082":"inv_staff_29","22383":"inv_sword_51","19309":"inv_misc_book_06","19315":"inv_misc_branch_01"});
 const ICON_URL=(name,size)=>`https://wow.zamimg.com/images/wow/icons/${size}/${name}.jpg`;
 const ico=(id,cls)=>{ const o=ITEM[id], n=ICONS[id], big=/big|tt/.test(cls||'');
   return `<span class="ico q${o?o.q:1} ${cls||''}" aria-hidden="true"><b>${esc((o&&o.n||'?')[0])}</b>${n?`<img src="${ICON_URL(n,big?'large':'small')}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`:''}</span>`; };
@@ -988,7 +1496,7 @@ function ttHTML(id){
   L.push(`<div class="tth">${ico(id,'tt')}<div class="n q${o.q}">${esc(o.n)}</div></div>`);
   L.push(`<div>${o.bind==='boe'?T.boe:T.bop}</div>`);
   if(o.uniq===1) L.push(`<div>${T.uniq}</div>`); if(o.uniq===2) L.push(`<div>${T.uniq2}</div>`);
-  L.push(`<div class="row"><span>${T.slot[o.slot]}</span><span>${T.ty[o.ty]||''}</span></div>`);
+  L.push(`<div class="row"><span>${o.two?(S.lang==='es'?'Dos manos':'Two-Hand'):o.ty==='held'?T.ty.held:T.slot[o.slot]}</span><span>${o.ty==='held'?'':T.ty[o.ty]||''}</span></div>`);
   if(o.dmg){ const d=o.dmg; L.push(`<div class="row"><span>${d.min?`${d.min} - ${d.max} ${T.dmg}`:''}</span><span>${T.speed} ${d.spd.toFixed(2)}</span></div><div>(${d.dps.toFixed(1)} ${T.dps})</div>`); }
   if(s.armor) L.push(`<div>${s.armor} ${T.armor}</div>`);
   if(s.bv&&o.ty==='shield') L.push(`<div>${s.bv} ${T.block}</div>`);
@@ -997,8 +1505,9 @@ function ttHTML(id){
   if(o.rl) L.push(`<div>${T.req} ${o.rl}</div>`);
   L.push(`<div class="mut">${T.ilvl} ${o.il}</div>`);
   const eq=[];
-  if(s.def) eq.push(T.def(s.def)); if(s.hit) eq.push(T.hit(s.hit)); if(s.crit) eq.push(T.crit(s.crit)); if(s.exp) eq.push(T.exp(s.exp)); if(s.blk) eq.push(T.blk(s.blk));
-  if(s.dodge) eq.push(T.dodge(s.dodge)); if(s.parry) eq.push(T.parry(s.parry)); if(s.bv&&o.ty!=='shield') eq.push(T.bv(s.bv)); if(s.ap) eq.push(T.ap(s.ap)); if(s.hp5) eq.push(T.hp5(s.hp5)); if(s.sp) eq.push(T.sp(s.sp));
+  const caster=o.spell||(s.sp||s.shp||s.fip)&&!s.ap&&!s.str&&!s.agi;
+  if(s.def) eq.push(T.def(s.def)); if(s.hit) eq.push(caster?T.shit(s.hit):T.hit(s.hit)); if(s.crit) eq.push(caster?T.scrit(s.crit):T.crit(s.crit)); if(s.exp) eq.push(T.exp(s.exp)); if(s.blk) eq.push(T.blk(s.blk));
+  if(s.dodge) eq.push(T.dodge(s.dodge)); if(s.parry) eq.push(T.parry(s.parry)); if(s.bv&&o.ty!=='shield') eq.push(T.bv(s.bv)); if(s.ap) eq.push(T.ap(s.ap)); if(s.hp5) eq.push(T.hp5(s.hp5)); if(s.sp) eq.push(T.sp(s.sp)); if(s.shp) eq.push(T.shp(s.shp)); if(s.fip) eq.push(T.fip(s.fip)); if(s.mp5) eq.push(T.mp5(s.mp5)); if(s.pen) eq.push(T.pen(s.pen)); if(s.haste) eq.push(T.haste(s.haste));
   eq.forEach(x=>L.push(`<div class="eq">${T.eq} ${x}</div>`));
   (o.fx||[]).forEach(f=>L.push(`<div class="eq">${T.fx[f]}</div>`));
   if(o.set) L.push(`<div class="set">${T.set}: ${esc(o.set)}</div>`);
@@ -1035,7 +1544,7 @@ function dl(a,b,fmt,lowerBetter){ const d=b-a; if(Math.abs(d)<0.005) return ''; 
 function deltaChips(sl,o,cur){
   if(o.id===cur.id) return `<span class="cur">${U('cur')}</span>`;
   const a=calc(), b=calc({[sl.k]:o});
-  const parts=IS_FURY()?[['hit','Hit',x=>f1(x)+'%'],['crit','Crit',x=>f2(x)+'%'],['ap','AP',x=>Math.round(x)],['exp','Exp',x=>f1(x)+'%'],['ep','EP',f1]]:[['D','Def',x=>Math.round(x)],['hit','Hit',x=>f1(x)+'%'],['avoid',U('avoidL').split(' ')[0],x=>f2(x)+'%'],['block',U('blockL').split(' ')[0],x=>f2(x)+'%'],['armor','Arm',x=>Math.round(x)],['sta','Sta',x=>Math.round(x)],['ep','EP',f1]];
+  const parts=IS_WL()?[['hit','Hit',x=>f1(x)+'%'],['sp','SP',x=>Math.round(x)],['crit','Crit',x=>f2(x)+'%'],['int','Int',x=>Math.round(x)],['ep','EP',f1]]:IS_FURY()?[['hit','Hit',x=>f1(x)+'%'],['crit','Crit',x=>f2(x)+'%'],['ap','AP',x=>Math.round(x)],['exp','Exp',x=>f1(x)+'%'],['ep','EP',f1]]:[['D','Def',x=>Math.round(x)],['hit','Hit',x=>f1(x)+'%'],['avoid',U('avoidL').split(' ')[0],x=>f2(x)+'%'],['block',U('blockL').split(' ')[0],x=>f2(x)+'%'],['armor','Arm',x=>Math.round(x)],['sta','Sta',x=>Math.round(x)],['ep','EP',f1]];
   const out=parts.map(([k,lb,fmt])=>{ const d=b[k]-a[k]; if(Math.abs(d)<0.005) return ''; return `<span class="${d>0?'up':'dn'}">${d>0?'+':''}${fmt(d)} ${lb}</span>`; }).join('');
   return out||'<span class="cur">=</span>';
 }
@@ -1062,7 +1571,32 @@ function renderStatsFury(){
       <label><span>Cruelty<small>+1% crit/rank</small></span><select id="tal-c" data-tal="c">${[0,1,2,3,4,5].map(r=>`<option ${T.c===r?'selected':''}>${r}</option>`).join('')}</select></label>
     </div>`;
 }
+function renderStatsWL(){
+  const a=calc(), p=PREVIEW?calc({[PREVIEW.slot]:ITEM[PREVIEW.id]}):null, v=p||a;
+  const bar=(lbl,key,cap,fmt,note,soft)=>{ const val=v[key], base=a[key], pct=Math.min(100,val/cap*100), bpct=Math.min(100,base/cap*100);
+    return `<div class="cap"><div class="row"><span>${lbl}</span><b>${fmt(val)} / ${fmt(cap)}${p?dl(base,val,fmt):''}</b></div>
+      <div class="track">${p?`<span class="ghost" style="width:${bpct}%"></span>`:''}<i class="${val>=cap?'ok':(soft?'soft':'')}" style="width:${pct}%;${p?'opacity:.85':''}"></i></div>${note?`<div class="note">${note}</div>`:''}</div>`; };
+  const n0=x=>String(Math.round(x)), pc=x=>f2(x)+'%';
+  const line=(lbl,key,fmt)=>`<span>${lbl}</span><span></span><b>${fmt(v[key])}${p?dl(a[key],v[key],fmt):''}</b>`;
+  const T=WL_TAL(), best=runOptWL('hit').hit+T.sup;
+  const school=S.spec==='aff'?'shadow':S.spec==='demo'?'fire':'fire';
+  $('stats').innerHTML=`<h3>${U('capsWL')}</h3><p class="model">${U('modelWL')}</p>
+    ${p?`<div class="note" style="font-size:12px;color:var(--gold);text-align:center">${U('prevL')} ${itemRef(PREVIEW.id)}</div>`:''}
+    ${bar(U('hitWL'),'hit',WLMODEL.hitCap,x=>f1(x)+'%',U('hitNoteWL')(T.sup,f1(wlGearHitCap()),f1(best),U(talSrc('sup')==='addon'?'talAddon':talSrc('sup')==='manual'?'talManual':'talAssumed')),true)}
+    <div class="av">
+      ${line(U('spL'),'sp',n0)}${line(U('shadowL'),'shadow',n0)}${line(U('fireSpL'),'fire',n0)}
+      ${line(U('critWL'),'crit',pc)}${line(U('intT'),'int',n0)}${line(U('staT'),'sta',n0)}
+      ${line(U('spiT'),'spi',n0)}${line('MP5','mp5',n0)}${line(U('penL'),'pen',n0)}${line('EP (WFB)','ep',f1)}
+    </div>
+    <p class="model">${U('epNoteWL')(f1(HITW_WL()))}</p>
+    <div class="tal"><div class="row"><b>${U('talT')}</b><span>${U('talNote')}</span></div>
+      <label><span>Suppression<small>+1% hit/rank · ${talTag('sup')}</small></span><select id="tal-sup" data-tal="${S.spec==='demo'?'supD':'sup'}">${[0,1,2,3,4,5].map(r=>`<option ${T.sup===r?'selected':''}>${r}</option>`).join('')}</select></label>
+      ${S.spec==='destro'?`<label><span>Devastation<small>+1% crit/rank · ${talTag('dev')}</small></span><select id="tal-dev" data-tal="dev">${[0,1,2,3,4,5].map(r=>`<option ${T.dev===r?'selected':''}>${r}</option>`).join('')}</select></label>`:''}
+      ${S.spec==='demo'?`<div class="row"><span>${U('dkNote')}</span></div>`:''}
+    </div>`;
+}
 function renderStats(){
+  if(IS_WL()) return renderStatsWL();
   if(IS_FURY()) return renderStatsFury();
   const a=calc(), p=PREVIEW?calc({[PREVIEW.slot]:ITEM[PREVIEW.id]}):null, v=p||a;
   const bar=(lbl,key,cap,fmt,note,soft)=>{ const val=v[key], base=a[key], pct=Math.min(100,val/cap*100), bpct=Math.min(100,base/cap*100);
@@ -1099,23 +1633,25 @@ document.addEventListener('pointerout',e=>{ const o=e.target.closest('[data-pv]'
 
 // ---------- RENDER ----------
 function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,1800)}
-const STL={def:'Def',hit:'Hit',sta:'Sta',str:'Str',agi:'Agi',armor:'Armor',bv:'BV',exp:'Exp',ap:'AP',int:'Int',spi:'Spi',hp5:'HP5',blk:'Block',sp:'SP',crit:'Crit'};
+const STL={def:'Def',hit:'Hit',sta:'Sta',str:'Str',agi:'Agi',armor:'Armor',bv:'BV',exp:'Exp',ap:'AP',int:'Int',spi:'Spi',hp5:'HP5',blk:'Block',sp:'SP',crit:'Crit',shp:'Shadow',fip:'Fire',mp5:'MP5',haste:'Haste',pen:'Pen'};
 const fmtSt=st=>Object.entries(st).map(([k,v])=>`${['hit','exp','blk','crit'].includes(k)?v+'%':'+'+v} ${STL[k]}`).join(' · ');
 
 function render(){
   document.documentElement.lang=S.lang;
   document.querySelectorAll('[data-i]').forEach(el=>el.textContent=U(el.dataset.i));
-  $('sp-prot').setAttribute('aria-pressed',!IS_FURY()); $('sp-fury').setAttribute('aria-pressed',IS_FURY());
-  document.querySelector('h1 small').textContent=U(IS_FURY()?'subF':'sub');
+  document.documentElement.dataset.cls=CLS();
+  $('specSel').innerHTML=SPECS.map(g=>`<optgroup label="${U('cls_'+g.cls)}">${g.specs.map(sp=>`<option value="${sp}" ${S.spec===sp?'selected':''}>${U('spec_'+sp)}</option>`).join('')}</optgroup>`).join('');
+  document.querySelector('h1 small').textContent=IS_WL()?U('subWL')(U('spec_'+S.spec)):U(IS_FURY()?'subF':'sub');
   $('fa').textContent=U('A'); $('fh').textContent=U('H'); $('simlink').textContent=U('sim');
   $('fa').setAttribute('aria-pressed',S.faction==='A'); $('fh').setAttribute('aria-pressed',S.faction==='H');
   $('les').setAttribute('aria-pressed',S.lang==='es'); $('len').setAttribute('aria-pressed',S.lang==='en');
-  renderSupport(); $('howPanel').innerHTML=U('how'); $('srcPanel').innerHTML=U(IS_FURY()?'srcF':'src'); $('io').placeholder=U('ioPh');
+  renderSupport(); $('howPanel').innerHTML=U('how'); $('srcPanel').innerHTML=U(IS_WL()?'srcWL':IS_FURY()?'srcF':'src'); $('io').placeholder=U('ioPh');
   hideTT();
 
   const t=calc();
   const m=(lbl,val,cap,unit,soft)=>{const pct=Math.min(100,val/cap*100);return `<div class="meter"><div class="lbl">${lbl}<b>${unit==='%'?val.toFixed(1):Math.round(val)}${unit} / ${cap}${unit}</b></div><div class="track"><i class="${val>=cap?'ok':(soft?'soft':'')}" style="width:${pct}%"></i></div></div>`};
-  $('meters').innerHTML = IS_FURY()? m(U('hit'),t.hit,FMODEL.hitCap,'%',true)+m(U('expL'),t.exp,FMODEL.expCap,'%',true)+`<div class="meter"><div class="lbl">${U('critTot')}<b>${t.crit.toFixed(1)}% · AP ${Math.round(t.ap)}</b></div></div>`
+  $('meters').innerHTML = IS_WL()? m(U('hit'),t.hit,WLMODEL.hitCap,'%',true)+`<div class="meter"><div class="lbl">${U('spL')}<b>${Math.round(S.spec==='aff'?t.shadow:t.fire)}</b></div></div><div class="meter"><div class="lbl">${U('critWL')}<b>${t.crit.toFixed(1)}%</b></div></div>`
+    : IS_FURY()? m(U('hit'),t.hit,FMODEL.hitCap,'%',true)+m(U('expL'),t.exp,FMODEL.expCap,'%',true)+`<div class="meter"><div class="lbl">${U('critTot')}<b>${t.crit.toFixed(1)}% · AP ${Math.round(t.ap)}</b></div></div>`
     : m(U('defGear'),t.D,MODEL.defCap,'')+m(U('hit'),t.hit,MODEL.hitCap,'%',true)+m(U('crushL').split(' (')[0],t.full,MODEL.crushCap,'%');
   simURL().then(u=>$('simlink').href=u);
 
@@ -1123,7 +1659,8 @@ function render(){
   const f1=selected(SLOTS.find(s=>s.k==='finger1')), f2=selected(SLOTS.find(s=>s.k==='finger2'));
   if(!S.offSlot.finger1&&!S.offSlot.finger2&&f1.id===f2.id) al.push(U('dupRing')(itemRef(f1.id)));
   SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]) return; const o=selected(sl); if(o.flag) al.push(`${itemRef(o.id)}: ${esc(tx(o.flag))}.`); });
-  if(!IS_FURY()&&t.D<MODEL.defCap) al.push(esc(U('defShort')(MODEL.defCap-Math.round(t.D))));
+  if(IS_WL()&&t.hit<WLMODEL.hitCap) al.push(esc(U('hitShortWL')((WLMODEL.hitCap-t.hit).toFixed(1))));
+  if(!IS_FURY()&&!IS_WL()&&t.D<MODEL.defCap) al.push(esc(U('defShort')(MODEL.defCap-Math.round(t.D))));
   if(IS_FURY()&&t.hit<FMODEL.hitCap) al.push(esc(U('hitShortF')((FMODEL.hitCap-t.hit).toFixed(1))));
   $('alerts').innerHTML=al.map(a=>`<div class="alert">${a}</div>`).join('');
 
@@ -1164,10 +1701,11 @@ function render(){
   $('ench').checked=S.ench; $('showDone').checked=S.showDone; $('showSkipped').checked=S.showSkipped;
   // Gear slot, character-sheet style: big quality-framed icon, slot label, item name, set, enchant, source · EP.
   // "⇅ n" opens the options below (each one compact, with its own icon, stats, badges, delta and "I have it").
-  const epFor=(o,k)=>(IS_FURY()?epFury(o,k):epOf(o,k));
+  const epFor=(o,k)=>(IS_WL()?epWL(o,k):IS_FURY()?epFury(o,k):epOf(o,k));
   const badgeHTML=o=>{ const bs=o.bis||[]; return `${bs.includes('wfb'+S.faction)?`<span class="b wfb">${U('wfbBis')}</span>`:''}${bs.includes('wtbc')?`<span class="b wtbc">${U('wtbcBis')}</span>`:''}${IS_FURY()&&bs.includes('su')?`<span class="b wtbc">sixtyupgrades</span>`:''}${o.verify?`<span class="b warn">${U('verifyB')}</span>`:''}`; };
-  const cardHTML=(sl,side)=>{ const cur=selected(sl), off=!!S.offSlot[sl.k], open=!!OPEN[sl.k], all=optsFor(sl), own=!!S.have[cur.id];
-    const ench=S.ench&&sl.ench?`<div class="gs-en"><span class="ico mini q2" aria-hidden="true"><img src="${ICON_URL('trade_engraving','small')}" alt="" loading="lazy" onerror="this.remove()"></span>${esc(sl.ench.n.replace(/^(Enchant [A-Za-z]+ - |Lesser Arcanum of |Arcanum of )/,m=>m.startsWith('Enchant')?'':m))}</div>`:'';
+  const cardHTML=(sl,side)=>{ if(!sl) return ''; if(sl.k==='offhand'&&IS_WL()&&ohBlocked()) return `<section class="gs ${side} off"><div class="gs-row"><span class="gs-ic"><span class="ico big q1" aria-hidden="true"><b>—</b></span></span><div class="gs-b"><div class="gs-slot">${esc(tx(sl.n))}</div><div class="gs-src">${U('ohTwo')}</div></div></div></section>`;
+    const cur=selected(sl), off=!!S.offSlot[sl.k], open=!!OPEN[sl.k], all=optsFor(sl), own=!!S.have[cur.id];
+    const ench=S.ench&&sl.ench&&!(IS_WL()&&sl.k==='mainhand'&&!cur.two)?`<div class="gs-en"><span class="ico mini q2" aria-hidden="true"><img src="${ICON_URL('trade_engraving','small')}" alt="" loading="lazy" onerror="this.remove()"></span>${esc(sl.ench.n.replace(/^(Enchant [A-Za-z]+ - |Lesser Arcanum of |Arcanum of )/,m=>m.startsWith('Enchant')?'':m))}</div>`:'';
     const opts=open?`<div class="gs-opts" role="radiogroup" aria-label="${esc(tx(sl.n))}">${all.map(o=>{ const rid=`o-${sl.k}-${o.id}`;
         return `<div class="gopt ${o.id===cur.id?'sel':''} ${S.have[o.id]?'owned':''}" data-pv="${sl.k}:${o.id}">
           <input class="sr" type="radio" name="s-${sl.k}" id="${rid}" value="${o.id}" data-slot="${sl.k}" ${o.id===cur.id?'checked':''}>
@@ -1204,6 +1742,7 @@ function render(){
 }
 
 // ---------- EVENTS ----------
+document.addEventListener('change',e=>{ if(e.target.id==='specSel'&&e.target.value!==S.spec){ S.spec=e.target.value; applySpec(); S.lastPre=''; PREVIEW=null; for(const k in OPEN) delete OPEN[k]; render(); } });
 document.addEventListener('click',e=>{
   const ref=e.target.closest('[data-item]');
   if(ref){ // touch/tap: toggle tooltip; on a radio label the tap still selects the option
@@ -1230,7 +1769,7 @@ document.addEventListener('change',e=>{
   else if(el.dataset.slot){ SEL()[el.dataset.slot]=+el.value; delete S.offSlot[el.dataset.slot]; S.lastPre=''; delete OPEN[el.dataset.slot]; PREVIEW=null; }
   else if(el.dataset.have){ if(el.checked) S.have[el.dataset.have]=true; else delete S.have[el.dataset.have]; }
   else if(el.dataset.off){ if(el.checked) S.offSlot[el.dataset.off]=true; else delete S.offSlot[el.dataset.off]; }
-  else if(el.dataset.tal){ S.talents=Object.assign({a:5,d:5,s:5,t:0,c:5},S.talents||{}); S.talents[el.dataset.tal]=+el.value; }
+  else if(el.dataset.tal){ S.talents=Object.assign({a:5,d:5,s:5,t:0,c:5,sup:5,dev:5},S.talents||{}); S.talents[el.dataset.tal]=+el.value; S.talSrc=Object.assign({},S.talSrc,{[el.dataset.tal]:'manual'}); }
   else if(el.id==='ench') S.ench=el.checked;
   else if(el.id==='showDone') S.showDone=el.checked;
   else if(el.id==='showSkipped') S.showSkipped=el.checked;
@@ -1251,14 +1790,14 @@ let PFORM=false;
 function renderPresets(){
   const mine=S.presets.map((p,i)=>({p,i})).filter(x=>x.p.faction===S.faction&&(x.p.spec||'prot')===S.spec);
   const mineOk=p=>p&&p.faction===S.faction&&(p.spec||'prot')===S.spec;
-  let cur=S.lastPre||''; if(cur&&!['wfb','wtbc','su','hit','tank','nocraft','nr','fr','bal'].includes(cur)&&!mineOk(S.presets[+cur])) cur='';
+  let cur=S.lastPre||''; if(cur&&!['wfb','wtbc','su','hit','tank','nocraft','nr','fr','bal','opt'].includes(cur)&&!mineOk(S.presets[+cur])) cur='';
   const o=(v,l,t)=>`<option value="${v}" ${cur===v?'selected':''} ${t?`title="${esc(t)}"`:''}>${esc(l)}</option>`;
   const curMine=/^\d+$/.test(cur)&&mineOk(S.presets[+cur]);
   $('presetBar').innerHTML=`<select id="preSel" class="presel" aria-label="${U('presetL')}">
       <option value="" ${cur?'':'selected'} disabled>${U('presetPick')}</option>
-      <optgroup label="${U('pgLists')}">${o('wfb','WoW Forever BiS List')}${o('wtbc','wowtbc.gg')}${IS_FURY()?o('su','sixtyupgrades'):o('bal',U('balP'),U('balTip'))}</optgroup>
-      <optgroup label="${U(IS_FURY()?'pgOptF':'pgOpt')}">${IS_FURY()?o('hit',U('maxHitF'),U('maxHitTipF'))+o('nocraft',U('nocraftPF'),U('nocraftTip')):o('hit',U('maxHit'),U('maxHitTip'))+o('tank',U('tankP'),U('tankTip'))+o('nocraft',U('nocraftP'),U('nocraftTip'))}</optgroup>
-      ${IS_FURY()?'':`<optgroup label="${U('pgRes')}">${o('nr',U('resNR'),U('resTip'))}${o('fr',U('resFR'),U('resTip'))}</optgroup>`}
+      <optgroup label="${U('pgLists')}">${o('wfb','WoW Forever BiS List')}${o('wtbc','wowtbc.gg')}${IS_WL()?'':IS_FURY()?o('su','sixtyupgrades'):o('bal',U('balP'),U('balTip'))}</optgroup>
+      <optgroup label="${U(IS_WL()?'pgOptWL':IS_FURY()?'pgOptF':'pgOpt')}">${IS_WL()?o('opt',U('optWL'),U('optTipWL'))+o('nocraft',U('nocraftWL'),U('nocraftTip')):IS_FURY()?o('hit',U('maxHitF'),U('maxHitTipF'))+o('nocraft',U('nocraftPF'),U('nocraftTip')):o('hit',U('maxHit'),U('maxHitTip'))+o('tank',U('tankP'),U('tankTip'))+o('nocraft',U('nocraftP'),U('nocraftTip'))}</optgroup>
+      ${IS_FURY()||IS_WL()?'':`<optgroup label="${U('pgRes')}">${o('nr',U('resNR'),U('resTip'))}${o('fr',U('resFR'),U('resTip'))}</optgroup>`}
       ${mine.length?`<optgroup label="${U('pgMine')}">${mine.map(({p,i})=>o(String(i),p.name)).join('')}</optgroup>`:''}
     </select>`+
     (curMine?`<button class="btn" data-pdel="${cur}" aria-label="${U('delPreset')}: ${esc(S.presets[+cur].name)}">× ${U('delPreset')}</button>`:'')+
@@ -1267,6 +1806,7 @@ function renderPresets(){
 }
 function applyPreset(k){
   if(k==='wfb'){preset('wfb'+S.faction);toast(U('tPresetW'))} else if(k==='wtbc'){preset('wtbc');toast(U('tPresetT'))} else if(k==='su'){preset('su');toast(U('tPresetSU'))}
+  else if(IS_WL()&&(k==='opt'||k==='nocraft')){ const b=runOptWL('ep',k==='nocraft'); Object.assign(SEL(),b.pick); if(!b.pick.offhand){} const c=calc(); toast(U('tWL')(c.hit.toFixed(1),Math.round(S.spec==='aff'?c.shadow:c.fire),c.crit.toFixed(1),Math.round(c.ep))); }
   else if(k==='hit'||k==='tank'||k==='nocraft'){ const b=optimizeHit(false,k==='tank'?'tank':'ep',k==='nocraft'); Object.assign(SEL(),b.pick);
     const c=calc(); toast(IS_FURY()?U('tFury')(b.hit.toFixed(1),c.crit.toFixed(1),Math.round(c.ep)):U(k==='tank'?'tTank':k==='nocraft'?'tNoCraft':'tMaxHit')(b.hit.toFixed(1),Math.round(c.D))); }
   else if(k==='bal'&&!IS_FURY()){ Object.assign(SEL(),RES_SETS.bal); const c=calc(); toast(U('tBal')(Math.round(c.D),c.hit.toFixed(1),Math.round(c.ep))); }
@@ -1294,7 +1834,7 @@ $('exp').onclick=async()=>{ const txt=JSON.stringify(S); $('io').value=txt;
 $('imp').onclick=()=>{ try{ S=Object.assign(DEF(),JSON.parse($('io').value)); render(); toast(U('tImp')); }catch(err){ toast(U('tImpFail')); } };
 // game bridge: PR1;f=A;s=head:226869,...;h=id,id;d=step,step;k=step,step;x=slot,slot
 function toGame(){
-  const sel=SLOTS.map(sl=>`${sl.k}:${selected(sl).id}`).join(',');
+  const sel=SLOTS.filter(sl=>!(sl.k==='offhand'&&IS_WL()&&ohBlocked())).map(sl=>`${sl.k}:${selected(sl).id}`).join(',');
   const ids=Object.keys(S.steps);
   return ['PR1','p='+S.spec,'f='+S.faction,'s='+sel,'h='+Object.keys(S.have).join(','),'d='+ids.filter(i=>S.steps[i]==='done').join(','),'k='+ids.filter(i=>S.steps[i]==='skipped').join(','),'l='+ids.filter(i=>S.steps[i]==='later').join(','),'x='+Object.keys(S.offSlot).join(',')].join(';');
 }
@@ -1303,11 +1843,12 @@ function fromGame(str){
   const p={}; str.split(';').slice(1).forEach(kv=>{const i=kv.indexOf('='); if(i>0) p[kv.slice(0,i)]=kv.slice(i+1);});
   const list=v=>(v||'').split(',').filter(Boolean);
   if(p.f==='A'||p.f==='H') S.faction=p.f;
-  if(p.p==='prot'||p.p==='fury'){ S.spec=p.p; applySpec(); }
+  if(SPEC_SLOTS[p.p]){ S.spec=p.p; applySpec(); }
   list(p.s).forEach(e=>{const [k,id]=e.split(':'); if(SLOTS.some(s=>s.k===k)) SEL()[k]=+id;});
   S.have={}; list(p.h).forEach(id=>S.have[id]=true);
   S.steps={}; list(p.d).forEach(id=>{if(NODE[id]) S.steps[id]='done'}); list(p.k).forEach(id=>{if(NODE[id]) S.steps[id]='skipped'}); list(p.l).forEach(id=>{if(NODE[id]) S.steps[id]='later'});
-  if(p.t){ const t={}; list(p.t).forEach(x=>{ const m=x.match(/^([adstc])(\d)$/); if(m) t[m[1]]=+m[2]; }); S.talents=Object.assign({a:5,d:5,s:5,t:0,c:5},t); }
+  if(p.t){ const t={}; list(p.t).forEach(x=>{ const m=x.match(/^(supD|sup|dev|[adstc])(\d)$/); if(m) t[m[1]]=+m[2]; }); S.talents=Object.assign({a:5,d:5,s:5,t:0,c:5,sup:5,dev:5},t);
+    S.talSrc={}; Object.keys(t).forEach(k=>S.talSrc[k]='addon'); }
   S.offSlot={}; list(p.x).forEach(k=>S.offSlot[k]=true);
   return list(p.d).length;
 }

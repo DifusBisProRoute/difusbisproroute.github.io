@@ -70,20 +70,26 @@ end
 -- ---------------------------------------------------------------------------
 -- Talent-frame look: spec info + background art detected from the client
 -- ---------------------------------------------------------------------------
+local SPEC_INFO = {
+  prot = { tab = 3, name = "Protection", icon = "Interface\\Icons\\Ability_Warrior_DefensiveStance", bg = "WarriorProtection" },
+  fury = { tab = 2, name = "Fury", icon = "Interface\\Icons\\Ability_Warrior_InnerRage", bg = "WarriorFury" },
+  aff = { tab = 1, name = "Affliction", icon = "Interface\\Icons\\Spell_Shadow_DeathCoil", bg = "WarlockCurses" },
+  demo = { tab = 2, name = "Demonology", icon = "Interface\\Icons\\Spell_Shadow_Metamorphosis", bg = "WarlockSummoning" },
+  destro = { tab = 3, name = "Destruction", icon = "Interface\\Icons\\Spell_Shadow_RainOfFire", bg = "WarlockDestruction" },
+}
 local function specInfo(spec)
   -- GetTalentTabInfo returns different shapes per client; read it defensively
-  local fury = (spec or PR.spec) == "fury"
-  local info = fury and { name = "Fury", points = 0, icon = "Interface\\Icons\\Ability_Warrior_InnerRage", bg = "WarriorFury" }
-    or { name = "Protection", points = 0, icon = "Interface\\Icons\\Ability_Warrior_DefensiveStance", bg = "WarriorProtection" }
+  local base = SPEC_INFO[spec or PR.spec] or SPEC_INFO.prot
+  local info = { name = base.name, points = 0, icon = base.icon, bg = base.bg }
   if not GetTalentTabInfo then return info end
-  local vals = { pcall(GetTalentTabInfo, fury and 2 or 3) }
+  local vals = { pcall(GetTalentTabInfo, base.tab) }
   if not vals[1] then return info end
   local names = {}
   for k = 2, #vals do
     local v = vals[k]
     if type(v) == "string" then
       if v:find("Interface") or v:find("\\") then info.icon = v
-      elseif v:find("^Warrior") then info.bg = v
+      elseif v:find("^Warrior") or v:find("^Warlock") then info.bg = v
       elseif #v < 32 then names[#names + 1] = v end
     elseif type(v) == "number" then
       if v > 1000 then info.iconId = info.iconId or v
@@ -109,8 +115,9 @@ local function applyArt(f, area)
   local low = bg:lower()
   -- 1) atlases used by newer talent UIs
   if C_Texture and C_Texture.GetAtlasInfo then
-    for _, a in ipairs({ "talents-background-warrior-protection", "talents-background-" .. low,
-      "talentframe-background-warrior-protection", "spec-background-warrior-protection" }) do
+    local cl = PR.IsWL() and "warlock-destruction" or "warrior-protection"
+    for _, a in ipairs({ "talents-background-" .. low, "talents-background-" .. cl,
+      "talentframe-background-" .. cl, "spec-background-" .. cl }) do
       if C_Texture.GetAtlasInfo(a) then
         local t = f:CreateTexture(nil, "BACKGROUND", nil, 1)
         t:SetAtlas(a); t:SetAllPoints(area)
@@ -120,8 +127,9 @@ local function applyArt(f, area)
     end
   end
   -- 2) single-file backgrounds
-  for _, path in ipairs({ "Interface\\TalentFrame\\" .. bg, "Interface\\TalentFrame\\bg-warrior-protection",
-    "Interface\\TalentFrame\\talentbg-warrior-protection" }) do
+  local cl2 = PR.IsWL() and "warlock-destruction" or "warrior-protection"
+  for _, path in ipairs({ "Interface\\TalentFrame\\" .. bg, "Interface\\TalentFrame\\bg-" .. cl2,
+    "Interface\\TalentFrame\\talentbg-" .. cl2 }) do
     if fileExists(path) then
       local t = f:CreateTexture(nil, "BACKGROUND", nil, 1)
       t:SetTexture(path); t:SetAllPoints(area)
@@ -271,7 +279,7 @@ function UI.Build()
   band.ring = ring
   f.band = band
 
-  -- spec switch (Prot / Fury), like the talent tree tabs
+  -- spec switch (Prot / Fury, or the 3 Warlock specs), like the talent tree tabs
   local function specBtn(key, label, x)
     local b = tabButton(band, 58)
     b:SetPoint("RIGHT", -64 - x, 2)
@@ -284,7 +292,12 @@ function UI.Build()
     end)
     return b
   end
-  f.specBtns = { fury = specBtn("fury", "Fury", 0), prot = specBtn("prot", "Prot", 64) }
+  f.specBtns = {}
+  local specs = PR.ClassSpecs()
+  for i = #specs, 1, -1 do
+    local key = specs[i]
+    f.specBtns[key] = specBtn(key, PR.T("spec_" .. key), (#specs - i) * 64)
+  end
 
   local lang = tabButton(band, 46)
   lang:SetPoint("RIGHT", -12, 2)
@@ -511,9 +524,9 @@ function UI.Relabel()
   f.band.specName, f.band.specPoints = sp.name, sp.points
   if f.band.ring then f.band.ring:SetTexture(sp.icon) end
   f.band.spec:SetText(f.band.specName)
-  f.band.sub:SetText(PR.T(PR.IsFury() and "bandSubF" or "bandSub"))
+  f.band.sub:SetText(PR.T(PR.IsWL() and "bandSubWL" or PR.IsFury() and "bandSubF" or "bandSub"))
   f.band.pts:SetText(f.band.specPoints and f.band.specPoints > 0 and tostring(f.band.specPoints) or "")
-  if f.specBtns then for k, b in pairs(f.specBtns) do b:SetSelected(k == PR.spec) end end
+  if f.specBtns then for k, b in pairs(f.specBtns) do b:SetText(PR.T("spec_" .. k)); b:SetSelected(k == PR.spec) end end
   f.tabs.gear:SetText("|TInterface\\Icons\\INV_Chest_Plate03:18:18:0:0|t  " .. PR.T("gear"))
   f.tabs.route:SetText("|TInterface\\Icons\\INV_Misc_Map_01:18:18:0:0|t  " .. PR.T("route"))
   f.tabs.opt:SetText("|TInterface\\Icons\\INV_Misc_Bag_10:18:18:0:0|t  " .. PR.T("optTab")); f.syncBtn:SetText(PR.T("sync")); f.simBtn:SetText(PR.T("sim"))
@@ -685,7 +698,15 @@ local function presetItems()
     { key = "wtbc", label = "wowtbc.gg", run = function() PR.ApplyTag("wtbc") end },
   }
   local function say(fmt, v) print(GOLD .. "Difu'sBisProRoute|r: " .. string.format(PR.T(fmt), v)) end
-  if not PR.IsFury() then
+  local function sayWL()
+    local c = PR.Calc()
+    print(GOLD .. "Difu'sBisProRoute|r: " .. string.format(PR.T("doneWL"), c.hit, math.floor((PR.spec == "aff" and c.shadow or c.fire) + 0.5), c.crit, math.floor(c.ep + 0.5)))
+  end
+  if PR.IsWL() then
+    L[#L + 1] = { header = PR.T("pgOptWL") }
+    L[#L + 1] = { key = "opt", label = PR.T("optWL"), run = function() PR.ApplyMaxHit(); sayWL() end }
+    L[#L + 1] = { key = "nocraft", label = PR.T("nocraftWL"), run = function() PR.ApplyMaxHit(nil, true); sayWL() end }
+  elseif not PR.IsFury() then
     L[#L + 1] = { key = "bal", label = PR.T("balP"), run = function()
       if PR.ApplyRes("bal") then
         local c = PR.Calc()
@@ -693,7 +714,8 @@ local function presetItems()
       end
     end }
   end
-  if PR.IsFury() then
+  if PR.IsWL() then -- done above
+  elseif PR.IsFury() then
     L[#L + 1] = { key = "su", label = "sixtyupgrades", run = function() PR.ApplyTag("su") end }
     L[#L + 1] = { header = PR.T("pgOptF") }
     L[#L + 1] = { key = "hit", label = PR.T("maxHitF"), run = function() say("maxHitDoneF", PR.ApplyMaxHit()) end }
@@ -831,7 +853,13 @@ end
 
 function UI.DeltaText(a, b)
   local parts = {}
-  local spec = PR.IsFury() and {
+  local spec = PR.IsWL() and {
+    { "hit", "Hit", function(x) return string.format("%.1f%%", x) end },
+    { "sp", "SP", function(x) return string.format("%d", math.floor(x + 0.5)) end },
+    { "crit", "Crit", function(x) return string.format("%.2f%%", x) end },
+    { "int", "Int", function(x) return string.format("%d", math.floor(x + 0.5)) end },
+    { "ep", "EP", function(x) return string.format("%.1f", x) end },
+  } or PR.IsFury() and {
     { "hit", "Hit", function(x) return string.format("%.1f%%", x) end },
     { "crit", "Crit", function(x) return string.format("%.2f%%", x) end },
     { "ap", "AP", function(x) return string.format("%d", math.floor(x + 0.5)) end },

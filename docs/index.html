@@ -698,7 +698,7 @@ const SLOTS_PROT = [
   {id:272403,n:'Valiant\'s Waistguard',q:4,il:60,rl:60,ty:'plate',bind:'bop',st:{armor:385,sta:11,str:14,agi:24},src:S_('Pix Xizzix · Reals','Pix Xizzix · Reals'),req:['reals'],xo:1}]},
  {k:'legs',n:S_('Piernas','Legs'),ench:{n:'Wild Leather Armor Kit',ws:8719,st:{def:4,sta:10}},opts:[
   {id:226868,n:'Legguards of Heroism',q:3,il:66,ty:'plate',bind:'bop',set:SET_H,st:{armor:601,sta:24,str:16,def:7,bv:21},src:S_('Quest T0.5 · Anthion\'s Parting Words','T0.5 quest · Anthion\'s Parting Words'),req:['t7'],bis:['wfbA','wfbH','wtbc']},
-  {id:237825,n:'Sentinel\'s Plate Legguards',q:4,il:78,rl:60,ty:'plate',bind:'bop',st:{armor:768,sta:39,str:27,hit:1,crit:2},src:S_('Silverwing Sentinels Exaltado · Warsong Gulch','Silverwing Sentinels Exalted · Warsong Gulch'),req:['rep_wsg'],fac:'A',bis:['hit']},
+  {id:237825,n:'Sentinel\'s Plate Legguards',q:4,il:78,rl:60,ty:'plate',bind:'bop',st:{armor:768,sta:39,str:27,hit:1,crit:2},src:S_('Silverwing Sentinels Exaltado · Warsong Gulch','Silverwing Sentinels Exalted · Warsong Gulch'),req:['rep_wsg'],fac:'A',bis:['hit'],noopt:1},
   {id:22328,n:'Legplates of Vigilance',q:3,il:63,rl:58,ty:'plate',bind:'bop',st:{armor:575,sta:22,def:15,hit:1},src:S_('Sothos & Jarien (summon) · Stratholme','Sothos & Jarien (summon) · Stratholme'),req:['summon']},
   {id:279265,n:'Azerothium Legplates',q:4,il:65,rl:60,ty:'plate',bind:'boe',st:{armor:646,sta:27,str:24,agi:18},src:S_('Crafteado · planos sin fuente conocida','Crafted · plans with no known source'),req:['plans'],verify:true},
   {id:11927,n:'Legplates of the Eternal Guardian',q:3,il:57,rl:52,ty:'plate',bind:'bop',st:{armor:682,def:15,blk:2},src:S_('Blackrock Depths','Blackrock Depths'),req:['dun_brd']},
@@ -1423,7 +1423,7 @@ function optimizeHit(useUnverified,mode,noCraft){
   if(IS_FURY()){ // try with and without forcing each 2-piece set bonus (Devilsaur = +2% hit)
     let best=runOpt(useUnverified,mode,noCraft,null);
     for(const name in SET_BONUS){ const forced={};
-      SLOTS.forEach(sl=>{ const o=optsFor(sl).find(o=>!o.xo&&o.set===name&&!(noCraft&&isCraftOrAH(o))&&(useUnverified||!o.verify)); if(o&&!S.offSlot[sl.k]) forced[sl.k]=o; });
+      SLOTS.forEach(sl=>{ const o=optsFor(sl).find(o=>!o.xo&&!o.noopt&&o.set===name&&!(noCraft&&isCraftOrAH(o))&&(useUnverified||!o.verify)); if(o&&!S.offSlot[sl.k]) forced[sl.k]=o; });
       if(Object.keys(forced).length<SET_BONUS[name].need) continue;
       const r=runOpt(useUnverified,mode,noCraft,{forced,st:SET_BONUS[name].st});
       if(r&&(r.h>best.h||(r.h===best.h&&r.score>best.score))) best=r; }
@@ -1439,7 +1439,7 @@ function runOpt(useUnverified,mode,noCraft,variant){
   const h0=variant&&variant.st.hit||0;
   let dp=new Map([['0|'+Math.min(HC,Math.round(h0*10)),{d:0,h:Math.min(HC,Math.round(h0*10)),score:h0*(fury?EPW_F.hit:0),hit:h0,pick:{}}]]);
   SLOTS.forEach(sl=>{ if(S.offSlot[sl.k]) return;
-    let opts=optsFor(sl).filter(o=>!o.xo); const f=opts.filter(o=>useUnverified||!o.verify); if(f.length) opts=f;
+    let opts=optsFor(sl).filter(o=>!o.xo&&!o.noopt); const f=opts.filter(o=>useUnverified||!o.verify); if(f.length) opts=f;
     if(noCraft){ opts=opts.filter(o=>!isCraftOrAH(o)); if(!opts.length) return; }
     if(variant&&variant.forced[sl.k]) opts=[variant.forced[sl.k]];
     const nx=new Map();

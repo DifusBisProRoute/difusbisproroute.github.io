@@ -415,7 +415,7 @@ function PR.OptimizeHit(useUnverified, mode, noCraft)
       for _, sl in ipairs(PR.SLOTS) do
         if not PR.char.off[sl.k] then
           for _, o in ipairs(PR.OptsFor(sl)) do
-            if not o.xo and o.set == name and not (noCraft and PR.IsCraftOrAH(o)) and (useUnverified or not o.verify) then forced[sl.k] = o; n = n + 1; break end
+            if not o.xo and not o.noopt and o.set == name and not (noCraft and PR.IsCraftOrAH(o)) and (useUnverified or not o.verify) then forced[sl.k] = o; n = n + 1; break end
           end
         end
       end
@@ -450,7 +450,7 @@ runOpt = function(useUnverified, mode, noCraft, variant, cands)
     if not PR.char.off[sl.k] then
       local opts, filtered = cands and (cands[sl.k] or {}) or PR.OptsFor(sl), {}
       if not cands then
-        for _, o in ipairs(opts) do if (useUnverified or not o.verify) and not o.xo then filtered[#filtered + 1] = o end end
+        for _, o in ipairs(opts) do if (useUnverified or not o.verify) and not o.xo and not o.noopt then filtered[#filtered + 1] = o end end
         if #filtered > 0 then opts = filtered end
       end
       if noCraft then

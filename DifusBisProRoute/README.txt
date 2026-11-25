@@ -1,4 +1,4 @@
-Difu'sBisProRoute 1.0.11 - WoW Forever (Warrior Prot / Fury, Warlock Affli / Demo / Destro)
+Difu'sBisProRoute 1.0.12 - WoW Forever (Warrior Prot / Fury, Warlock Affli / Demo / Destro)
 =========================================================================================
 
 INSTALL

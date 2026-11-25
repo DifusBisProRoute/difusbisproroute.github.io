@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.12
+- Protection: the optimized presets (Optimal, Tank, No crafts) no longer pick Sentinel's Plate Legguards (Warsong Gulch PvP reputation). You can still choose them by hand.
+
 ## 1.0.11
 - **Warlock**: new Affliction, Demonology and Destruction routes, in the addon and on the web guide. A Warlock character gets the Warlock specs; on the web, a Class / spec dropdown (Warrior: Protection, Fury · Warlock: Affliction, Demonology, Destruction).
 - Warlock model: 17% spell hit cap against level 63 bosses; Suppression (read from your talents) counts for up to 5%. Spell power, Shadow and Fire damage, spell crit (Intellect, gear and Devastation for Destruction) and EP with the WoW Forever BiS List weights of each spec.

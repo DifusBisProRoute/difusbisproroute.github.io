@@ -85,6 +85,8 @@ PR.L = {
 -- Warlock strings
 local function addL(lang, t) for k, v in pairs(t) do PR.L[lang][k] = v end end
 addL("es", {
+  cls_WARRIOR = "Warrior", cls_WARLOCK = "Warlock", clsTip = "Planear otra clase",
+  enchL = "Enchant", enchMissNow = "Tu pieza equipada en este slot no tiene enchant.", enchHasNow = "Tu pieza equipada en este slot ya tiene enchant.",
   spec_prot = "Prot", spec_fury = "Fury", spec_aff = "Afli", spec_demo = "Demo", spec_destro = "Destro",
   specN_aff = "Aflicción", specN_demo = "Demonología", specN_destro = "Destrucción",
   bandSubWL = "Ruta pre-raid de Warlock · WoW Forever", notSupported = "Difu'sBisProRoute tiene rutas para Warrior y Warlock; esta clase usa los datos de Warrior.",
@@ -101,6 +103,8 @@ addL("es", {
   ohTwo = "Vacía: el bastón usa las dos manos", optSubWL = "Mejor set con lo que tienes: lo más cerca del 17% de hit de hechizos, luego el máximo EP.",
 })
 addL("en", {
+  cls_WARRIOR = "Warrior", cls_WARLOCK = "Warlock", clsTip = "Plan another class",
+  enchL = "Enchant", enchMissNow = "Your equipped piece in this slot has no enchant.", enchHasNow = "Your equipped piece in this slot is already enchanted.",
   spec_prot = "Prot", spec_fury = "Fury", spec_aff = "Affli", spec_demo = "Demo", spec_destro = "Destro",
   specN_aff = "Affliction", specN_demo = "Demonology", specN_destro = "Destruction",
   bandSubWL = "Warlock pre-raid route · WoW Forever", notSupported = "Difu'sBisProRoute has routes for Warrior and Warlock; this class uses the Warrior data.",
@@ -180,10 +184,19 @@ function PR.IsFury() return PR.spec == "fury" end
 PR.WL_SPECS = { aff = true, demo = true, destro = true }
 function PR.IsWL(spec) return PR.WL_SPECS[spec or PR.spec] or false end
 -- specs offered to this character (the class decides)
-function PR.ClassSpecs()
-  local _, cls = UnitClass and UnitClass("player")
-  if cls == "WARLOCK" then return { "aff", "demo", "destro" }, cls end
-  return { "prot", "fury" }, cls
+PR.CLASS_SPECS = { WARRIOR = { "prot", "fury" }, WARLOCK = { "aff", "demo", "destro" } }
+function PR.SpecClass(spec) return PR.WL_SPECS[spec] and "WARLOCK" or "WARRIOR" end
+function PR.PlayerClass() local _, cls = UnitClass and UnitClass("player"); return cls end
+-- the class whose route you are looking at: your own by default, any supported class on demand
+function PR.ViewClass()
+  if PR.spec and PR.SPEC_SLOTS[PR.spec] and PR.char then return PR.SpecClass(PR.spec) end
+  return PR.PlayerClass() == "WARLOCK" and "WARLOCK" or "WARRIOR"
+end
+-- planning another class than the one you play: no live talents or stats for it
+function PR.OtherClass() return PR.SpecClass(PR.spec) ~= (PR.PlayerClass() == "WARLOCK" and "WARLOCK" or "WARRIOR") end
+function PR.ClassSpecs(cls)
+  cls = cls or PR.ViewClass()
+  return PR.CLASS_SPECS[cls] or PR.CLASS_SPECS.WARRIOR, cls
 end
 function PR.IndexItems()
   wipe(PR.ITEM)
@@ -197,16 +210,15 @@ function PR.IndexItems()
 end
 -- switch spec: slots, item index, per-spec selection table (PR.char.sel keeps pointing at the active one)
 function PR.ApplySpec(spec)
-  local specs = PR.ClassSpecs()
-  local ok = false
-  for _, sp in ipairs(specs) do if sp == spec then ok = true end end
-  if not ok or not PR.SPEC_SLOTS[spec] then spec = specs[1] end
+  if not PR.SPEC_SLOTS[spec] then spec = PR.ClassSpecs(PR.PlayerClass() == "WARLOCK" and "WARLOCK" or "WARRIOR")[1] end
   PR.spec = spec
   PR.SLOTS = PR.SPEC_SLOTS[spec]
   PR.IndexItems()
   if PR.char then
     if PR.char.spec ~= spec then PR.char.lastPre = nil end
     PR.char.spec = spec
+    PR.char.lastSpec = PR.char.lastSpec or {}
+    PR.char.lastSpec[PR.SpecClass(spec)] = spec
     PR.char.selBySpec = PR.char.selBySpec or {}
     PR.char.selBySpec[spec] = PR.char.selBySpec[spec] or {}
     PR.char.sel = PR.char.selBySpec[spec]
@@ -879,8 +891,14 @@ function PR.DumpTalents()
     R.cruelty or 0, how.cruelty or "-"))
 end
 
+-- switch the planner to the other supported class (its last used spec)
+function PR.ToggleClass()
+  local cls = PR.SpecClass(PR.spec) == "WARLOCK" and "WARRIOR" or "WARLOCK"
+  local last = PR.char and PR.char.lastSpec and PR.char.lastSpec[cls]
+  PR.ApplySpec(last or PR.CLASS_SPECS[cls][1])
+end
 function PR.Ranks()
-  if PR.liveRanks then return PR.liveRanks, true end
+  if PR.liveRanks and not PR.OtherClass() then return PR.liveRanks, true end
   return PR.DEFAULT_RANKS, false
 end
 
@@ -900,6 +918,7 @@ end
 -- what the game reports right now (gear + talents + buffs)
 function PR.Live()
   local L = {}
+  if PR.OtherClass() then return L end -- planning another class: no "Now" column
   local function try(f, ...) if f then local ok, a, b = pcall(f, ...); if ok then return a, b end end end
   L.hp = try(UnitHealthMax, "player")
   local _, eff = try(UnitArmor, "player"); L.armor = eff
@@ -1337,7 +1356,8 @@ function PR.Init()
   c.bank = c.bank or {}; c.turnedIn = c.turnedIn or {}; c.presets = c.presets or {}
   c.showDone = (c.showDone == nil) and true or c.showDone
   PR.char = c
-  local specs, class = PR.ClassSpecs()
+  local class = PR.PlayerClass()
+  local specs = PR.ClassSpecs(class == "WARLOCK" and "WARLOCK" or "WARRIOR")
   if not c.selBySpec then c.selBySpec = { [specs[1]] = c.sel } end
   PR.ApplySpec(c.spec or specs[1])
   if class ~= "WARRIOR" and class ~= "WARLOCK" then print("|cffc69b6dDifu'sBisProRoute|r: " .. PR.T("notSupported")) end

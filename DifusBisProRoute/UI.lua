@@ -280,9 +280,8 @@ function UI.Build()
   f.band = band
 
   -- spec switch (Prot / Fury, or the 3 Warlock specs), like the talent tree tabs
-  local function specBtn(key, label, x)
+  local function specBtn(key, label)
     local b = tabButton(band, 58)
-    b:SetPoint("RIGHT", -64 - x, 2)
     b:SetText(label)
     b:SetScript("OnClick", function()
       if PR.spec ~= key then
@@ -293,11 +292,19 @@ function UI.Build()
     return b
   end
   f.specBtns = {}
-  local specs = PR.ClassSpecs()
-  for i = #specs, 1, -1 do
-    local key = specs[i]
-    f.specBtns[key] = specBtn(key, PR.T("spec_" .. key), (#specs - i) * 64)
+  for _, cls in ipairs({ "WARRIOR", "WARLOCK" }) do
+    for _, key in ipairs(PR.CLASS_SPECS[cls]) do f.specBtns[key] = specBtn(key, PR.T("spec_" .. key)) end
   end
+  -- class switch: plan the other class (shows its name), like the web's class dropdown
+  f.clsBtn = tabButton(band, 70)
+  f.clsBtn:SetScript("OnClick", function()
+    PR.ToggleClass(); UI.preview = nil; if UI.fly then UI.fly:Hide() end
+    UI.Relabel(); PR.Refresh(false)
+  end)
+  f.clsBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM"); GameTooltip:SetText(PR.T("clsTip")); GameTooltip:Show()
+  end)
+  f.clsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
   local lang = tabButton(band, 46)
   lang:SetPoint("RIGHT", -12, 2)
@@ -526,7 +533,21 @@ function UI.Relabel()
   f.band.spec:SetText(f.band.specName)
   f.band.sub:SetText(PR.T(PR.IsWL() and "bandSubWL" or PR.IsFury() and "bandSubF" or "bandSub"))
   f.band.pts:SetText(f.band.specPoints and f.band.specPoints > 0 and tostring(f.band.specPoints) or "")
-  if f.specBtns then for k, b in pairs(f.specBtns) do b:SetText(PR.T("spec_" .. k)); b:SetSelected(k == PR.spec) end end
+  if f.specBtns then
+    -- only the specs of the class being planned, right to left before the language button
+    local specs, cls = PR.ClassSpecs()
+    for _, b in pairs(f.specBtns) do b:Hide() end
+    local x = 64
+    for i = #specs, 1, -1 do
+      local b = f.specBtns[specs[i]]
+      b:ClearAllPoints(); b:SetPoint("RIGHT", -x, 2); b:SetText(PR.T("spec_" .. specs[i])); b:SetSelected(specs[i] == PR.spec); b:Show()
+      x = x + 64
+    end
+    if f.clsBtn then
+      f.clsBtn:ClearAllPoints(); f.clsBtn:SetPoint("RIGHT", -x, 2)
+      f.clsBtn:SetText(PR.T(cls == "WARLOCK" and "cls_WARRIOR" or "cls_WARLOCK") .. " >")
+    end
+  end
   f.tabs.gear:SetText("|TInterface\\Icons\\INV_Chest_Plate03:18:18:0:0|t  " .. PR.T("gear"))
   f.tabs.route:SetText("|TInterface\\Icons\\INV_Misc_Map_01:18:18:0:0|t  " .. PR.T("route"))
   f.tabs.opt:SetText("|TInterface\\Icons\\INV_Misc_Bag_10:18:18:0:0|t  " .. PR.T("optTab")); f.syncBtn:SetText(PR.T("sync")); f.simBtn:SetText(PR.T("sim"))

@@ -180,6 +180,24 @@ end
 -- ---------------------------------------------------------------------------
 -- Slot buttons
 -- ---------------------------------------------------------------------------
+-- planned enchant of a slot (a one-hand Warlock weapon takes none) and what the equipped piece has
+local INV = { head = 1, neck = 2, shoulder = 3, back = 15, chest = 5, wrist = 9, hands = 10, waist = 6, legs = 7, feet = 8,
+  finger1 = 11, finger2 = 12, trinket1 = 13, trinket2 = 14, mainhand = 16, offhand = 17, ranged = 18 }
+local function plannedEnch(sl, o)
+  if not sl or not sl.ench or PR.char.off[sl.k] then return nil end
+  if PR.IsWL() and sl.k == "mainhand" and not (o and o.two) then return nil end
+  if sl.k == "offhand" and PR.OHBlocked() then return nil end
+  return sl.ench
+end
+local function shortEnch(n) return n:match("^Enchant [%a ]- %- (.+)$") or n end
+-- nil = nothing equipped there, 0 = equipped without enchant, else the enchant id
+local function equippedEnch(k)
+  if PR.OtherClass() then return nil end -- planning another class: your gear does not apply
+  local link = INV[k] and GetInventoryItemLink and GetInventoryItemLink("player", INV[k])
+  if not link then return nil end
+  return tonumber(link:match("item:%d+:(%d*)") or "") or 0
+end
+
 local function slotButton(parent, key, side)
   local b = CreateFrame("Button", nil, parent)
   b:SetSize(SLOT_SIZE, SLOT_SIZE)
@@ -192,6 +210,9 @@ local function slotButton(parent, key, side)
   b.check:SetTexture("Interface\\RaidFrame\\ReadyCheck-Ready")
   b.warn = b:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge"); b.warn:SetPoint("TOPRIGHT", -3, -1); b.warn:SetText("!"); b.warn:SetTextColor(1, 0.3, 0.25)
   b.off = b:CreateTexture(nil, "OVERLAY", nil, 3); b.off:SetAllPoints(); b.off:SetColorTexture(0, 0, 0, 0.7)
+  -- enchant badge (bottom left): the slot has a planned enchant; red when your equipped piece has none
+  b.ench = b:CreateTexture(nil, "OVERLAY", nil, 4); b.ench:SetSize(14, 14); b.ench:SetPoint("BOTTOMLEFT", -2, -2)
+  b.ench:SetTexture("Interface\\Icons\\Trade_Engraving"); b.ench:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   b.hl = b:CreateTexture(nil, "HIGHLIGHT"); b.hl:SetAllPoints(); b.hl:SetColorTexture(1, 0.82, 0, 0.18)
   b.label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   b.label:SetWidth(150); b.label:SetWordWrap(false)
@@ -209,6 +230,14 @@ local function slotButton(parent, key, side)
   b:SetScript("OnEnter", function(self)
     local sl = slotByKey(key); local o = PR.Selected(sl)
     H().showItemTooltip(self, o.id)
+    local en = plannedEnch(sl, o)
+    if en then
+      GameTooltip:AddLine(" ")
+      GameTooltip:AddLine(PR.T("enchL") .. ": " .. en.n, 0.12, 1, 0.12, true)
+      local eq = equippedEnch(key)
+      if eq == 0 then GameTooltip:AddLine(PR.T("enchMissNow"), 1, 0.4, 0.3, true)
+      elseif eq then GameTooltip:AddLine(PR.T("enchHasNow"), 0.6, 0.6, 0.6, true) end
+    end
     GameTooltip:AddLine(" ")
     GameTooltip:AddLine(string.format(PR.T("slotHint"), #PR.OptsFor(sl)), 1, 0.82, 0, true)
     GameTooltip:Show()
@@ -226,6 +255,11 @@ local function refreshSlot(b)
   b.warn:SetShown(o.verify and true or false)
   b.off:SetShown(PR.char.off[b.key] and true or false)
   b.icon:SetDesaturated(PR.char.off[b.key] and true or false)
+  local en = plannedEnch(sl, o)
+  b.ench:SetShown(en and true or false)
+  if en then
+    if equippedEnch(b.key) == 0 then b.ench:SetVertexColor(1, 0.3, 0.25) else b.ench:SetVertexColor(1, 1, 1) end
+  end
   -- like the web: SLOT (grey) / item name (quality colour) / EP (+ ready check when you own it)
   local own = PR.Has(o.id) and "  |TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12|t" or ""
   if b.key == "offhand" and PR.OHBlocked() then
@@ -235,7 +269,8 @@ local function refreshSlot(b)
     b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n|cffe5604f" .. PR.T("offTag") .. "|r\n|cff9d9d9d" .. PR.T("offHint") .. "|r")
   else
     b.label:SetText("|cff9d9d9d" .. string.upper(PR.tx(sl.n)) .. "|r\n" .. H().qualityHex(o.q) .. PR.ItemName(o.id) ..
-      "|r\n|cffc69b6d" .. string.format("%.1f EP", PR.EP(o, sl.k)) .. "|r" .. own)
+      "|r\n|cffc69b6d" .. string.format("%.1f EP", PR.EP(o, sl.k)) .. "|r" .. own ..
+      (en and ("\n|cff1eff00" .. shortEnch(en.n) .. "|r") or ""))
   end
   b.label:SetWordWrap(true)
 end

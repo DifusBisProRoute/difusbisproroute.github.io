@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.14
+- Gear tab: every slot shows the enchant it should carry, as on the web guide: a small enchant icon on the slot, the enchant name in the slot label (wide window) and in the tooltip. The icon turns red when the piece you have equipped in that slot has no enchant, and the tooltip says so.
+
+## 1.0.13
+- Any character can now plan any supported class: a **Warlock >** / **Warrior >** button next to the spec buttons switches the class. Your own class keeps reading your talents and stats; another class uses the default talents and has no "Now" column.
+
 ## 1.0.12
 - Protection: the optimized presets (Optimal, Tank, No crafts) no longer pick Sentinel's Plate Legguards (Warsong Gulch PvP reputation). You can still choose them by hand.
 

@@ -233,7 +233,7 @@ function PR.OwnedCandidates()
     local known = PR.ITEM[id]
     local o
     if known then
-      o = { st = known.st, dps = known.dps, spd = known.spd, pe = known.pe, two = known.two }
+      o = { st = known.st, dps = known.dps, spd = known.spd, pe = known.pe, two = known.two, set = known.set }
     else
       local r = readTooltip("item:" .. id) -- base item, without the enchant
       local full = readTooltip(link)

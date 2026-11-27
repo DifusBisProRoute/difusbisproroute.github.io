@@ -1,7 +1,11 @@
 # Changelog
 
+## 1.0.15
+- Protection: the optimizer and the stats now count the **Battlegear of Heroism** set bonuses (4 pieces: proc heal + 10 rage, est. 4.7 EP; 6 pieces: +20 Strength). The Optimal preset now picks 7 Heroism pieces (Alliance) or 6 (Horde) and still reaches 440 Defense + 8% hit: +26 to +34 Strength and +52 to +68 attack power (more threat), more avoidance, about the same Stamina.
+
 ## 1.0.14
 - Gear tab: every slot shows the enchant it should carry, as on the web guide: a small enchant icon on the slot, the enchant name in the slot label (wide window) and in the tooltip. The icon turns red when the piece you have equipped in that slot has no enchant, and the tooltip says so.
+- Wider window (900 px) so every slot shows its item, EP and enchant next to the stats sheet. Use `/difu scale` if it is too big for your screen.
 
 ## 1.0.13
 - Any character can now plan any supported class: a **Warlock >** / **Warrior >** button next to the spec buttons switches the class. Your own class keeps reading your talents and stats; another class uses the default talents and has no "Now" column.

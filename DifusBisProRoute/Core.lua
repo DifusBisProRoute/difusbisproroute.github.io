@@ -442,8 +442,29 @@ function PR.OptimizeHit(useUnverified, mode, noCraft)
 end
 
 -- cands (optional): slotKey -> list of options to use instead of the guide's ("Optimize current" tab)
+-- Protection: Battlegear of Heroism bonuses that count (WoW Forever BiS List): 4 pieces = proc heal + 10 rage
+-- (est. 4.7 EP), 6 pieces = +20 Strength. The 2 and 3 piece bonuses (resistances, HP5) have no tank weight.
+PR.PROT_SETS = { ["Battlegear of Heroism"] = { { need = 4, pe = 4.7 }, { need = 6, st = { str = 20 } } } }
+function PR.ProtSetBonus(cnt)
+  local st, pe = {}, 0
+  for name, list in pairs(PR.PROT_SETS) do
+    for _, b in ipairs(list) do
+      if (cnt[name] or 0) >= b.need then
+        pe = pe + (b.pe or 0)
+        for k, v in pairs(b.st or {}) do st[k] = (st[k] or 0) + v end
+      end
+    end
+  end
+  return st, pe
+end
+local function protSetEP(c)
+  local st, pe = PR.ProtSetBonus({ ["Battlegear of Heroism"] = c })
+  for k, v in pairs(st) do pe = pe + v * (PR.EPW[k] or 0) end
+  return pe
+end
 runOpt = function(useUnverified, mode, noCraft, variant, cands)
   local fury, wl = PR.IsFury(), PR.IsWL()
+  local setsOn = not fury and not wl and mode ~= "tank" -- Protection EP counts the Heroism set bonuses
   local R = PR.Ranks()
   local enchDef = 0
   if PR.useEnchants and not cands then -- owned items already carry their real enchant
@@ -457,7 +478,7 @@ runOpt = function(useUnverified, mode, noCraft, variant, cands)
   -- instead of copying the whole pick table (no per-state garbage).
   local h0 = variant and variant.st.hit or 0
   local nh0 = math.min(HC, math.floor(h0 * 10 + 0.5))
-  local dp = { [nh0] = { d = 0, h = nh0, hit = h0, score = fury and h0 * PR.EPW_F.hit or 0 } }
+  local dp = { [nh0] = { d = 0, h = nh0, c = 0, hit = h0, score = fury and h0 * PR.EPW_F.hit or 0 } }
   for _, sl in ipairs(PR.SLOTS) do
     if not PR.char.off[sl.k] then
       local opts, filtered = cands and (cands[sl.k] or {}) or PR.OptsFor(sl), {}
@@ -475,7 +496,7 @@ runOpt = function(useUnverified, mode, noCraft, variant, cands)
       if #opts == 0 then nx = dp end
       for _, v in pairs(#opts > 0 and dp or {}) do
         if wl and k == "offhand" and v.two then -- staff: the off hand stays empty
-          local key = v.d * 1000 + v.h + 500000
+          local key = v.d * 1000 + v.h + 500000 + (v.c or 0) * 1000000
           local cur = nx[key]
           if not cur or v.score > cur.score then nx[key] = v end
         end
@@ -490,10 +511,11 @@ runOpt = function(useUnverified, mode, noCraft, variant, cands)
               score = score + PR.EPWL({ st = sl.ench.st }, PR.spec) -- only a staff takes the 2H enchant
             end
             local two = (k == "mainhand") and (o.two and true or false) or v.two
-            local key = nd * 1000 + nh + (two and 500000 or 0)
+            local c = setsOn and math.min(6, (v.c or 0) + (o.set == "Battlegear of Heroism" and 1 or 0)) or 0
+            local key = nd * 1000 + nh + (two and 500000 or 0) + c * 1000000
             local cur = nx[key]
             if not cur or score > cur.score then
-              nx[key] = { d = nd, h = nh, hit = hit, score = score, prev = v, slot = k, id = o.id, o = o, two = two,
+              nx[key] = { d = nd, h = nh, c = c, hit = hit, score = score, prev = v, slot = k, id = o.id, o = o, two = two,
                 f1 = (k == "finger1") and o.id or v.f1, t1 = (k == "trinket1") and o.id or v.t1 }
             end
           end
@@ -503,6 +525,7 @@ runOpt = function(useUnverified, mode, noCraft, variant, cands)
     end
   end
   local best
+  if setsOn then for _, v in pairs(dp) do v.score = v.score + protSetEP(v.c or 0) end end
   if wl then -- EP + the value of hit up to the cap
     local HW, bv = PR.HitW_WL(), nil
     for _, v in pairs(dp) do
@@ -1079,17 +1102,21 @@ function PR.Calc(overSlot, overOpt)
   if PR.IsWL() then return PR.CalcWL(overSlot, overOpt) end
   local M = PR.MODEL
   local g = { def = 0, hit = 0, sta = 0, agi = 0, armor = 0, exp = 0, blk = 0, dodge = 0, parry = 0, bv = 0, str = 0, ap = 0, crit = 0, nr = 0, fr = 0 }
-  local ep = 0
+  local ep, cnt = 0, {}
   for _, sl in ipairs(PR.SLOTS) do
     if not PR.char.off[sl.k] or overSlot == sl.k then
       local o = (overSlot == sl.k and overOpt) or PR.Selected(sl)
       ep = ep + PR.EP(o, sl.k)
+      if o and o.set then cnt[o.set] = (cnt[o.set] or 0) + 1 end
       for k in pairs(g) do
         g[k] = g[k] + ((o and o.st and o.st[k]) or 0)
         if PR.useEnchants and sl.ench and sl.ench.st then g[k] = g[k] + (sl.ench.st[k] or 0) end
       end
     end
   end
+  local sbSt, sbPe = PR.ProtSetBonus(cnt)
+  for k, v in pairs(sbSt) do g[k] = (g[k] or 0) + v; ep = ep + v * (PR.EPW[k] or 0) end
+  ep = ep + sbPe
   local R = PR.Ranks()
   local T = PR.TALENTS
   local baseAgi, baseSta = PR.BaseStats()

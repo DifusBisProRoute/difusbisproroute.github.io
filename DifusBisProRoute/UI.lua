@@ -6,7 +6,7 @@ PR.UI = UI
 local GOLD = "|cffc69b6d"   -- warrior class colour
 local RED = "|cffd0392b"
 local GOOD, BAD = "|cff6cc07a", "|cffe5604f"
-local W, H = 640, 780
+local W, H = 900, 780 -- wide enough for the slot labels (item, EP, enchant) beside the stats sheet
 local ROW_W = W - 56
 
 local function qualityHex(q)
